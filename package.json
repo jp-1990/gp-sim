@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install",
+    "test": "jest --watch"
   },
   "dependencies": {
     "next": "12.1.1",
@@ -14,11 +16,25 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.3",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/node": "17.0.23",
     "@types/react": "17.0.43",
     "@types/react-dom": "17.0.14",
-    "eslint": "8.12.0",
+    "eslint": "^8.2.0",
     "eslint-config-next": "12.1.1",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.1",
     "typescript": "4.6.3"
+  },
+  "lint-staged": {
+    "!(jest*)*.{js,ts,tsx}": [
+      "eslint --cache --fix",
+      "jest --bail --findRelatedTests"
+    ],
+    "!(jest*)*.{js,ts,tsx,css,md}": "prettier --write"
   }
 }
