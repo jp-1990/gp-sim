@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 
-import English from '../../lang/en.json';
-import French from '../../lang/fr.json';
+import English from '../../../lang/en.json';
+import French from '../../../lang/fr.json';
 
 interface Props {
   locale: string;

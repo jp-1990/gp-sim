@@ -4,8 +4,8 @@ import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 
-import English from '../lang/en.json';
-import French from '../lang/fr.json';
+import English from '../../lang/en.json';
+import French from '../../lang/fr.json';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { locale, defaultLocale } = useRouter();
