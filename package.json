@@ -8,14 +8,17 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "extract-intl": "formatjs extract 'pages/**/*.ts*' '--ignore=**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern [sha512:contenthash:base64:6] --format simple"
   },
   "dependencies": {
     "next": "12.1.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react": "^17.0.2",
+    "react-dom": "17.0.2",
+    "react-intl": "^5.24.8"
   },
   "devDependencies": {
+    "@formatjs/cli": "^4.8.3",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
     "@testing-library/react-hooks": "^7.0.2",
