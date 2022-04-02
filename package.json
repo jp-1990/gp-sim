@@ -12,6 +12,7 @@
     "extract-intl": "formatjs extract 'src/**/*.ts*' '--ignore=**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern [sha512:contenthash:base64:6] --format simple"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^1.7.0",
     "next": "12.1.1",
     "react": "^17.0.2",
     "react-dom": "17.0.2",

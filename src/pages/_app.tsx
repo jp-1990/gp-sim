@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
+import { UserProvider } from '@auth0/nextjs-auth0';
 import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
@@ -21,13 +22,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, [locale]);
   return (
-    <IntlProvider
-      messages={messages}
-      locale={locale || 'en'}
-      defaultLocale={defaultLocale}
-    >
-      <Component {...pageProps} />;
-    </IntlProvider>
+    <UserProvider>
+      <IntlProvider
+        messages={messages}
+        locale={locale || 'en'}
+        defaultLocale={defaultLocale}
+      >
+        <Component {...pageProps} />;
+      </IntlProvider>
+    </UserProvider>
   );
 }
 

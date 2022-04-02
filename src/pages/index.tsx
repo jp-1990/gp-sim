@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
           <FormattedMessage {...messages.welcome} /> to{' '}
           <a href="https://nextjs.org">Next.js!</a>
         </h1>
-
+        <a href="/api/auth/login">Login</a>
         <p className={styles.description}>
           Get started by editing{' '}
           <code className={styles.code}>pages/index.tsx</code>
