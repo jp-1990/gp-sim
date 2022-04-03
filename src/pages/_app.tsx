@@ -1,9 +1,14 @@
+import '@fontsource/lato';
+
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { UserProvider } from '@auth0/nextjs-auth0';
 import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+
+import theme from '../styles/chakra-theme';
 
 import English from '../../lang/en.json';
 import French from '../../lang/fr.json';
@@ -28,7 +33,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         locale={locale || 'en'}
         defaultLocale={defaultLocale}
       >
-        <Component {...pageProps} />;
+        <ChakraProvider theme={theme}>
+          <Component {...pageProps} />;
+        </ChakraProvider>
       </IntlProvider>
     </UserProvider>
   );
