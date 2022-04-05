@@ -1,3 +1,6 @@
 {
-  "pages.index.welcome": "Welcome"
+  "pages.index.welcome": "Welcome",
+  "utils.nav.navOptions.garages": "Garages",
+  "utils.nav.navOptions.paintshop": "Paintshop",
+  "utils.nav.navOptions.setups": "Setups"
 }

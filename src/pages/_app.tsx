@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         defaultLocale={defaultLocale}
       >
         <ChakraProvider theme={theme}>
-          <Component {...pageProps} />;
+          <Component {...pageProps} />
         </ChakraProvider>
       </IntlProvider>
     </UserProvider>
