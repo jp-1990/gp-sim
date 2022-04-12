@@ -36,3 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 
 dev-data
+public/car1.png
+public/car2.png
+public/car3.png
+public/car4.png
+public/car5.png
+public/car6.png
