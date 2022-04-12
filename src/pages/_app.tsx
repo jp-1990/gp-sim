@@ -7,7 +7,9 @@ import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
+import { Provider } from 'react-redux';
 
+import store from '../store/store';
 import theme from '../styles/chakra-theme';
 
 import English from '../../lang/en.json';
@@ -27,17 +29,19 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, [locale]);
   return (
-    <UserProvider>
-      <IntlProvider
-        messages={messages}
-        locale={locale || 'en'}
-        defaultLocale={defaultLocale}
-      >
-        <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
-        </ChakraProvider>
-      </IntlProvider>
-    </UserProvider>
+    <Provider store={store}>
+      <UserProvider>
+        <IntlProvider
+          messages={messages}
+          locale={locale || 'en'}
+          defaultLocale={defaultLocale}
+        >
+          <ChakraProvider theme={theme}>
+            <Component {...pageProps} />
+          </ChakraProvider>
+        </IntlProvider>
+      </UserProvider>
+    </Provider>
   );
 }
 
