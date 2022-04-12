@@ -25,9 +25,9 @@ import { navOptions, LOGIN_URL, LOGOUT_URL } from '../../../utils/nav/';
 import { messages } from './MainLayout.messages';
 import { commonStrings } from '../../../utils/intl';
 
-const NavItem = ({ label }: { label: string }) => (
+const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={10}>
-    <Link href="/">
+    <Link href={path || '/'}>
       <a>
         <Heading size={'md'}>{label}</Heading>
       </a>
@@ -93,16 +93,18 @@ const MainLayout: React.FC<Props> = ({
             justifyContent="flex-start"
             px={4}
           >
-            <Heading size="md">GPSim Paddock</Heading>
+            <Heading size="md">Sim Paddock</Heading>
           </GridItem>
           <GridItem colSpan={12} display="flex" alignItems="center" px={4}>
             <chakra.nav>
               <List display="flex" alignItems="center">
                 {navOptions(intl).reduce((array, item) => {
                   const output = [...array];
-                  const { requiresUser, label } = item;
+                  const { requiresUser, label, path } = item;
                   if (requiresUser && !user) return output;
-                  output.push(<NavItem key={label} label={label} />);
+                  output.push(
+                    <NavItem key={label} label={label} path={path} />
+                  );
                   return output;
                 }, [] as JSX.Element[])}
               </List>
@@ -163,10 +165,16 @@ const MainLayout: React.FC<Props> = ({
       </header>
 
       {/* body */}
-      <Flex minH={`${contentMinHeight}px`}>{children}</Flex>
+      <Flex
+        alignItems="center"
+        direction="column"
+        minH={`${contentMinHeight}px`}
+      >
+        {children}
+      </Flex>
 
       {/* footer */}
-      <footer role="contentinfo">
+      <chakra.footer role="contentinfo" pt={9}>
         <Flex h={28} bg="red.600">
           <Box p="2">
             <a
@@ -186,7 +194,7 @@ const MainLayout: React.FC<Props> = ({
             </a>
           </Box>
         </Flex>
-      </footer>
+      </chakra.footer>
     </Flex>
   );
 };
