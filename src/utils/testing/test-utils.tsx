@@ -2,12 +2,15 @@ import React, { useMemo } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { ChakraProvider } from '@chakra-ui/react';
-import { UserProvider, useUser } from '@auth0/nextjs-auth0';
+import { UserProvider } from '@auth0/nextjs-auth0';
+import { Provider } from 'react-redux';
 
+import store from '../../store/store';
 import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
+import { AnyAction, Store } from '@reduxjs/toolkit';
 
 interface Auth0User {
   name?: string;
@@ -42,8 +45,13 @@ export const setTestUser = (user: Auth0User | undefined) =>
 
 interface Props {
   locale: string;
+  reduxStore: Store<any, AnyAction>;
 }
-const TestProviders: React.FC<Props> = ({ children, locale = 'en' }) => {
+const TestProviders: React.FC<Props> = ({
+  children,
+  reduxStore = store,
+  locale = 'en'
+}) => {
   const messages = useMemo(() => {
     switch (locale) {
       case 'en':
@@ -56,13 +64,19 @@ const TestProviders: React.FC<Props> = ({ children, locale = 'en' }) => {
   }, [locale]);
 
   return (
-    <UserProvider>
-      <ChakraProvider theme={theme}>
-        <IntlProvider messages={messages} locale={locale} defaultLocale={'en'}>
-          {children}
-        </IntlProvider>
-      </ChakraProvider>
-    </UserProvider>
+    <Provider store={reduxStore}>
+      <UserProvider>
+        <ChakraProvider theme={theme}>
+          <IntlProvider
+            messages={messages}
+            locale={locale}
+            defaultLocale={'en'}
+          >
+            {children}
+          </IntlProvider>
+        </ChakraProvider>
+      </UserProvider>
+    </Provider>
   );
 };
 

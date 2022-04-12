@@ -17,12 +17,18 @@ import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
 
 import store, { useAppDispatch } from '../../store/store';
+import { fetchLiveries, rehydrate } from '../../store/livery/slice';
 import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
-import { fetchLiveries, rehydrate } from '../../store/livery/slice';
 
-const Liveries: NextPage = ({ liveries, ids }: any) => {
+import { LiveryDataType } from '../../types';
+
+interface Props {
+  liveries: Record<string, LiveryDataType>;
+  ids: string[];
+}
+const Liveries: NextPage<Props> = ({ liveries, ids }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
