@@ -29,6 +29,13 @@ const buildTags = (tags: string[]) => {
 interface Props {
   tags: string[];
 }
+/**
+ *
+ * @param {Props['tags']} props.tags - String[ ]. Array of tags
+ * @returns Function Component
+ *
+ * @description Renders a list of tags. Primarily intended to display search tags associated with an item.
+ */
 const Tags: ComponentWithAs<'div', FlexProps & Props> = ({
   tags,
   ...props

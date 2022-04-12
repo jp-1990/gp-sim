@@ -13,6 +13,15 @@ interface Props {
   color?: string;
   alignItems?: 'flex-end' | 'flex-start';
 }
+/**
+ *
+ * @param {Props['rating']} props.rating - number. The number of icons to be highlighted.
+ * @param {Props['color']} props.color - string. The color of the highlighted items.
+ * @param {Props['alignItems']} props.alignItems - 'flex-end' | 'flex-start'. Left or right align the icons.
+ * @returns Function Component
+ *
+ * @description Renders 5 starts. The color of each star relates to the number present in the rating prop (rating = 3, 3 stars will be highlighted).
+ */
 const Rating: React.FC<Props> = ({
   color = 'red',
   rating,

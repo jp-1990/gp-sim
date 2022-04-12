@@ -5,6 +5,14 @@ interface Props {
   heading: React.ReactNode;
   paragraph?: React.ReactNode;
 }
+/**
+ *
+ * @param {Props['heading']} props.heading
+ * @param {Props['paragraph']} props.paragraph
+ * @returns Function Component
+ *
+ * @description Renders a heading and a paragraph of text. Intended as an introduction to a page.
+ */
 const PageHeading: React.FC<Props> = ({ heading, paragraph }) => {
   return (
     <chakra.section pt={8}>

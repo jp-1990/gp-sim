@@ -11,26 +11,34 @@ import {
 } from '@chakra-ui/react';
 
 import { ImageWithFallback, Rating } from '../../../core';
+import { LiveryDataType } from '../../../../types';
 
-interface Props {
-  id: string;
-  rating: number;
-  downloads: number;
-  imgUrl: string;
-  price: number | string;
-  author: string;
-  title: string;
-  car: string;
-}
+type Props = Omit<
+  LiveryDataType,
+  'downloads' | 'description' | 'tags' | 'imgUrls'
+> & { imgUrl: string };
+
+/**
+ *
+ * @param {Props['author']} props.author
+ * @param {Props['car']} props.car
+ * @param {Props['id']} props.id
+ * @param {Props['imgUrl']} props.imgUrl
+ * @param {Props['price']} props.price
+ * @param {Props['rating']} props.rating
+ * @param {Props['title']} props.title
+ * @returns Function Component
+ *
+ * @description A card to render a livery preview. Intended to be used in a list to render previews of multiple liveries.
+ */
 const LiveryCard: React.FC<Props> = ({
+  author,
+  car,
   id,
-  rating,
-  downloads = 0,
   imgUrl = '',
   price = 'Free',
-  author,
-  title,
-  car
+  rating,
+  title
 }) => {
   const mainColor = 'red';
   return (

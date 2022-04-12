@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 
-const SITE_TITLE = 'GP Sim Paddock';
+const SITE_TITLE = 'Sim Paddock';
 const BASE_URL = '';
 
 /*
@@ -20,6 +20,16 @@ interface Props {
   locale?: string;
 }
 
+/**
+ * @param {Props['locale']} props.locale
+ * @param {Props['ogImageUrl']} props.ofImageUrl
+ * @param {Props['pageDescription']} props.pageDescription
+ * @param {Props['pageTitle']} props.pageTitle
+ * @param {Props['urlPath']} props.urlPath
+ * @returns Function Component
+ *
+ * @description Pre-configures meta properties for Next.js Head for SEO and social media purposes.
+ */
 const Meta: React.FC<Props> = ({
   pageDescription,
   pageTitle = '',
