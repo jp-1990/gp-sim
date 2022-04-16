@@ -2,11 +2,12 @@ import React from 'react';
 import {
   ComponentWithAs,
   Input as ChakraInput,
-  InputProps as ChakraInputProps,
-  chakra
+  InputProps as ChakraInputProps
 } from '@chakra-ui/react';
+
 import { useForm } from '../../Form';
-import { defaultOnChange, FOCUS_BORDER_COLOR } from '../../utils';
+import ControlWrapper from '../ControlWrapper/ControlWrapper';
+import { defaultOnChange, isFieldValid, FOCUS_BORDER_COLOR } from '../../utils';
 import { DefaultInputProps } from '../../types';
 
 type InputProps = DefaultInputProps;
@@ -17,22 +18,21 @@ type InputProps = DefaultInputProps;
 const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
   label,
   stateKey,
+  validators,
   ...chakraProps
 }) => {
   const { state, setState } = useForm();
   const onChange = defaultOnChange<HTMLInputElement>(setState, stateKey);
+
+  const isValid = isFieldValid(state[stateKey], validators);
+
   return (
-    <>
-      {label && (
-        <chakra.label
-          htmlFor={`${stateKey}-input`}
-          px={1}
-          pb={0.5}
-          fontSize="sm"
-        >
-          {label}
-        </chakra.label>
-      )}
+    <ControlWrapper
+      htmlFor={`${stateKey}-input`}
+      label={label}
+      isValid={isValid.valid}
+      errorText={isValid.message}
+    >
       <ChakraInput
         test-id={`${stateKey}-input`}
         id={`${stateKey}-input`}
@@ -40,9 +40,10 @@ const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
         onChange={onChange}
         value={state[stateKey] || ''}
         focusBorderColor={FOCUS_BORDER_COLOR}
+        isRequired={true}
         {...chakraProps}
       />
-    </>
+    </ControlWrapper>
   );
 };
 

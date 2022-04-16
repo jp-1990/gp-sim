@@ -1,3 +1,5 @@
+import { ValidationOptionsType } from '../utils/validation';
+
 export type FormStatusType = {
   loading: boolean;
   error: boolean;
@@ -18,5 +20,6 @@ export interface FormValueType {
 
 export interface DefaultInputProps {
   label?: React.ReactNode;
+  validators?: ValidationOptionsType[];
   stateKey: string;
 }
