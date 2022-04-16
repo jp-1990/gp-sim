@@ -4,6 +4,7 @@ import {
   FormStatusType,
   SetFormStatusType
 } from '../types';
+import { IsFieldValidReturnType } from './validation';
 
 /**
  * @param setState - setState to set form state
@@ -119,7 +120,10 @@ export const selectImagesRemoveByIndex =
  */
 export const setFormStatus =
   (setState: FormValueType['setState']) =>
-  (status: keyof FormStatusType, value: boolean) =>
+  (
+    status: keyof Omit<FormStatusType, 'validators' | 'invalidFields'>,
+    value: boolean
+  ) =>
     setState((prev) => {
       const nextState = { ...prev };
       nextState[status] = value;
@@ -140,3 +144,75 @@ export const submitButtonSubmitForm =
   ) =>
   () =>
     onClick(state, setFormStatus);
+
+/**
+ * Intended to be used to add validators for form fields to state, to be looped over and called when form submit is fired
+ * @param validator - function which should internally call a validator function and return the IsFieldValidReturnType
+ * @param setState - setState to set form state
+ */
+export const formAddValidator = (
+  validator: () => IsFieldValidReturnType,
+  setState: FormValueType['setState']
+) => {
+  setState((_prev) => {
+    const prev = { ..._prev };
+    prev.validators = [...prev.validators, validator];
+    return prev;
+  });
+};
+
+/**
+ * Intended to be used on submit to validate all fields in the form
+ * @param validators - array of functions to validate form state
+ * @returns boolean
+ */
+export const isFormStateValid = (
+  validators: (() => IsFieldValidReturnType)[]
+) => {
+  return validators.reduce((prev, cur) => {
+    if (prev === false) return prev;
+    const { valid } = cur();
+    return valid;
+  }, true as boolean);
+};
+
+/**
+ *
+ * @param stateKey - string key to use to index state
+ * @param setState - setState to set form state
+ * @returns
+ */
+export const addToInvalidFields = (
+  stateKey: string,
+  setState: FormValueType['setState']
+) => {
+  if (!stateKey) return;
+  setState((_prev) => {
+    const prev = { ..._prev };
+    const invalidFields = [...prev.invalidFields];
+    if (!invalidFields.includes(stateKey)) invalidFields.push(stateKey);
+    prev.invalidFields = invalidFields;
+    return prev;
+  });
+};
+
+/**
+ *
+ * @param stateKey - string key to use to index state
+ * @param setState - setState to set form state
+ * @returns
+ */
+export const removeFromInvalidFields = (
+  stateKey: string,
+  setState: FormValueType['setState']
+) => {
+  if (!stateKey) return;
+  setState((_prev) => {
+    const prev = { ..._prev };
+    const invalidFields = [...prev.invalidFields];
+    if (invalidFields.includes(stateKey)) {
+      prev.invalidFields = invalidFields.filter((el) => el !== stateKey);
+    }
+    return prev;
+  });
+};

@@ -3,10 +3,10 @@ import { ValidationOptionsType } from '../utils/validation';
 export type FormStatusType = {
   loading: boolean;
   error: boolean;
-  isValid: boolean;
+  invalidFields: string[];
 };
 export type SetFormStatusType = (
-  status: keyof FormStatusType,
+  status: keyof Omit<FormStatusType, 'invalidFields'>,
   value: boolean
 ) => void;
 

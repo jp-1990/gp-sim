@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
 import {
   ComponentWithAs,
   Textarea as ChakraTextarea,
@@ -7,7 +8,13 @@ import {
 
 import { useForm } from '../../Form';
 import ControlWrapper from '../ControlWrapper/ControlWrapper';
-import { defaultOnChange, FOCUS_BORDER_COLOR, isFieldValid } from '../../utils';
+import {
+  addToInvalidFields,
+  defaultOnChange,
+  FOCUS_BORDER_COLOR,
+  isFieldValid,
+  removeFromInvalidFields
+} from '../../utils';
 import { DefaultInputProps } from '../../types';
 
 type TextareaProps = DefaultInputProps;
@@ -24,6 +31,11 @@ const TextArea: ComponentWithAs<
 
   const onChange = defaultOnChange<HTMLTextAreaElement>(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
+
+  useEffect(() => {
+    if (!isValid.valid) addToInvalidFields(stateKey, setState);
+    if (isValid.valid) removeFromInvalidFields(stateKey, setState);
+  }, [isValid.valid]);
 
   return (
     <ControlWrapper

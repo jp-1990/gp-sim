@@ -6,7 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import { useForm } from '../../Form';
 import ControlWrapper from '../ControlWrapper/ControlWrapper';
 import {
+  addToInvalidFields,
   isFieldValid,
+  removeFromInvalidFields,
   selectImagesOnChange,
   selectImagesRemoveByIndex
 } from '../../utils';
@@ -52,6 +54,11 @@ const SelectImages = <T extends string>({
   const onChange = selectImagesOnChange(setState, stateKey, max);
   const onRemove = selectImagesRemoveByIndex(setState, stateKey, max);
   const isValid = isFieldValid(state[stateKey], validators);
+
+  useEffect(() => {
+    if (!isValid.valid) addToInvalidFields(stateKey, setState);
+    if (isValid.valid) removeFromInvalidFields(stateKey, setState);
+  }, [isValid.valid]);
 
   const childrenStateInput = isStateWithStateKey<T>(state, stateKey)
     ? state

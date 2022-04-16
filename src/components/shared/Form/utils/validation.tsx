@@ -2,7 +2,7 @@ import { FormattedMessage } from 'react-intl';
 import { formStrings } from '../../../../utils/intl';
 
 export type ValidationOptionsType = keyof typeof validatorFunctions;
-type IsFieldValidType = {
+export type IsFieldValidReturnType = {
   valid: boolean;
   message: React.ReactNode | undefined;
   priority: number;
@@ -35,7 +35,6 @@ export const isFieldValid = (
   return validators.reduce(
     (_prev, cur) => {
       const prev = { ..._prev };
-      if (value ?? true) return prev;
       const isValid = validate(value, cur);
       if (isValid === true) return prev;
       if (isValid.priority > prev.priority) return prev;
@@ -45,6 +44,7 @@ export const isFieldValid = (
       valid: true,
       message: undefined,
       priority: Infinity
-    } as IsFieldValidType
+    } as IsFieldValidReturnType
   );
 };
+export type IsFieldValidType = typeof isFieldValid;

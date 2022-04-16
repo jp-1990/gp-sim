@@ -1,12 +1,18 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
 import {
   ComponentWithAs,
   Select as ChakraSelect,
-  SelectProps as ChakraSelectProps,
-  chakra
+  SelectProps as ChakraSelectProps
 } from '@chakra-ui/react';
 import { useForm } from '../../Form';
-import { defaultOnChange, FOCUS_BORDER_COLOR, isFieldValid } from '../../utils';
+import {
+  addToInvalidFields,
+  defaultOnChange,
+  FOCUS_BORDER_COLOR,
+  isFieldValid,
+  removeFromInvalidFields
+} from '../../utils';
 import { DefaultInputProps } from '../../types';
 import ControlWrapper from '../ControlWrapper/ControlWrapper';
 
@@ -27,6 +33,11 @@ const Select: ComponentWithAs<'select', ChakraSelectProps & SelectProps> = ({
 
   const onChange = defaultOnChange<HTMLSelectElement>(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
+
+  useEffect(() => {
+    if (!isValid.valid) addToInvalidFields(stateKey, setState);
+    if (isValid.valid) removeFromInvalidFields(stateKey, setState);
+  }, [isValid.valid]);
 
   return (
     <ControlWrapper

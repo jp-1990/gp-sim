@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
 import {
   ComponentWithAs,
   Checkbox as ChakraCheckbox,
@@ -10,7 +11,9 @@ import ControlWrapper from '../ControlWrapper/ControlWrapper';
 import {
   checkboxOnChange,
   isFieldValid,
-  FOCUS_BORDER_COLOR
+  FOCUS_BORDER_COLOR,
+  addToInvalidFields,
+  removeFromInvalidFields
 } from '../../utils';
 import { DefaultInputProps } from '../../types';
 
@@ -28,6 +31,11 @@ const Checkbox: ComponentWithAs<
 
   const onChange = checkboxOnChange<HTMLInputElement>(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
+
+  useEffect(() => {
+    if (!isValid.valid) addToInvalidFields(stateKey, setState);
+    if (isValid.valid) removeFromInvalidFields(stateKey, setState);
+  }, [isValid.valid]);
 
   return (
     <ControlWrapper

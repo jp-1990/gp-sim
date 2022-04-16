@@ -15,7 +15,7 @@ const useForm = () => {
 export const initialFormState = {
   loading: false,
   error: false,
-  isValid: true
+  invalidFields: []
 };
 
 const FormProvider: React.FC = ({ children }) => {

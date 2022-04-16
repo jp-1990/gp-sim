@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
 import {
   ComponentWithAs,
   NumberInput as ChakraNumberInput,
@@ -14,7 +15,9 @@ import ControlWrapper from '../ControlWrapper/ControlWrapper';
 import {
   numberInputOnChange,
   isFieldValid,
-  FOCUS_BORDER_COLOR
+  FOCUS_BORDER_COLOR,
+  addToInvalidFields,
+  removeFromInvalidFields
 } from '../../utils';
 import { DefaultInputProps } from '../../types';
 
@@ -32,6 +35,11 @@ const NumberInput: ComponentWithAs<
 
   const onChange = numberInputOnChange(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
+
+  useEffect(() => {
+    if (!isValid.valid) addToInvalidFields(stateKey, setState);
+    if (isValid.valid) removeFromInvalidFields(stateKey, setState);
+  }, [isValid.valid]);
 
   return (
     <ControlWrapper

@@ -24,7 +24,7 @@ const SubmitButton: ComponentWithAs<
   Omit<ChakraButtonProps, 'onClick'> & SubmitButtonProps
 > = ({ loadingText, onClick, children, ...chakraProps }) => {
   const { state, setState } = useForm();
-  const submitDisabled = !state.isValid || state.error;
+  const submitDisabled = !!state.invalidFields.length || state.error;
 
   const isLoadingState = chakraProps.isLoading ?? state.loading;
   const isLoadingTextString =
@@ -32,6 +32,7 @@ const SubmitButton: ComponentWithAs<
     ((<FormattedMessage {...commonStrings.uploading} />) as unknown as string);
 
   const isDisabledState = chakraProps.isDisabled ?? submitDisabled;
+
   const onSubmit = submitButtonSubmitForm(
     state,
     setFormStatus(setState),

@@ -64,29 +64,6 @@ describe('SubmitButton', () => {
     expect(screen.queryByText(TESTING_TEXT)).not.toBeInTheDocument();
   });
 
-  it('fires the provided function onClick which can adjust form status isValid to disable submit', async () => {
-    const user = userEvent.setup();
-    const onClickMock = jest.fn((_, setFormStatus) => {
-      setFormStatus('isValid', false);
-    });
-    render(
-      <Form>
-        <SubmitButton onClick={onClickMock}>{TESTING_TEXT}</SubmitButton>
-      </Form>
-    );
-    const button = screen.getByRole('button');
-    expect(screen.getByText(TESTING_TEXT)).toBeInTheDocument();
-    await user.click(button);
-    expect(onClickMock).toHaveBeenCalledWith(
-      initialFormState,
-      expect.anything()
-    );
-    expect(screen.queryByText(TESTING_TEXT)).toBeInTheDocument();
-    await user.click(button);
-    expect(button).toBeDisabled();
-    expect(onClickMock).toHaveBeenCalledTimes(1);
-  });
-
   it('fires the provided function onClick which can adjust form status error to disable submit', async () => {
     const user = userEvent.setup();
     const onClickMock = jest.fn((_, setFormStatus) => {
