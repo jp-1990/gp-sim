@@ -42,7 +42,7 @@ const Rating: React.FC<Props> = ({
               data-testid={`${STAR_ICON}-${i > 4 - rating ? FILLED : DEFAULT}`}
               key={i}
               mx={0.5}
-              color={i > 4 - rating ? color : 'gray.100'}
+              color={i > 4 - rating ? color : 'gray.200'}
             />
           ))}
       </Box>

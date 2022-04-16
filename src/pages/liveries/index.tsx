@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
+import { FormattedMessage } from 'react-intl';
 
 import store, { useAppDispatch } from '../../store/store';
 import { fetchLiveries, rehydrate } from '../../store/livery/slice';
@@ -22,6 +23,8 @@ import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
+import { LIVERIES_URL } from '../../utils/nav';
+import { liveryStrings } from '../../utils/intl';
 import { LiveryDataType } from '../../types';
 
 interface Props {
@@ -39,17 +42,11 @@ const Liveries: NextPage<Props> = ({ liveries, ids }) => {
     <MainLayout
       pageTitle="Liveries"
       pageDescription="Find your next livery from the collection uploaded by our users!"
-      urlPath="/liveries"
+      urlPath={LIVERIES_URL}
     >
       <PageHeading
-        heading="<section heading>"
-        paragraph={`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-            mauris eros, euismod ut mi vitae, convallis iaculis quam.
-            Pellentesque consectetur iaculis tortor vitae euismod. Integer
-            malesuada congue elementum. Pellentesque vulputate diam dignissim
-            elit hendrerit iaculis.
-            Interdum et malesuada fames ac ante ipsum primis in faucibus
-            `}
+        heading={<FormattedMessage {...liveryStrings.liveriesHeading} />}
+        paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
       />
       <chakra.section pt={8} w="5xl" display="flex" justifyContent="flex-start">
         <Grid
@@ -127,22 +124,13 @@ const Liveries: NextPage<Props> = ({ liveries, ids }) => {
           w="5xl"
         >
           {ids.map((e: string) => {
-            const {
-              id,
-              author,
-              rating,
-              downloads,
-              title,
-              car,
-              imgUrls,
-              price
-            } = liveries[e];
+            const { id, author, rating, title, car, imgUrls, price } =
+              liveries[e];
             return (
               <LiveryCard
                 key={e}
                 author={author}
                 rating={rating}
-                downloads={downloads}
                 id={id}
                 title={title}
                 car={car}

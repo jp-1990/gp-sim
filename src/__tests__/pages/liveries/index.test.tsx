@@ -22,6 +22,5 @@ describe('Liveries', () => {
     render(<Liveries ids={['0']} liveries={{ '0': testLivery }} />);
     const testValues = [testLivery.author, testLivery.title, testLivery.price];
     expectAllToBeInDocument(Object.values(testValues));
-    expect(true).toBe(true);
   });
 });

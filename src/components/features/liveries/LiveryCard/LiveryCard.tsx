@@ -12,6 +12,7 @@ import {
 
 import { ImageWithFallback, Rating } from '../../../core';
 import { LiveryDataType } from '../../../../types';
+import { LIVERY_URL } from '../../../../utils/nav';
 
 type Props = Omit<
   LiveryDataType,
@@ -43,7 +44,7 @@ const LiveryCard: React.FC<Props> = ({
   const mainColor = 'red';
   return (
     <LinkBox>
-      <Link href={`/liveries/${id}`} passHref>
+      <Link href={LIVERY_URL(id)} passHref>
         <LinkOverlay>
           <Box
             position="relative"

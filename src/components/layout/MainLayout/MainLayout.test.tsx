@@ -9,12 +9,12 @@ import {
   expectAllToBeInDocument,
   expectAllToNotBeInDocument
 } from '../../../utils/testing/helpers';
-import { commonStrings } from '../../../utils/intl';
+import { commonStrings, profileStrings } from '../../../utils/intl';
 import { messages } from './MainLayout.messages';
 import MainLayout from './MainLayout';
 
-const { paintshop, garages, profile, viewProfile, myGarages, myLiveries } =
-  commonStrings;
+const { paintshop, garages } = commonStrings;
+const { profile, viewProfile, myGarages, myLiveries } = profileStrings;
 const { login, logout } = messages;
 
 describe('MainLayout', () => {

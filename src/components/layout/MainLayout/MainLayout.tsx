@@ -23,7 +23,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import Meta from '../../shared/utils/Meta/Meta';
 import { navOptions, LOGIN_URL, LOGOUT_URL } from '../../../utils/nav/';
 import { messages } from './MainLayout.messages';
-import { commonStrings } from '../../../utils/intl';
+import { profileStrings } from '../../../utils/intl';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={10}>
@@ -132,22 +132,22 @@ const MainLayout: React.FC<Props> = ({
               <Menu isLazy>
                 <MenuButton>
                   <Heading size="sm">
-                    <FormattedMessage {...commonStrings.profile} />
+                    <FormattedMessage {...profileStrings.profile} />
                   </Heading>
                 </MenuButton>
                 <MenuList>
                   <MenuItem>
-                    <FormattedMessage {...commonStrings.viewProfile} />
+                    <FormattedMessage {...profileStrings.viewProfile} />
                   </MenuItem>
                   <MenuDivider />
                   <MenuItem>
-                    <FormattedMessage {...commonStrings.myGarages} />
+                    <FormattedMessage {...profileStrings.myGarages} />
                   </MenuItem>
                   <MenuItem>
-                    <FormattedMessage {...commonStrings.myLiveries} />
+                    <FormattedMessage {...profileStrings.myLiveries} />
                   </MenuItem>
                   {/* <MenuItem>
-                    <FormattedMessage {...commonStrings.mySetups} />
+                    <FormattedMessage {...profileStrings.mySetups} />
                   </MenuItem> */}
                   <MenuDivider />
                   <MenuItem>

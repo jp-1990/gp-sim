@@ -3,7 +3,37 @@ import { defineMessages } from 'react-intl';
 // react-intl doesn't like template literals
 // scope = `utils.intl.commonStrings`;
 
-export const commonStrings = defineMessages({
+const actions = {
+  addToBasket: {
+    id: 'utils.intl.commonStrings.addToBasket',
+    defaultMessage: 'Add to Basket'
+  },
+  addToCollection: {
+    id: 'utils.intl.commonStrings.addToCollection',
+    defaultMessage: 'Add to Collection'
+  },
+  upload: {
+    id: 'utils.intl.commonStrings.upload',
+    defaultMessage: 'Upload'
+  },
+  cancel: {
+    id: 'utils.intl.commonStrings.cancel',
+    defaultMessage: 'Cancel'
+  },
+  selectImages: {
+    id: 'utils.intl.commonStrings.selectImages',
+    defaultMessage: 'Select Images'
+  }
+};
+
+const download = {
+  downloads: {
+    id: 'utils.intl.commonStrings.downloads',
+    defaultMessage: `{downloads} Downloads`
+  }
+};
+
+const main = {
   paintshop: {
     id: 'utils.intl.commonStrings.paintshop',
     defaultMessage: 'Paintshop'
@@ -15,26 +45,26 @@ export const commonStrings = defineMessages({
   setups: {
     id: 'utils.intl.commonStrings.setups',
     defaultMessage: 'Setups'
-  },
-  // PROFILE
-  profile: {
-    id: 'utils.intl.commonStrings.profile',
-    defaultMessage: 'Profile'
-  },
-  viewProfile: {
-    id: 'utils.intl.commonStrings.viewProfile',
-    defaultMessage: 'View profile'
-  },
-  myGarages: {
-    id: 'utils.intl.commonStrings.myGarages',
-    defaultMessage: 'My garages'
-  },
-  mySetups: {
-    id: 'utils.intl.commonStrings.mySetups',
-    defaultMessage: 'My setups'
-  },
-  myLiveries: {
-    id: 'utils.intl.commonStrings.myLiveries',
-    defaultMessage: 'My liveries'
   }
+};
+
+const status = {
+  uploading: {
+    id: 'utils.intl.commonStrings.uploading',
+    defaultMessage: 'Uploading'
+  },
+  error: {
+    id: 'utils.intl.commonStrings.error',
+    defaultMessage: 'Something went wrong!'
+  }
+};
+
+const upload = {};
+
+export const commonStrings = defineMessages({
+  ...actions,
+  ...download,
+  ...main,
+  ...status,
+  ...upload
 });

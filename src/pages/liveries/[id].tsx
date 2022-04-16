@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import store from '../../store/store';
 import { fetchLiveries, fetchLivery } from '../../store/livery/slice';
@@ -19,9 +19,12 @@ import { MainLayout } from '../../components/layout';
 import { ImageWithFallback, Rating } from '../../components/core';
 import { Breadcrumbs, Tags } from '../../components/core';
 import { LiveryDataType } from '../../types';
+import { FormattedMessage } from 'react-intl';
+import { commonStrings } from '../../utils/intl';
+import { LIVERIES_URL, LIVERY_URL } from '../../utils/nav';
 
 type Props = LiveryDataType;
-const Livery = ({
+const Livery: NextPage<Props> = ({
   car,
   title,
   rating,
@@ -32,13 +35,13 @@ const Livery = ({
   price,
   tags,
   description
-}: Props) => {
+}) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
   const breadcrumbOptions = [
     {
-      name: 'Paintshop',
-      href: '/liveries/'
+      name: <FormattedMessage {...commonStrings.paintshop} />,
+      href: LIVERIES_URL
     },
     {
       name: `${car} - ${title}`,
@@ -48,9 +51,9 @@ const Livery = ({
 
   return (
     <MainLayout
-      pageTitle="Liveries"
-      pageDescription="Find your next livery from the collection uploaded by our users!"
-      urlPath="/liveries"
+      pageTitle={`${car} - ${title}`}
+      pageDescription={`View this livery!`}
+      urlPath={LIVERY_URL(id)}
     >
       <Box maxW="5xl" display="flex" flexDir={'column'}>
         <Breadcrumbs options={breadcrumbOptions} />
@@ -61,7 +64,10 @@ const Livery = ({
             </Heading>
             <Rating rating={rating} alignItems="flex-start" />
             <Text fontSize="md" pt={1} pb={6}>
-              {downloads} Downloads
+              <FormattedMessage
+                {...commonStrings.downloads}
+                values={{ downloads }}
+              />
             </Text>
             <Grid
               templateColumns="repeat(24, 1fr)"
@@ -133,7 +139,7 @@ const Livery = ({
               {price}
             </Heading>
             <Button bg="gray.900" color="white" size="md" w={40} lineHeight={1}>
-              Add to Basket
+              <FormattedMessage {...commonStrings.addToBasket} />
             </Button>
           </Flex>
         </chakra.section>
