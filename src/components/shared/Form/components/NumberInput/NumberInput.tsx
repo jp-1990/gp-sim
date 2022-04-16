@@ -37,6 +37,7 @@ const NumberInput: ComponentWithAs<
     <ControlWrapper
       htmlFor={fieldId}
       label={label}
+      isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
     >

@@ -32,6 +32,7 @@ const Select: ComponentWithAs<'select', ChakraSelectProps & SelectProps> = ({
     <ControlWrapper
       htmlFor={fieldId}
       label={label}
+      isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
     >

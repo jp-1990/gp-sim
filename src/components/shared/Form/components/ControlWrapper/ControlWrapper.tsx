@@ -10,6 +10,7 @@ import { formStrings } from '../../../../../utils/intl';
 
 interface ControlWrapperProps {
   isValid?: boolean;
+  isRequired?: boolean;
   helperText?: ReactNode;
   errorText?: ReactNode;
   label?: ReactNode;
@@ -18,6 +19,7 @@ interface ControlWrapperProps {
 
 const ControlWrapper: React.FC<ControlWrapperProps> = ({
   isValid = true,
+  isRequired = false,
   helperText,
   errorText = <FormattedMessage {...formStrings.invalidInput} />,
   label,
@@ -25,16 +27,17 @@ const ControlWrapper: React.FC<ControlWrapperProps> = ({
   children
 }) => {
   return (
-    <FormControl isInvalid={!isValid}>
-      <FormLabel px={1} mb={0.5} fontSize="sm" htmlFor={htmlFor}>
+    <FormControl isInvalid={!isValid} isRequired={isRequired}>
+      <FormLabel px={1} mb={label ? 0.5 : 0} fontSize="sm" htmlFor={htmlFor}>
         {label}
       </FormLabel>
       {children}
-      {!isValid ? (
+      {!isValid && (
         <FormErrorMessage px={1} fontSize="sm">
           {errorText}
         </FormErrorMessage>
-      ) : (
+      )}
+      {isValid && helperText && (
         <FormHelperText px={1} fontSize="sm">
           {helperText}
         </FormHelperText>

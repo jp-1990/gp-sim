@@ -31,6 +31,7 @@ const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
     <ControlWrapper
       htmlFor={fieldId}
       label={label}
+      isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
     >
@@ -41,7 +42,6 @@ const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
         onChange={onChange}
         value={state[stateKey] || ''}
         focusBorderColor={FOCUS_BORDER_COLOR}
-        isRequired={true}
         {...chakraProps}
       />
     </ControlWrapper>

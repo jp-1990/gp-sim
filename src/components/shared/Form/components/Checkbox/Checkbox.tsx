@@ -32,6 +32,7 @@ const Checkbox: ComponentWithAs<
   return (
     <ControlWrapper
       htmlFor={fieldId}
+      isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
     >
