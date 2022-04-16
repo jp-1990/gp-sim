@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { useForm } from '../../Form';
 import { submitButtonSubmitForm, setFormStatus } from '../../utils';
-import { FormStateType, FormValueType, SetFormStatusType } from '../../types';
+import { FormStateType, SetFormStatusType } from '../../types';
 import { commonStrings } from '../../../../../utils/intl';
 
 interface SubmitButtonProps {

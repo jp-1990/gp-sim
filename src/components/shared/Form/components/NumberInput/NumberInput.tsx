@@ -6,46 +6,50 @@ import {
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInputField,
-  NumberInputStepper,
-  chakra
+  NumberInputStepper
 } from '@chakra-ui/react';
+
 import { useForm } from '../../Form';
-import { FOCUS_BORDER_COLOR, numberInputOnChange } from '../../utils';
+import ControlWrapper from '../ControlWrapper/ControlWrapper';
+import {
+  numberInputOnChange,
+  isFieldValid,
+  FOCUS_BORDER_COLOR
+} from '../../utils';
 import { DefaultInputProps } from '../../types';
 
 type NumberInputProps = DefaultInputProps;
 /**
- * Accepts any props accepted by ChakraUI Input and a label: ReactNode and stateKey: string. State is handled internally, but can be overridden by supplying onChange and value props.
+ * Accepts any props accepted by ChakraUI Input and a label: ReactNode, stateKey: string and array of validators. State is handled internally, but can be overridden by supplying onChange and value props.
  * @returns Function Component
  */
 const NumberInput: ComponentWithAs<
   'div',
   ChakraNumberInputProps & NumberInputProps
-> = ({ label, stateKey, ...chakraProps }) => {
+> = ({ label, stateKey, validators, ...chakraProps }) => {
   const { state, setState } = useForm();
+  const fieldId = `${stateKey}-number-input`;
+
   const onChange = numberInputOnChange(setState, stateKey);
+  const isValid = isFieldValid(state[stateKey], validators);
+
   return (
-    <>
-      {label && (
-        <chakra.label
-          id={`${stateKey}-number-input-label`}
-          px={1}
-          pb={0.5}
-          fontSize="sm"
-        >
-          {label}
-        </chakra.label>
-      )}
+    <ControlWrapper
+      htmlFor={fieldId}
+      label={label}
+      isValid={isValid.valid}
+      errorText={isValid.message}
+    >
       <ChakraNumberInput
-        test-id={`${stateKey}-number-input`}
-        id={`${stateKey}-number-input`}
+        test-id={fieldId}
+        id={fieldId}
         onChange={onChange}
         value={state[stateKey] || ''}
-        aria-labelledby={`${stateKey}-number-input-label`}
+        aria-labelledby={'field-1-label'}
         focusBorderColor={FOCUS_BORDER_COLOR}
         {...chakraProps}
       />
-    </>
+    </ControlWrapper>
   );
 };
 

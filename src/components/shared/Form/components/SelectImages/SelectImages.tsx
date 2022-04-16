@@ -4,7 +4,12 @@ import React, { ReactNode, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useForm } from '../../Form';
-import { selectImagesOnChange, selectImagesRemoveByIndex } from '../../utils';
+import ControlWrapper from '../ControlWrapper/ControlWrapper';
+import {
+  isFieldValid,
+  selectImagesOnChange,
+  selectImagesRemoveByIndex
+} from '../../utils';
 import { DefaultInputProps, FormValueType } from '../../types';
 import { commonStrings } from '../../../../../utils/intl';
 
@@ -22,6 +27,7 @@ interface SelectImageProps<T extends string> extends DefaultInputProps {
  * @param {SelectImageProps['max']} SelectImageProps.max - number. the maximum number of images to allow
  * @param {SelectImageProps['label']} SelectImageProps.label - ReactNode. Text to display in the user prompt button
  * @param {SelectImageProps['stateKey']} SelectImageProps.stateKey - string. used to set values to state
+ * @param {SelectImageProps['validators']} SelectImageProps.validators - array of validators (strings)
  * @param {SelectImageProps['children']} SelectImageProps.children - function accepting state and a function used to removed images from state by index. OR ReactNode
  * @returns Function Component
  */
@@ -29,9 +35,12 @@ const SelectImages = <T extends string>({
   max,
   label = <FormattedMessage {...commonStrings.selectImages} />,
   stateKey,
+  validators,
   children
 }: SelectImageProps<T>) => {
   const { state, setState } = useForm();
+  const fieldId = `${stateKey}-imageUpload`;
+
   useEffect(() => {
     setState((prev) => {
       const prevState = { ...prev };
@@ -42,14 +51,19 @@ const SelectImages = <T extends string>({
 
   const onChange = selectImagesOnChange(setState, stateKey, max);
   const onRemove = selectImagesRemoveByIndex(setState, stateKey, max);
+  const isValid = isFieldValid(state[stateKey], validators);
 
   const childrenStateInput = isStateWithStateKey<T>(state, stateKey)
     ? state
     : undefined;
 
   return (
-    <>
-      <Button as="label" w="2xs" lineHeight={1} htmlFor="imageUpload">
+    <ControlWrapper
+      htmlFor={fieldId}
+      isValid={isValid.valid}
+      errorText={isValid.message}
+    >
+      <Button as="label" w="2xs" lineHeight={1} htmlFor={fieldId}>
         {label}
       </Button>
       <input
@@ -57,13 +71,13 @@ const SelectImages = <T extends string>({
         multiple
         type="file"
         accept="image/*"
-        id="imageUpload"
+        id={fieldId}
         onChange={onChange}
       />
       {children && typeof children === 'function'
         ? children(childrenStateInput, onRemove)
         : children}
-    </>
+    </ControlWrapper>
   );
 };
 

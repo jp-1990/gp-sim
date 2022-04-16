@@ -2,11 +2,12 @@ import React from 'react';
 import {
   ComponentWithAs,
   Textarea as ChakraTextarea,
-  TextareaProps as ChakraTextareaProps,
-  chakra
+  TextareaProps as ChakraTextareaProps
 } from '@chakra-ui/react';
+
 import { useForm } from '../../Form';
-import { defaultOnChange, FOCUS_BORDER_COLOR } from '../../utils';
+import ControlWrapper from '../ControlWrapper/ControlWrapper';
+import { defaultOnChange, FOCUS_BORDER_COLOR, isFieldValid } from '../../utils';
 import { DefaultInputProps } from '../../types';
 
 type TextareaProps = DefaultInputProps;
@@ -17,31 +18,30 @@ type TextareaProps = DefaultInputProps;
 const TextArea: ComponentWithAs<
   'textarea',
   ChakraTextareaProps & TextareaProps
-> = ({ label, stateKey, ...chakraProps }) => {
+> = ({ label, stateKey, validators, ...chakraProps }) => {
   const { state, setState } = useForm();
+  const fieldId = `${stateKey}-textarea`;
+
   const onChange = defaultOnChange<HTMLTextAreaElement>(setState, stateKey);
+  const isValid = isFieldValid(state[stateKey], validators);
+
   return (
-    <>
-      {label && (
-        <chakra.label
-          htmlFor={`${stateKey}-textarea`}
-          px={1}
-          pb={0.5}
-          fontSize="sm"
-        >
-          {label}
-        </chakra.label>
-      )}
+    <ControlWrapper
+      htmlFor={fieldId}
+      label={label}
+      isValid={isValid.valid}
+      errorText={isValid.message}
+    >
       <ChakraTextarea
-        test-id={`${stateKey}-textarea`}
-        id={`${stateKey}-textarea`}
+        test-id={fieldId}
+        id={fieldId}
         type="text"
         onChange={onChange}
         value={state[stateKey] || ''}
         focusBorderColor={FOCUS_BORDER_COLOR}
         {...chakraProps}
       />
-    </>
+    </ControlWrapper>
   );
 };
 

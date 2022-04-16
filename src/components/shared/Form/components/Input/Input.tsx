@@ -12,7 +12,7 @@ import { DefaultInputProps } from '../../types';
 
 type InputProps = DefaultInputProps;
 /**
- * Accepts any props accepted by ChakraUI Input and a label: ReactNode and stateKey: string. State is handled internally, but can be overridden by supplying onChange and value props.
+ * Accepts any props accepted by ChakraUI Input and a label: ReactNode, stateKey: string and array of validators. State is handled internally, but can be overridden by supplying onChange and value props.
  * @returns Function Component
  */
 const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
@@ -22,20 +22,21 @@ const Input: ComponentWithAs<'input', ChakraInputProps & InputProps> = ({
   ...chakraProps
 }) => {
   const { state, setState } = useForm();
-  const onChange = defaultOnChange<HTMLInputElement>(setState, stateKey);
+  const fieldId = `${stateKey}-input`;
 
+  const onChange = defaultOnChange<HTMLInputElement>(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
 
   return (
     <ControlWrapper
-      htmlFor={`${stateKey}-input`}
+      htmlFor={fieldId}
       label={label}
       isValid={isValid.valid}
       errorText={isValid.message}
     >
       <ChakraInput
-        test-id={`${stateKey}-input`}
-        id={`${stateKey}-input`}
+        test-id={fieldId}
+        id={fieldId}
         type="text"
         onChange={onChange}
         value={state[stateKey] || ''}

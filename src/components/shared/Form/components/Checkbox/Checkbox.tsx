@@ -4,38 +4,53 @@ import {
   Checkbox as ChakraCheckbox,
   CheckboxProps as ChakraCheckboxProps
 } from '@chakra-ui/react';
+
 import { useForm } from '../../Form';
-import { checkboxOnChange, FOCUS_BORDER_COLOR } from '../../utils';
+import ControlWrapper from '../ControlWrapper/ControlWrapper';
+import {
+  checkboxOnChange,
+  isFieldValid,
+  FOCUS_BORDER_COLOR
+} from '../../utils';
 import { DefaultInputProps } from '../../types';
 
 type CheckboxProps = Omit<DefaultInputProps, 'label'>;
 /**
- * Accepts any props accepted by ChakraUI Checkbox and a stateKey: string. State is handled internally, but can be overridden by supplying onChange and value props.
+ * Accepts any props accepted by ChakraUI Checkbox, stateKey: string and array of validators. State is handled internally, but can be overridden by supplying onChange and value props.
  * @returns Function Component
  */
 const Checkbox: ComponentWithAs<
   'input',
   ChakraCheckboxProps & CheckboxProps
-> = ({ stateKey, children, ...chakraProps }) => {
+> = ({ stateKey, validators, children, ...chakraProps }) => {
   const { state, setState } = useForm();
+  const fieldId = `${stateKey}-checkbox`;
+
   const onChange = checkboxOnChange<HTMLInputElement>(setState, stateKey);
+  const isValid = isFieldValid(state[stateKey], validators);
 
   return (
-    <ChakraCheckbox
-      test-id={`${stateKey}-checkbox`}
-      id={`${stateKey}-checkbox`}
-      onChange={onChange}
-      value={state[stateKey]}
-      focusBorderColor={FOCUS_BORDER_COLOR}
-      css={`
-        > span:first-of-type {
-          box-shadow: unset;
-        }
-      `}
-      {...chakraProps}
+    <ControlWrapper
+      htmlFor={fieldId}
+      isValid={isValid.valid}
+      errorText={isValid.message}
     >
-      {children}
-    </ChakraCheckbox>
+      <ChakraCheckbox
+        test-id={fieldId}
+        id={fieldId}
+        onChange={onChange}
+        value={state[stateKey]}
+        focusBorderColor={FOCUS_BORDER_COLOR}
+        css={`
+          > span:first-of-type {
+            box-shadow: unset;
+          }
+        `}
+        {...chakraProps}
+      >
+        {children}
+      </ChakraCheckbox>
+    </ControlWrapper>
   );
 };
 
