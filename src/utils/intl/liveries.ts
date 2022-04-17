@@ -30,6 +30,10 @@ const upload = {
   uploadLivery: {
     id: 'utils.intl.liveries.uploadLivery',
     defaultMessage: 'Upload Livery'
+  },
+  descriptionPlaceholder: {
+    id: 'utils.intl.liveries.descriptionPlaceholder',
+    defaultMessage: 'Tell people about this livery...'
   }
 };
 

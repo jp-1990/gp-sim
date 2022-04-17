@@ -20,6 +20,10 @@ const actions = {
     id: 'utils.intl.commonStrings.cancel',
     defaultMessage: 'Cancel'
   },
+  remove: {
+    id: 'utils.intl.commonStrings.remove',
+    defaultMessage: 'Remove'
+  },
   selectImages: {
     id: 'utils.intl.commonStrings.selectImages',
     defaultMessage: 'Select Images'

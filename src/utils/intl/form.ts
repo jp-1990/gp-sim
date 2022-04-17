@@ -3,6 +3,79 @@ import { defineMessages } from 'react-intl';
 // react-intl doesn't like template literals
 // scope = `utils.intl.form`;
 
+const fieldLabels = {
+  title: {
+    id: 'utils.intl.form.title',
+    defaultMessage: 'Title'
+  },
+  car: {
+    id: 'utils.intl.form.car',
+    defaultMessage: 'Car'
+  },
+  description: {
+    id: 'utils.intl.form.description',
+    defaultMessage: 'Description'
+  },
+  garage: {
+    id: 'utils.intl.form.garage',
+    defaultMessage: 'Garage'
+  },
+  garageKey: {
+    id: 'utils.intl.form.garageKey',
+    defaultMessage: 'Garage Key'
+  },
+  price: {
+    id: 'utils.intl.form.price',
+    defaultMessage: 'Price'
+  },
+  searchTags: {
+    id: 'utils.intl.form.searchTags',
+    defaultMessage: 'Search Tags'
+  }
+};
+
+const fieldPlaceholders = {
+  titlePlaceholder: {
+    id: 'utils.intl.form.titlePlaceholder',
+    defaultMessage: 'Title'
+  },
+  carPlaceholder: {
+    id: 'utils.intl.form.carPlaceholder',
+    defaultMessage: 'Select a car'
+  },
+  garagePlaceholder: {
+    id: 'utils.intl.form.garagePlaceholder',
+    defaultMessage: 'Select a garage'
+  },
+  garageKeyPlaceholder: {
+    id: 'utils.intl.form.garageKeyPlaceholder',
+    defaultMessage: 'Garage Key'
+  },
+  searchTagsPlaceholder: {
+    id: 'utils.intl.form.searchTagsPlaceholder',
+    defaultMessage: 'Search tags'
+  },
+  pricePlaceholder: {
+    id: 'utils.intl.form.pricePlaceholder',
+    defaultMessage: 'Free'
+  }
+};
+
+const liveries = {
+  makeThisLiveryPublic: {
+    id: 'utils.intl.form.makeThisLiveryPublic',
+    defaultMessage: 'Make this livery public'
+  },
+  addThisLiveryToAPrivateGarage: {
+    id: 'utils.intl.form.addThisLiveryToAPrivateGarage',
+    defaultMessage: 'Add this livery to a private garage'
+  },
+  selectLiveryFiles: {
+    id: 'utils.intl.form.selectLiveryFiles',
+    defaultMessage: 'Select Livery Files'
+  }
+};
+
 const invalidField = {
   invalidInput: {
     id: 'utils.intl.form.invalidInput',
@@ -14,6 +87,17 @@ const invalidField = {
   }
 };
 
+const helperText = {
+  selectImageHelperText: {
+    id: 'utils.intl.form.selectImageHelperText',
+    defaultMessage: 'Add up to 4 images of your livery*'
+  }
+};
+
 export const formStrings = defineMessages({
-  ...invalidField
+  ...fieldLabels,
+  ...fieldPlaceholders,
+  ...helperText,
+  ...invalidField,
+  ...liveries
 });
