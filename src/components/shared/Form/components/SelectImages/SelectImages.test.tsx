@@ -35,6 +35,20 @@ describe('SelectImages', () => {
     expect(getByLabelText(TESTING_LABEL)).toBeInTheDocument();
   });
 
+  it('renders the helper text for the SelectImages field', () => {
+    render(
+      <Form>
+        <SelectImages
+          stateKey={STATE_KEY}
+          helperText={TESTING_LABEL}
+          max={4}
+        ></SelectImages>
+      </Form>
+    );
+    const { getByText } = screen;
+    expect(getByText(TESTING_LABEL)).toBeInTheDocument();
+  });
+
   it('should allow user to upload single or multiple files', async () => {
     render(
       <Form>

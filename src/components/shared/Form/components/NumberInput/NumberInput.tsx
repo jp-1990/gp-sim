@@ -53,7 +53,7 @@ const NumberInput: ComponentWithAs<
         test-id={fieldId}
         id={fieldId}
         onChange={onChange}
-        value={state[stateKey] || ''}
+        value={state[stateKey] || chakraProps.defaultValue || ''}
         aria-labelledby={'field-1-label'}
         focusBorderColor={FOCUS_BORDER_COLOR}
         {...chakraProps}

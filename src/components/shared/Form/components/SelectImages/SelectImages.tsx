@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  FormErrorMessage,
+  FormHelperText
+} from '@chakra-ui/react';
 import React, { ReactNode, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -13,10 +18,11 @@ import {
   selectImagesRemoveByIndex
 } from '../../utils';
 import { DefaultInputProps, FormValueType } from '../../types';
-import { commonStrings } from '../../../../../utils/intl';
+import { commonStrings, formStrings } from '../../../../../utils/intl';
 
 interface SelectImageProps<T extends string> extends DefaultInputProps {
   max: number;
+  helperText?: React.ReactNode;
   children?:
     | ((
         state: StateWithStateKey<T> | undefined,
@@ -28,6 +34,7 @@ interface SelectImageProps<T extends string> extends DefaultInputProps {
  * Provides a button to open the file explorer, where a user should select images. Images will be set to state using the provided stateKey prop, with their length constrained by the max prop.
  * @param {SelectImageProps['max']} SelectImageProps.max - number. the maximum number of images to allow
  * @param {SelectImageProps['label']} SelectImageProps.label - ReactNode. Text to display in the user prompt button
+ * @param {SelectImageProps['helperText']} SelectImageProps.helperText - ReactNode. Text to display to the right of the button
  * @param {SelectImageProps['stateKey']} SelectImageProps.stateKey - string. used to set values to state
  * @param {SelectImageProps['validators']} SelectImageProps.validators - array of validators (strings)
  * @param {SelectImageProps['children']} SelectImageProps.children - function accepting state and a function used to removed images from state by index. OR ReactNode
@@ -36,6 +43,7 @@ interface SelectImageProps<T extends string> extends DefaultInputProps {
 const SelectImages = <T extends string>({
   max,
   label = <FormattedMessage {...commonStrings.selectImages} />,
+  helperText = <FormattedMessage {...formStrings.selectImageHelperText} />,
   stateKey,
   validators,
   children
@@ -52,6 +60,8 @@ const SelectImages = <T extends string>({
   }, []);
 
   const onChange = selectImagesOnChange(setState, stateKey, max);
+  const onClick = (e: React.MouseEvent) =>
+    ((e.target as HTMLInputElement).value = '');
   const onRemove = selectImagesRemoveByIndex(setState, stateKey, max);
   const isValid = isFieldValid(state[stateKey], validators);
 
@@ -70,9 +80,22 @@ const SelectImages = <T extends string>({
       isValid={isValid.valid}
       errorText={isValid.message}
     >
-      <Button as="label" w="2xs" lineHeight={1} htmlFor={fieldId}>
-        {label}
-      </Button>
+      <Flex>
+        <Button
+          as="label"
+          size={'sm'}
+          px={12}
+          lineHeight={1}
+          htmlFor={fieldId}
+          colorScheme="red"
+          fontWeight="normal"
+        >
+          {label}
+        </Button>
+        <FormHelperText pl={4} fontSize="sm">
+          {helperText}
+        </FormHelperText>
+      </Flex>
       <input
         hidden
         multiple
@@ -80,6 +103,7 @@ const SelectImages = <T extends string>({
         accept="image/*"
         id={fieldId}
         onChange={onChange}
+        onClick={onClick}
       />
       {children && typeof children === 'function'
         ? children(childrenStateInput, onRemove)
