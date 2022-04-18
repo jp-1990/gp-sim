@@ -17,6 +17,9 @@ const validatorFunctions = {
     };
   }
 };
+export const validatorOptions = Object.fromEntries(
+  Object.keys(validatorFunctions).map((key) => [key, key])
+) as Record<ValidationOptionsType, ValidationOptionsType>;
 
 const validate = (value: any, validator: ValidationOptionsType) => {
   return validatorFunctions[validator](value);

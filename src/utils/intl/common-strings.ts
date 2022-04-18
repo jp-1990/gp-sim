@@ -27,6 +27,10 @@ const actions = {
   selectImages: {
     id: 'utils.intl.commonStrings.selectImages',
     defaultMessage: 'Select Images'
+  },
+  selectFiles: {
+    id: 'utils.intl.commonStrings.selectFiles',
+    defaultMessage: 'Select Files'
   }
 };
 
