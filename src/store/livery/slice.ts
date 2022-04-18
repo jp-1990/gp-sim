@@ -25,12 +25,12 @@ export const fetchLivery = createAsyncThunk(
   }
 );
 
-interface State {
+export interface LiveryState {
   ids: string[];
   liveries: Record<string, LiveryDataType>;
 }
 
-const initialState: State = {
+const initialState: LiveryState = {
   ids: [],
   liveries: {}
 };
@@ -39,7 +39,7 @@ const liverySlice = createSlice({
   name: 'livery',
   initialState,
   reducers: {
-    rehydrate: (state, action: PayloadAction<State>) => {
+    rehydrateLiverySlice: (state, action: PayloadAction<LiveryState>) => {
       state.ids = action.payload.ids;
       state.liveries = action.payload.liveries;
     }
@@ -57,6 +57,6 @@ const liverySlice = createSlice({
   }
 });
 
-export const { rehydrate } = liverySlice.actions;
+export const { rehydrateLiverySlice } = liverySlice.actions;
 export const liveryReducer = liverySlice.reducer;
 export default liverySlice;
