@@ -17,9 +17,20 @@ const testLivery = {
   tags: ['90s', '90s', '2010s']
 };
 
+const testCar = {
+  id: '0',
+  class: 'GT4',
+  name: 'Aston Martin V8 Vantage GT4'
+};
+
 describe('Liveries', () => {
   it('renders a livery', () => {
-    render(<Liveries ids={['0']} liveries={{ '0': testLivery }} />);
+    render(
+      <Liveries
+        livery={{ ids: ['0'], liveries: { '0': testLivery } }}
+        car={{ ids: ['0'], cars: { '0': testCar } }}
+      />
+    );
     const testValues = [testLivery.author, testLivery.title, testLivery.price];
     expectAllToBeInDocument(Object.values(testValues));
   });
