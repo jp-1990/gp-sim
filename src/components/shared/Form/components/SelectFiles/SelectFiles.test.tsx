@@ -6,11 +6,11 @@ import {
   setTestUser,
   waitFor
 } from '../../../../../utils/testing/test-utils';
-import SelectImages from './SelectImages';
+import SelectFiles from './SelectFiles';
 import { Form, FORM_CONTEXT_ERROR } from '../../Form';
 import { expectAllToBeInDocument } from '../../../../../utils/testing/helpers';
 
-describe('SelectImages', () => {
+describe('SelectFiles', () => {
   beforeEach(() => {
     setTestUser(undefined);
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -19,54 +19,42 @@ describe('SelectImages', () => {
   afterAll(() => jest.clearAllMocks());
 
   const TESTING_LABEL = 'testing-label';
-  const STATE_KEY = 'testingSelectImages';
+  const STATE_KEY = 'testingSelectFiles';
 
-  it('renders the label for the SelectImages field', () => {
+  const fileA = new File(['file-a'], 'file-a.txt', { type: 'text/plain' });
+  const fileB = new File(['file-b'], 'file-b.txt', { type: 'text/plain' });
+  const fileC = new File(['file-c'], 'file-c.txt', { type: 'text/plain' });
+
+  it('renders the label for the SelectFiles field', () => {
     render(
       <Form>
-        <SelectImages
-          stateKey={STATE_KEY}
-          label={TESTING_LABEL}
-          max={4}
-        ></SelectImages>
+        <SelectFiles stateKey={STATE_KEY} label={TESTING_LABEL}></SelectFiles>
       </Form>
     );
-    const { getByLabelText } = screen;
-    expect(getByLabelText(TESTING_LABEL)).toBeInTheDocument();
+    expect(screen.getByLabelText(TESTING_LABEL)).toBeInTheDocument();
   });
 
-  it('renders the helper text for the SelectImages field', () => {
+  it('renders the helper text for the SelectFiles field', () => {
     render(
       <Form>
-        <SelectImages
+        <SelectFiles
           stateKey={STATE_KEY}
           helperText={TESTING_LABEL}
-          max={4}
-        ></SelectImages>
+        ></SelectFiles>
       </Form>
     );
-    const { getByText } = screen;
-    expect(getByText(TESTING_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(TESTING_LABEL)).toBeInTheDocument();
   });
 
-  it('should allow user to upload single or multiple files', async () => {
+  it('should allow user to select single or multiple files', async () => {
     render(
       <Form>
-        <SelectImages
-          stateKey={STATE_KEY}
-          label={TESTING_LABEL}
-          max={4}
-        ></SelectImages>
+        <SelectFiles stateKey={STATE_KEY} label={TESTING_LABEL}></SelectFiles>
       </Form>
     );
-    const { getByLabelText } = screen;
     const user = userEvent.setup();
 
-    const fileA = new File(['file-a'], 'file-a.png', { type: 'image/png' });
-    const fileB = new File(['file-b'], 'file-b.png', { type: 'image/png' });
-    const fileC = new File(['file-c'], 'file-c.png', { type: 'image/png' });
-
-    const input = getByLabelText(TESTING_LABEL) as HTMLInputElement;
+    const input = screen.getByLabelText(TESTING_LABEL) as HTMLInputElement;
 
     expect(input).toBeInTheDocument();
     await user.upload(input, fileA);
@@ -84,25 +72,24 @@ describe('SelectImages', () => {
   });
 
   it('correctly renders the result of the children if it is a ReactNode', () => {
-    const childrenText = 'child is not a function';
+    const childrenText = 'child is a ReactNode';
     render(
       <Form>
-        <SelectImages stateKey={STATE_KEY} label={TESTING_LABEL} max={4}>
+        <SelectFiles stateKey={STATE_KEY} label={TESTING_LABEL}>
           <div>{childrenText}</div>
-        </SelectImages>
+        </SelectFiles>
       </Form>
     );
-    const { getByText } = screen;
-    expect(getByText(childrenText)).toBeInTheDocument();
+    expect(screen.getByText(childrenText)).toBeInTheDocument();
   });
 
   it('correctly renders the result of the children if it is a function', () => {
-    const childrenText = 'child is not a function';
+    const childrenText = 'child is a function';
     render(
       <Form>
-        <SelectImages stateKey={STATE_KEY} label={TESTING_LABEL} max={4}>
+        <SelectFiles stateKey={STATE_KEY} label={TESTING_LABEL}>
           {() => <div>{childrenText}</div>}
-        </SelectImages>
+        </SelectFiles>
       </Form>
     );
     const { getByText } = screen;
@@ -113,43 +100,34 @@ describe('SelectImages', () => {
     const childrenText = 'child is a function';
     const component = (
       <Form>
-        <SelectImages<typeof STATE_KEY>
+        <SelectFiles<typeof STATE_KEY>
           stateKey={STATE_KEY}
           label={TESTING_LABEL}
-          max={4}
         >
           {(state, onRemove) => {
             if (!state) return null;
-            const { testingSelectImages } = { ...state };
+            const { testingSelectFiles } = { ...state };
             return (
               <>
                 <div>{childrenText}</div>
-                {testingSelectImages.map((image, i) => (
+                {testingSelectFiles.map((file, i) => (
                   <div key={i}>
-                    <span>{image.name}</span>
+                    <span>{file.name}</span>
                     <button
                       onClick={() => onRemove(i)}
-                    >{`remove-${image.name}`}</button>
+                    >{`remove-${file.name}`}</button>
                   </div>
                 ))}
               </>
             );
           }}
-        </SelectImages>
+        </SelectFiles>
       </Form>
     );
     render(component);
     const { getByText, getByLabelText, queryByText } = screen;
     const user = userEvent.setup();
-    const fileA = new File(['file-a'], 'file-a.png', {
-      type: 'image/png'
-    });
-    const fileB = new File(['file-b'], 'file-b.png', {
-      type: 'image/png'
-    });
-    const fileC = new File(['file-c'], 'file-c.png', {
-      type: 'image/png'
-    });
+
     await waitFor(async () => {
       expect(getByText(childrenText)).toBeInTheDocument();
 
@@ -172,9 +150,44 @@ describe('SelectImages', () => {
     expect(queryByText(fileC.name)).not.toBeInTheDocument();
   });
 
+  it('correctly renders the result of the children if it is a function and bases rendering on form state, will not allow more than max items', async () => {
+    const component = (
+      <Form>
+        <SelectFiles<typeof STATE_KEY>
+          stateKey={STATE_KEY}
+          label={TESTING_LABEL}
+          max={2}
+        >
+          {(state) => {
+            if (!state) return null;
+            const { testingSelectFiles } = { ...state };
+            return (
+              <>
+                {testingSelectFiles.map((file, i) => (
+                  <div key={i}>{file.name}</div>
+                ))}
+              </>
+            );
+          }}
+        </SelectFiles>
+      </Form>
+    );
+    render(component);
+    const user = userEvent.setup();
+
+    await waitFor(async () => {
+      const input = screen.getByLabelText(TESTING_LABEL) as HTMLInputElement;
+      expect(input).toBeInTheDocument();
+
+      await user.upload(input, [fileA, fileB, fileC]);
+      expectAllToBeInDocument([fileA.name, fileB.name]);
+      expect(screen.queryByText(fileC.name)).not.toBeInTheDocument();
+    });
+  });
+
   it('does not render outside of the Form component', () => {
     try {
-      render(<SelectImages stateKey={STATE_KEY} max={4}></SelectImages>);
+      render(<SelectFiles stateKey={STATE_KEY} max={4}></SelectFiles>);
     } catch (err: any) {
       expect(err.message).toEqual(FORM_CONTEXT_ERROR);
     }

@@ -36,6 +36,7 @@ export {
   NumberInputStepper
 } from './components/NumberInput/NumberInput';
 export { default as Select } from './components/Select/Select';
-export { default as SelectImages } from './components/SelectImages/SelectImages';
+export { default as SelectFiles } from './components/SelectFiles/SelectFiles';
 export { default as SubmitButton } from './components/SubmitButton/SubmitButton';
+export { default as Tags } from './components/Tags/Tags';
 export { default as Textarea } from './components/Textarea/Textarea';
