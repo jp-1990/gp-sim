@@ -18,24 +18,29 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage } from 'react-intl';
 
 import store, { useAppDispatch } from '../../store/store';
-import { fetchLiveries, rehydrate } from '../../store/livery/slice';
+import { fetchLiveries, rehydrateLiverySlice } from '../../store/livery/slice';
+import { fetchCars, rehydrateCarSlice } from '../../store/car/slice';
+import { CarState, LiveryState } from '../../store/types';
+
 import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
 import { LIVERIES_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
-import { LiveryDataType } from '../../types';
 
 interface Props {
-  liveries: Record<string, LiveryDataType>;
-  ids: string[];
+  car: CarState;
+  livery: LiveryState;
 }
-const Liveries: NextPage<Props> = ({ liveries, ids }) => {
+const Liveries: NextPage<Props> = ({ car, livery }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(rehydrate({ liveries, ids }));
+    dispatch(
+      rehydrateLiverySlice({ liveries: livery.liveries, ids: livery.ids })
+    );
+    dispatch(rehydrateCarSlice({ cars: car.cars, ids: car.ids }));
   }, []);
 
   return (
@@ -69,9 +74,14 @@ const Liveries: NextPage<Props> = ({ liveries, ids }) => {
           </GridItem>
           <GridItem colSpan={3} rowSpan={1}>
             <Select placeholder="Select car">
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {car.ids.map((id) => {
+                const targetCar = car.cars[id];
+                return (
+                  <option key={id + targetCar.name} value={targetCar.name}>
+                    {targetCar.name}
+                  </option>
+                );
+              })}
             </Select>
           </GridItem>
           <GridItem colSpan={1} rowSpan={1}>
@@ -123,9 +133,9 @@ const Liveries: NextPage<Props> = ({ liveries, ids }) => {
           gap={4}
           w="5xl"
         >
-          {ids.map((e: string) => {
+          {livery.ids.map((e: string) => {
             const { id, author, rating, title, car, imgUrls, price } =
-              liveries[e];
+              livery.liveries[e];
             return (
               <LiveryCard
                 key={e}
@@ -148,9 +158,14 @@ const Liveries: NextPage<Props> = ({ liveries, ids }) => {
 export default Liveries;
 
 export const getStaticProps = async () => {
-  await store.dispatch(fetchLiveries({ filters: {}, quantity: 100 }));
-  const { liveries, ids } = store.getState().livery;
+  await Promise.all([
+    store.dispatch(fetchLiveries({ filters: {}, quantity: 100 })),
+    store.dispatch(fetchCars())
+  ]);
+
+  const car = store.getState().car;
+  const livery = store.getState().livery;
   return {
-    props: { liveries, ids }
+    props: { livery, car }
   };
 };
