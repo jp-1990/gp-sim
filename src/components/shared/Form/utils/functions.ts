@@ -65,14 +65,33 @@ export const numberInputOnChange =
 /**
  * @param setState - setState to set form state
  * @param stateKey - string key to use to index state
+ * @returns onChange function to handle input element onChange event
+ */
+export const tagsOnChange =
+  <T extends HTMLInputElement>(
+    setState: React.Dispatch<React.SetStateAction<FormValueType['state']>>,
+    stateKey: string
+  ) =>
+  (event: React.ChangeEvent<T>) => {
+    const { value } = event.target;
+    setState((prev) => {
+      const prevState = { ...prev };
+      prevState[stateKey] = value;
+      return prevState;
+    });
+  };
+
+/**
+ * @param setState - setState to set form state
+ * @param stateKey - string key to use to index state
  * @param max - number maximum number of images
  * @returns onChange function to handle SelectImages element onChange event
  */
-export const selectImagesOnChange =
+export const selectFilesOnChange =
   (
     setState: React.Dispatch<React.SetStateAction<FormValueType['state']>>,
     stateKey: string,
-    max: number
+    max: number | undefined
   ) =>
   (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.length) return;
@@ -81,7 +100,7 @@ export const selectImagesOnChange =
       const prevState = { ...prev };
       const newState = [...prevState[stateKey]];
       newState.push(...files);
-      if (newState.length > max) newState.length = max;
+      if (max && newState.length > max) newState.length = max;
       prevState[stateKey] = newState;
       return prevState;
     });
@@ -93,21 +112,19 @@ export const selectImagesOnChange =
  * @param max - number maximum number of images
  * @returns onChange function to handle SelectImages element onChange event
  */
-export const selectImagesRemoveByIndex =
+export const selectFilesRemoveByIndex =
   (
     setState: React.Dispatch<React.SetStateAction<FormValueType['state']>>,
     stateKey: string,
-    max: number
+    max: number | undefined
   ) =>
   (index: number) => {
-    if (index > max) return;
+    if (max && index > max) return;
     setState((prev) => {
       const prevState = { ...prev };
-
       const newState = [...prevState[stateKey]];
-
       newState.splice(index, 1);
-      if (newState.length > max) newState.length = max;
+      if (max && newState.length > max) newState.length = max;
       prevState[stateKey] = newState;
       return prevState;
     });
@@ -180,7 +197,6 @@ export const isFormStateValid = (
  *
  * @param stateKey - string key to use to index state
  * @param setState - setState to set form state
- * @returns
  */
 export const addToInvalidFields = (
   stateKey: string,
@@ -200,7 +216,6 @@ export const addToInvalidFields = (
  *
  * @param stateKey - string key to use to index state
  * @param setState - setState to set form state
- * @returns
  */
 export const removeFromInvalidFields = (
   stateKey: string,
@@ -216,3 +231,10 @@ export const removeFromInvalidFields = (
     return prev;
   });
 };
+
+/**
+ * Used to reset the value field on the clicked element. Useful for ensuring onChange will fire when the user expects it to.
+ * @param event - React MouseEvent
+ */
+export const setInputTargetValueToEmptyString = (event: React.MouseEvent) =>
+  ((event.target as HTMLInputElement).value = '');
