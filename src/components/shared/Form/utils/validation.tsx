@@ -1,6 +1,16 @@
 import { FormattedMessage } from 'react-intl';
 import { formStrings } from '../../../../utils/intl';
 
+// liveryname.json
+// /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g
+
+export const liveryFileNames = [
+  'sponsors.json',
+  'sponsors.png',
+  'decals.json',
+  'decals.png'
+] as const;
+
 export type ValidationOptionsType = keyof typeof validatorFunctions;
 export type IsFieldValidReturnType = {
   valid: boolean;

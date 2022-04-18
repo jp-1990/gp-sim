@@ -1,9 +1,31 @@
-import React, { useState } from 'react';
-import { NextPage } from 'next';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
+import { GetStaticProps, NextPage } from 'next';
 import { FormattedMessage, useIntl } from 'react-intl';
+import {
+  Box,
+  Button,
+  chakra,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Tfoot,
+  Th,
+  Thead,
+  Tr
+} from '@chakra-ui/react';
+import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { useDispatch } from 'react-redux';
 
 import { MainLayout } from '../../components/layout';
-import { Breadcrumbs, ImageWithFallback } from '../../components/core';
+import { Breadcrumbs, ImageWithFallback, Tag } from '../../components/core';
 import {
   Checkbox,
   Form,
@@ -14,24 +36,20 @@ import {
   NumberInputField,
   NumberInputStepper,
   Select,
-  SelectImages,
+  SelectFiles,
   SubmitButton,
+  Tags,
   Textarea
 } from '../../components/shared';
+import {
+  validatorOptions,
+  liveryFileNames
+} from '../../components/shared/Form/utils';
 
+import store from '../../store/store';
+import { CarState, fetchCars, rehydrateCarSlice } from '../../store/car/slice';
 import { commonStrings, liveryStrings, formStrings } from '../../utils/intl';
 import { LIVERIES_URL, LIVERY_UPLOAD_URL } from '../../utils/nav';
-import {
-  Box,
-  Button,
-  chakra,
-  Divider,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Text
-} from '@chakra-ui/react';
 
 const breadcrumbOptions = [
   {
@@ -44,8 +62,45 @@ const breadcrumbOptions = [
   }
 ];
 
-const Create: NextPage = () => {
+const stateKeys = {
+  TITLE: 'title',
+  CAR: 'car',
+  DESCRIPTION: 'description',
+  LIVERY_FILES: 'liveryFiles',
+  PUBLIC_LIVERY: 'publicLivery',
+  PRIVATE_GARAGE: 'privateGarage',
+  GARAGE: 'garage',
+  GARAGE_KEY: 'garageKey',
+  PRICE: 'price',
+  SEARCH_TAGS: 'searchTags',
+  IMAGE_FILES: 'imageFiles'
+} as const;
+
+const validators = {
+  title: [validatorOptions.NON_NULL_STRING],
+  car: [validatorOptions.NON_NULL_STRING],
+  description: undefined,
+  liveryFiles: undefined,
+  publicLivery: undefined,
+  privateGarage: undefined,
+  garage: undefined,
+  garageKey: undefined,
+  price: undefined,
+  searchTags: undefined,
+  imageFiles: undefined
+};
+
+interface Props {
+  car: CarState;
+}
+const Create: NextPage<Props> = ({ car }) => {
   const intl = useIntl();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(rehydrateCarSlice({ cars: car.cars, ids: car.ids }));
+  }, []);
+
   return (
     <MainLayout
       pageTitle="Create Livery"
@@ -74,33 +129,41 @@ const Create: NextPage = () => {
           >
             <GridItem rowSpan={1} colSpan={12}>
               <Input
-                stateKey="title"
+                isRequired
+                validators={validators.title}
+                stateKey={stateKeys.TITLE}
                 label={<FormattedMessage {...formStrings.title} />}
                 placeholder={intl.formatMessage({
                   ...formStrings.titlePlaceholder
                 })}
                 w="sm"
-                validators={['NON_NULL_STRING']}
-                isRequired
               />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
               <Select
-                stateKey="car"
+                isRequired
+                validators={validators.car}
+                stateKey={stateKeys.CAR}
                 label={<FormattedMessage {...formStrings.car} />}
                 placeholder={intl.formatMessage({
                   ...formStrings.carPlaceholder
                 })}
                 w="sm"
-                isRequired
-                validators={['NON_NULL_STRING']}
               >
-                <option value="option1">Option 1</option>
+                {car.ids.map((id) => {
+                  const targetCar = car.cars[id];
+                  return (
+                    <option key={id + targetCar.name} value={targetCar.name}>
+                      {targetCar.name}
+                    </option>
+                  );
+                })}
               </Select>
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
               <Textarea
-                stateKey="description"
+                validators={validators.description}
+                stateKey={stateKeys.DESCRIPTION}
                 label={<FormattedMessage {...formStrings.description} />}
                 w="3xl"
                 placeholder={intl.formatMessage({
@@ -110,27 +173,180 @@ const Create: NextPage = () => {
                 resize="none"
               />
             </GridItem>
-            <GridItem rowSpan={1} colSpan={12} mt={3} mb={1}>
-              <Button
-                size="sm"
-                px={12}
-                lineHeight={1}
-                colorScheme="red"
-                fontWeight="normal"
+
+            <GridItem rowSpan={1} colSpan={12} my={5}>
+              <SelectFiles<typeof stateKeys.LIVERY_FILES>
+                validators={validators.imageFiles}
+                stateKey={stateKeys.LIVERY_FILES}
+                label={<FormattedMessage {...formStrings.selectLiveryFiles} />}
+                accept=".json,.dds,.png"
+                helperText={
+                  <FormattedMessage
+                    {...formStrings.selectLiveryFilesHelperText}
+                  />
+                }
               >
-                {<FormattedMessage {...formStrings.selectLiveryFiles} />}
-              </Button>
-              <Divider mt={2} />
+                {(state, onRemove) => {
+                  if (!state) return null;
+                  const { [stateKeys.LIVERY_FILES]: files } = { ...state };
+
+                  const isApproved = (s: string | undefined) =>
+                    s ? (
+                      <CheckIcon w={3} h={3} color="green" />
+                    ) : (
+                      <CloseIcon w={3} h={2} color="red" />
+                    );
+                  const getId = (files: File[], name: string) =>
+                    files.findIndex((f) => f.name === name);
+
+                  const dynamicRows = () => {
+                    const selectedFile = files.find((f) => {
+                      const name = f.name as typeof liveryFileNames[number];
+                      return !liveryFileNames.includes(name);
+                    });
+
+                    const approved = isApproved(
+                      selectedFile?.name.match(
+                        /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g
+                      )
+                        ? selectedFile?.name
+                        : undefined
+                    );
+                    return (
+                      <GridItem colSpan={12} rowSpan={1}>
+                        <Grid
+                          templateColumns="repeat(12, 1fr)"
+                          templateRows="repeat(1,minmax(2rem, 2rem))"
+                        >
+                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
+                            [your-livery-name].json
+                          </GridItem>
+                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
+                            {selectedFile?.name || '-'}
+                          </GridItem>
+                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
+                            {approved}
+                          </GridItem>
+                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
+                            {selectedFile?.name && (
+                              <Button
+                                h={4}
+                                variant="ghost"
+                                lineHeight={1}
+                                fontSize={'xs'}
+                                colorScheme="red"
+                                onClick={() =>
+                                  onRemove(getId(files, selectedFile.name))
+                                }
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </GridItem>
+                        </Grid>
+                      </GridItem>
+                    );
+                  };
+
+                  const fixedRows = () =>
+                    liveryFileNames.map((name, i) => {
+                      const selectedFile = files.find((f) => f.name === name);
+                      const approved = isApproved(selectedFile?.name);
+
+                      return (
+                        <GridItem key={name + i} colSpan={12} rowSpan={1}>
+                          <Grid
+                            templateColumns="repeat(12, 1fr)"
+                            templateRows="repeat(1,minmax(2rem, 2rem))"
+                          >
+                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
+                              {name}
+                            </GridItem>
+                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
+                              {selectedFile?.name || '-'}
+                            </GridItem>
+                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
+                              {approved}
+                            </GridItem>
+                            <GridItem rowSpan={1} colSpan={1}>
+                              {selectedFile?.name && (
+                                <Button
+                                  h={4}
+                                  variant="ghost"
+                                  lineHeight={1}
+                                  fontSize={'xs'}
+                                  colorScheme="red"
+                                  onClick={() =>
+                                    onRemove(getId(files, selectedFile.name))
+                                  }
+                                >
+                                  Remove
+                                </Button>
+                              )}
+                            </GridItem>
+                          </Grid>
+                        </GridItem>
+                      );
+                    });
+                  return (
+                    <>
+                      <Grid
+                        templateColumns="repeat(12, 1fr)"
+                        templateRows="repeat(6,minmax(2rem, 2rem))"
+                        gap={1}
+                        w="5xl"
+                        my={3}
+                        pl={3}
+                      >
+                        <GridItem
+                          fontWeight={'bold'}
+                          color="gray.800"
+                          rowSpan={1}
+                          colSpan={4}
+                        >
+                          Required Files
+                        </GridItem>
+                        <GridItem
+                          fontWeight={'bold'}
+                          color="gray.800"
+                          rowSpan={1}
+                          colSpan={6}
+                        >
+                          Currently Selected
+                        </GridItem>
+                        <GridItem
+                          fontWeight={'bold'}
+                          color="gray.800"
+                          rowSpan={1}
+                          colSpan={1}
+                        >
+                          Approved
+                        </GridItem>
+                        <GridItem rowSpan={1} colSpan={1}></GridItem>
+                        {dynamicRows()}
+                        {fixedRows()}
+                      </Grid>
+                    </>
+                  );
+                }}
+              </SelectFiles>
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
               <Checkbox
-                stateKey="publicLivery"
+                validators={validators.publicLivery}
+                stateKey={stateKeys.PUBLIC_LIVERY}
                 defaultIsChecked
                 colorScheme="red"
+                my={1}
               >
                 {<FormattedMessage {...formStrings.makeThisLiveryPublic} />}
               </Checkbox>
-              <Checkbox stateKey="privateGarage" colorScheme="red">
+              <Checkbox
+                validators={validators.privateGarage}
+                stateKey={stateKeys.PRIVATE_GARAGE}
+                colorScheme="red"
+                my={1}
+              >
                 {
                   <FormattedMessage
                     {...formStrings.addThisLiveryToAPrivateGarage}
@@ -140,7 +356,8 @@ const Create: NextPage = () => {
             </GridItem>
             <GridItem rowSpan={1} colSpan={3}>
               <Select
-                stateKey="garage"
+                validators={validators.garage}
+                stateKey={stateKeys.GARAGE}
                 label={<FormattedMessage {...formStrings.garage} />}
                 size={'md'}
                 placeholder={intl.formatMessage({
@@ -152,7 +369,8 @@ const Create: NextPage = () => {
             </GridItem>
             <GridItem rowSpan={1} colSpan={4}>
               <Input
-                stateKey="garageKey"
+                validators={validators.garageKey}
+                stateKey={stateKeys.GARAGE_KEY}
                 label={<FormattedMessage {...formStrings.garageKey} />}
                 placeholder={intl.formatMessage({
                   ...formStrings.garageKey
@@ -162,7 +380,8 @@ const Create: NextPage = () => {
 
             <GridItem rowSpan={1} colSpan={12}>
               <NumberInput
-                stateKey="price"
+                validators={validators.price}
+                stateKey={stateKeys.PRICE}
                 label={<FormattedMessage {...formStrings.price} />}
                 precision={2}
                 defaultValue={intl.formatMessage({
@@ -180,20 +399,43 @@ const Create: NextPage = () => {
               </NumberInput>
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
-              <Input
-                stateKey="tags"
+              <Tags<typeof stateKeys.SEARCH_TAGS>
+                validators={validators.searchTags}
+                stateKey={stateKeys.SEARCH_TAGS}
                 label={<FormattedMessage {...formStrings.searchTags} />}
                 placeholder={intl.formatMessage({
                   ...formStrings.searchTagsPlaceholder
                 })}
                 w={48}
-              />
+              >
+                {(state) => {
+                  if (!state) return null;
+                  const { [stateKeys.SEARCH_TAGS]: tags } = state;
+                  const tagsArray = tags.split(',').filter((e) => e.trim());
+                  return (
+                    <Flex mt={2}>
+                      {tagsArray.map((tag, i) => {
+                        return <Tag key={tag + i} tag={tag} />;
+                      })}
+                    </Flex>
+                  );
+                }}
+              </Tags>
             </GridItem>
             <GridItem rowSpan={1} colSpan={12} mt={5} mb={3}>
-              <SelectImages<'images'> max={4} stateKey="images">
+              <SelectFiles<typeof stateKeys.IMAGE_FILES>
+                validators={validators.imageFiles}
+                stateKey={stateKeys.IMAGE_FILES}
+                label={<FormattedMessage {...commonStrings.selectImages} />}
+                max={4}
+                accept="image/*"
+                helperText={
+                  <FormattedMessage {...formStrings.selectImageHelperText} />
+                }
+              >
                 {(state, onRemove) => {
                   if (!state) return null;
-                  const { images } = { ...state };
+                  const { [stateKeys.IMAGE_FILES]: images } = { ...state };
                   return (
                     <Grid
                       templateColumns="repeat(4, 1fr)"
@@ -234,7 +476,7 @@ const Create: NextPage = () => {
                     </Grid>
                   );
                 }}
-              </SelectImages>
+              </SelectFiles>
               <Divider mt={3} />
             </GridItem>
             <GridItem rowSpan={1} colSpan={3}>
@@ -266,3 +508,13 @@ const Create: NextPage = () => {
 };
 
 export default Create;
+
+export const getStaticProps: GetStaticProps = async () => {
+  await store.dispatch(fetchCars());
+  const car = store.getState().car;
+  return {
+    props: {
+      car
+    }
+  };
+};

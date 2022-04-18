@@ -92,9 +92,14 @@ const helperText = {
     id: 'utils.intl.form.selectImageHelperText',
     defaultMessage: 'Add up to 4 images of your livery*'
   },
+  selectLiveryFilesHelperText: {
+    id: 'utils.intl.form.selectLiveryFilesHelperText',
+    defaultMessage:
+      'It is your responsibility to ensure that the correct files are selected*'
+  },
   searchTagsHelperText: {
     id: 'utils.intl.form.searchTagsHelperText',
-    defaultMessage: 'Enter a comma after each search tag.'
+    defaultMessage: 'Enter a comma after each search tag*'
   }
 };
 
