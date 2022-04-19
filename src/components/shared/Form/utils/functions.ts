@@ -85,7 +85,7 @@ export const tagsOnChange =
  * @param setState - setState to set form state
  * @param stateKey - string key to use to index state
  * @param max - number maximum number of images
- * @returns onChange function to handle SelectImages element onChange event
+ * @returns onChange function to handle SelectFiles element onChange event
  */
 export const selectFilesOnChange =
   (
@@ -95,9 +95,13 @@ export const selectFilesOnChange =
   ) =>
   (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.length) return;
-    const files = Array.from(event.target.files);
+    const newFiles = Array.from(event.target.files);
     setState((prev) => {
       const prevState = { ...prev };
+      const files = newFiles.filter(
+        (file) => !prevState[stateKey].find((e: any) => e.name === file.name)
+      );
+      if (!files.length) return prevState;
       const newState = [...prevState[stateKey]];
       newState.push(...files);
       if (max && newState.length > max) newState.length = max;
@@ -110,7 +114,7 @@ export const selectFilesOnChange =
  * @param setState - setState to set form state
  * @param stateKey - string key to use to index state
  * @param max - number maximum number of images
- * @returns onChange function to handle SelectImages element onChange event
+ * @returns onChange function to handle SelectFiles element onChange event
  */
 export const selectFilesRemoveByIndex =
   (

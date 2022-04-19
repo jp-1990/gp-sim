@@ -43,7 +43,7 @@ import {
 } from '../../components/shared';
 import {
   validatorOptions,
-  liveryFileNames
+  liveryFilenames
 } from '../../components/shared/Form/utils';
 
 import store from '../../store/store';
@@ -80,7 +80,10 @@ const validators = {
   title: [validatorOptions.NON_NULL_STRING],
   car: [validatorOptions.NON_NULL_STRING],
   description: undefined,
-  liveryFiles: undefined,
+  liveryFiles: [
+    validatorOptions.NON_NULL_LIVERY_FILES,
+    validatorOptions.DYNAMIC_LIVERY_FILE_NAME
+  ],
   publicLivery: undefined,
   privateGarage: undefined,
   garage: undefined,
@@ -176,7 +179,8 @@ const Create: NextPage<Props> = ({ car }) => {
 
             <GridItem rowSpan={1} colSpan={12} my={5}>
               <SelectFiles<typeof stateKeys.LIVERY_FILES>
-                validators={validators.imageFiles}
+                max={5}
+                validators={validators.liveryFiles}
                 stateKey={stateKeys.LIVERY_FILES}
                 label={<FormattedMessage {...formStrings.selectLiveryFiles} />}
                 accept=".json,.dds,.png"
@@ -201,8 +205,8 @@ const Create: NextPage<Props> = ({ car }) => {
 
                   const dynamicRows = () => {
                     const selectedFile = files.find((f) => {
-                      const name = f.name as typeof liveryFileNames[number];
-                      return !liveryFileNames.includes(name);
+                      const name = f.name as typeof liveryFilenames[number];
+                      return !liveryFilenames.includes(name);
                     });
 
                     const approved = isApproved(
@@ -248,8 +252,8 @@ const Create: NextPage<Props> = ({ car }) => {
                     );
                   };
 
-                  const fixedRows = () =>
-                    liveryFileNames.map((name, i) => {
+                  const fixedRows = () => {
+                    return liveryFilenames.map((name, i) => {
                       const selectedFile = files.find((f) => f.name === name);
                       const approved = isApproved(selectedFile?.name);
 
@@ -288,6 +292,7 @@ const Create: NextPage<Props> = ({ car }) => {
                         </GridItem>
                       );
                     });
+                  };
                   return (
                     <>
                       <Grid
