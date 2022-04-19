@@ -11,15 +11,7 @@ import {
   Grid,
   GridItem,
   Heading,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Tfoot,
-  Th,
-  Thead,
-  Tr
+  Text
 } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { useDispatch } from 'react-redux';
@@ -193,105 +185,75 @@ const Create: NextPage<Props> = ({ car }) => {
                 {(state, onRemove) => {
                   if (!state) return null;
                   const { [stateKeys.LIVERY_FILES]: files } = { ...state };
+                  const stateFiles = [...files];
 
-                  const isApproved = (s: string | undefined) =>
-                    s ? (
-                      <CheckIcon w={3} h={3} color="green" />
-                    ) : (
-                      <CloseIcon w={3} h={2} color="red" />
-                    );
                   const getId = (files: File[], name: string) =>
                     files.findIndex((f) => f.name === name);
 
-                  const dynamicRows = () => {
-                    const selectedFile = files.find((f) => {
-                      const name = f.name as typeof liveryFilenames[number];
-                      return !liveryFilenames.includes(name);
-                    });
+                  const tableRows = () => {
+                    const requiredFiles = [
+                      {
+                        name: '[your-livery-name].json',
+                        regex: /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g,
+                        file: undefined,
+                        index: 0
+                      },
+                      ...liveryFilenames.map((name, index) => ({
+                        name,
+                        regex: new RegExp(`^${name}$`, 'g'),
+                        file: undefined,
+                        index: index + 1
+                      }))
+                    ];
 
-                    const approved = isApproved(
-                      selectedFile?.name.match(
-                        /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g
-                      )
-                        ? selectedFile?.name
-                        : undefined
-                    );
-                    return (
-                      <GridItem colSpan={12} rowSpan={1}>
-                        <Grid
-                          templateColumns="repeat(12, 1fr)"
-                          templateRows="repeat(1,minmax(2rem, 2rem))"
-                        >
-                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
-                            [your-livery-name].json
-                          </GridItem>
-                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
-                            {selectedFile?.name || '-'}
-                          </GridItem>
-                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
-                            {approved}
-                          </GridItem>
-                          <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
-                            {selectedFile?.name && (
-                              <Button
-                                h={4}
-                                variant="ghost"
-                                lineHeight={1}
-                                fontSize={'xs'}
-                                colorScheme="red"
-                                onClick={() =>
-                                  onRemove(getId(files, selectedFile.name))
-                                }
-                              >
-                                Remove
-                              </Button>
-                            )}
-                          </GridItem>
-                        </Grid>
-                      </GridItem>
-                    );
-                  };
+                    const availableIndexes = requiredFiles.map((_, i) => i);
+                    const outputRows = Array.from(Array(5));
 
-                  const fixedRows = () => {
-                    return liveryFilenames.map((name, i) => {
-                      const selectedFile = files.find((f) => f.name === name);
-                      const approved = isApproved(selectedFile?.name);
+                    for (const { name, regex, index } of requiredFiles) {
+                      const targetFile = stateFiles.find((f, i) => {
+                        if (f.name.match(regex)) {
+                          stateFiles.splice(i, 1);
+                          return true;
+                        }
+                      });
 
-                      return (
-                        <GridItem key={name + i} colSpan={12} rowSpan={1}>
-                          <Grid
-                            templateColumns="repeat(12, 1fr)"
-                            templateRows="repeat(1,minmax(2rem, 2rem))"
-                          >
-                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
-                              {name}
-                            </GridItem>
-                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
-                              {selectedFile?.name || '-'}
-                            </GridItem>
-                            <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
-                              {approved}
-                            </GridItem>
-                            <GridItem rowSpan={1} colSpan={1}>
-                              {selectedFile?.name && (
-                                <Button
-                                  h={4}
-                                  variant="ghost"
-                                  lineHeight={1}
-                                  fontSize={'xs'}
-                                  colorScheme="red"
-                                  onClick={() =>
-                                    onRemove(getId(files, selectedFile.name))
-                                  }
-                                >
-                                  Remove
-                                </Button>
-                              )}
-                            </GridItem>
-                          </Grid>
-                        </GridItem>
+                      if (targetFile) {
+                        const approved = !!targetFile.name;
+                        outputRows[index] = (
+                          <TableRow
+                            key={name}
+                            requiredName={name}
+                            selectedName={targetFile.name}
+                            approved={approved}
+                            onRemove={() =>
+                              onRemove(getId(files, targetFile.name))
+                            }
+                          />
+                        );
+                        const indexToRemove = availableIndexes.findIndex(
+                          (i) => i === index
+                        );
+                        availableIndexes.splice(indexToRemove, 1);
+                      } else {
+                        outputRows[index] = (
+                          <TableRow key={name} requiredName={name} />
+                        );
+                      }
+                    }
+                    for (const file of stateFiles) {
+                      const index = availableIndexes[0];
+                      outputRows[index] = (
+                        <TableRow
+                          key={requiredFiles[index].name}
+                          requiredName={requiredFiles[index].name}
+                          selectedName={file.name}
+                          approved={false}
+                          onRemove={() => onRemove(getId(files, file.name))}
+                        />
                       );
-                    });
+                      availableIndexes.shift();
+                    }
+                    return outputRows;
                   };
                   return (
                     <>
@@ -328,8 +290,7 @@ const Create: NextPage<Props> = ({ car }) => {
                           Approved
                         </GridItem>
                         <GridItem rowSpan={1} colSpan={1}></GridItem>
-                        {dynamicRows()}
-                        {fixedRows()}
+                        {tableRows()}
                       </Grid>
                     </>
                   );
@@ -522,4 +483,54 @@ export const getStaticProps: GetStaticProps = async () => {
       car
     }
   };
+};
+
+interface TableRowProps {
+  requiredName: string;
+  selectedName?: string;
+  approved?: boolean;
+  onRemove?: () => void;
+}
+const TableRow: React.FC<TableRowProps> = ({
+  requiredName,
+  selectedName = '-',
+  approved,
+  onRemove
+}) => {
+  const isApproved = (bool?: boolean) => {
+    if (bool) return <CheckIcon w={3} h={3} color="green" />;
+    return <CloseIcon w={3} h={2} color="red" />;
+  };
+  return (
+    <GridItem colSpan={12} rowSpan={1}>
+      <Grid
+        templateColumns="repeat(12, 1fr)"
+        templateRows="repeat(1,minmax(2rem, 2rem))"
+      >
+        <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
+          {requiredName}
+        </GridItem>
+        <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
+          {selectedName}
+        </GridItem>
+        <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
+          {isApproved(approved)}
+        </GridItem>
+        <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
+          {selectedName !== '-' && (
+            <Button
+              h={4}
+              variant="ghost"
+              lineHeight={1}
+              fontSize={'xs'}
+              colorScheme="red"
+              onClick={onRemove}
+            >
+              Remove
+            </Button>
+          )}
+        </GridItem>
+      </Grid>
+    </GridItem>
+  );
 };
