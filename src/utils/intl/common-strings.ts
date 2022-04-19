@@ -64,10 +64,23 @@ const status = {
   error: {
     id: 'utils.intl.commonStrings.error',
     defaultMessage: 'Something went wrong!'
+  },
+  approved: {
+    id: 'utils.intl.commonStrings.approved',
+    defaultMessage: 'Approved'
   }
 };
 
-const upload = {};
+const upload = {
+  requiredFiles: {
+    id: 'utils.intl.commonStrings.requiredFiles',
+    defaultMessage: 'Required Files'
+  },
+  currentlySelected: {
+    id: 'utils.intl.commonStrings.currentlySelected',
+    defaultMessage: 'Currently Selected'
+  }
+};
 
 export const commonStrings = defineMessages({
   ...actions,

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { GetStaticProps, NextPage } from 'next';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import {
   Box,
   Button,
@@ -13,83 +13,36 @@ import {
   Heading,
   Text
 } from '@chakra-ui/react';
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { useDispatch } from 'react-redux';
 
 import { MainLayout } from '../../components/layout';
-import { Breadcrumbs, ImageWithFallback, Tag } from '../../components/core';
+import { Breadcrumbs } from '../../components/core';
+import { Form } from '../../components/shared';
 import {
-  Checkbox,
-  Form,
-  Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
-  SelectFiles,
-  SubmitButton,
-  Tags,
-  Textarea
-} from '../../components/shared';
-import {
-  validatorOptions,
-  liveryFilenames
-} from '../../components/shared/Form/utils';
+  breadcrumbOptions,
+  LiveryDescription,
+  LiveryGarageKey,
+  LiveryPrice,
+  LiveryPrivate,
+  LiveryPublic,
+  LiverySearchTags,
+  LiverySelectCar,
+  LiverySelectFiles,
+  LiverySelectGarage,
+  LiverySelectImages,
+  LiverySubmit,
+  LiveryTitle
+} from '../../components/features/create-livery';
 
 import store from '../../store/store';
 import { CarState, fetchCars, rehydrateCarSlice } from '../../store/car/slice';
-import { commonStrings, liveryStrings, formStrings } from '../../utils/intl';
-import { LIVERIES_URL, LIVERY_UPLOAD_URL } from '../../utils/nav';
-
-const breadcrumbOptions = [
-  {
-    name: <FormattedMessage {...commonStrings.paintshop} />,
-    href: LIVERIES_URL
-  },
-  {
-    name: <FormattedMessage {...liveryStrings.uploadALivery} />,
-    href: undefined
-  }
-];
-
-const stateKeys = {
-  TITLE: 'title',
-  CAR: 'car',
-  DESCRIPTION: 'description',
-  LIVERY_FILES: 'liveryFiles',
-  PUBLIC_LIVERY: 'publicLivery',
-  PRIVATE_GARAGE: 'privateGarage',
-  GARAGE: 'garage',
-  GARAGE_KEY: 'garageKey',
-  PRICE: 'price',
-  SEARCH_TAGS: 'searchTags',
-  IMAGE_FILES: 'imageFiles'
-} as const;
-
-const validators = {
-  title: [validatorOptions.NON_NULL_STRING],
-  car: [validatorOptions.NON_NULL_STRING],
-  description: undefined,
-  liveryFiles: [
-    validatorOptions.NON_NULL_LIVERY_FILES,
-    validatorOptions.DYNAMIC_LIVERY_FILE_NAME
-  ],
-  publicLivery: undefined,
-  privateGarage: undefined,
-  garage: undefined,
-  garageKey: undefined,
-  price: undefined,
-  searchTags: undefined,
-  imageFiles: undefined
-};
+import { commonStrings, liveryStrings } from '../../utils/intl';
+import { LIVERY_UPLOAD_URL } from '../../utils/nav';
 
 interface Props {
   car: CarState;
 }
 const Create: NextPage<Props> = ({ car }) => {
-  const intl = useIntl();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -123,337 +76,39 @@ const Create: NextPage<Props> = ({ car }) => {
             my={8}
           >
             <GridItem rowSpan={1} colSpan={12}>
-              <Input
-                isRequired
-                validators={validators.title}
-                stateKey={stateKeys.TITLE}
-                label={<FormattedMessage {...formStrings.title} />}
-                placeholder={intl.formatMessage({
-                  ...formStrings.titlePlaceholder
-                })}
-                w="sm"
-              />
+              <LiveryTitle />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
-              <Select
-                isRequired
-                validators={validators.car}
-                stateKey={stateKeys.CAR}
-                label={<FormattedMessage {...formStrings.car} />}
-                placeholder={intl.formatMessage({
-                  ...formStrings.carPlaceholder
-                })}
-                w="sm"
-              >
-                {car.ids.map((id) => {
-                  const targetCar = car.cars[id];
-                  return (
-                    <option key={id + targetCar.name} value={targetCar.name}>
-                      {targetCar.name}
-                    </option>
-                  );
-                })}
-              </Select>
+              <LiverySelectCar ids={car.ids} cars={car.cars} />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
-              <Textarea
-                validators={validators.description}
-                stateKey={stateKeys.DESCRIPTION}
-                label={<FormattedMessage {...formStrings.description} />}
-                w="3xl"
-                placeholder={intl.formatMessage({
-                  ...liveryStrings.descriptionPlaceholder
-                })}
-                size="md"
-                resize="none"
-              />
+              <LiveryDescription />
             </GridItem>
-
             <GridItem rowSpan={1} colSpan={12} my={5}>
-              <SelectFiles<typeof stateKeys.LIVERY_FILES>
-                max={5}
-                validators={validators.liveryFiles}
-                stateKey={stateKeys.LIVERY_FILES}
-                label={<FormattedMessage {...formStrings.selectLiveryFiles} />}
-                accept=".json,.dds,.png"
-                helperText={
-                  <FormattedMessage
-                    {...formStrings.selectLiveryFilesHelperText}
-                  />
-                }
-              >
-                {(state, onRemove) => {
-                  if (!state) return null;
-                  const { [stateKeys.LIVERY_FILES]: files } = { ...state };
-                  const stateFiles = [...files];
-
-                  const getId = (files: File[], name: string) =>
-                    files.findIndex((f) => f.name === name);
-
-                  const tableRows = () => {
-                    const requiredFiles = [
-                      {
-                        name: '[your-livery-name].json',
-                        regex: /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g,
-                        file: undefined,
-                        index: 0
-                      },
-                      ...liveryFilenames.map((name, index) => ({
-                        name,
-                        regex: new RegExp(`^${name}$`, 'g'),
-                        file: undefined,
-                        index: index + 1
-                      }))
-                    ];
-
-                    const availableIndexes = requiredFiles.map((_, i) => i);
-                    const outputRows = Array.from(Array(5));
-
-                    for (const { name, regex, index } of requiredFiles) {
-                      const targetFile = stateFiles.find((f, i) => {
-                        if (f.name.match(regex)) {
-                          stateFiles.splice(i, 1);
-                          return true;
-                        }
-                      });
-
-                      if (targetFile) {
-                        const approved = !!targetFile.name;
-                        outputRows[index] = (
-                          <TableRow
-                            key={name}
-                            requiredName={name}
-                            selectedName={targetFile.name}
-                            approved={approved}
-                            onRemove={() =>
-                              onRemove(getId(files, targetFile.name))
-                            }
-                          />
-                        );
-                        const indexToRemove = availableIndexes.findIndex(
-                          (i) => i === index
-                        );
-                        availableIndexes.splice(indexToRemove, 1);
-                      } else {
-                        outputRows[index] = (
-                          <TableRow key={name} requiredName={name} />
-                        );
-                      }
-                    }
-                    for (const file of stateFiles) {
-                      const index = availableIndexes[0];
-                      outputRows[index] = (
-                        <TableRow
-                          key={requiredFiles[index].name}
-                          requiredName={requiredFiles[index].name}
-                          selectedName={file.name}
-                          approved={false}
-                          onRemove={() => onRemove(getId(files, file.name))}
-                        />
-                      );
-                      availableIndexes.shift();
-                    }
-                    return outputRows;
-                  };
-                  return (
-                    <>
-                      <Grid
-                        templateColumns="repeat(12, 1fr)"
-                        templateRows="repeat(6,minmax(2rem, 2rem))"
-                        gap={1}
-                        w="5xl"
-                        my={3}
-                        pl={3}
-                      >
-                        <GridItem
-                          fontWeight={'bold'}
-                          color="gray.800"
-                          rowSpan={1}
-                          colSpan={4}
-                        >
-                          Required Files
-                        </GridItem>
-                        <GridItem
-                          fontWeight={'bold'}
-                          color="gray.800"
-                          rowSpan={1}
-                          colSpan={6}
-                        >
-                          Currently Selected
-                        </GridItem>
-                        <GridItem
-                          fontWeight={'bold'}
-                          color="gray.800"
-                          rowSpan={1}
-                          colSpan={1}
-                        >
-                          Approved
-                        </GridItem>
-                        <GridItem rowSpan={1} colSpan={1}></GridItem>
-                        {tableRows()}
-                      </Grid>
-                    </>
-                  );
-                }}
-              </SelectFiles>
+              <LiverySelectFiles />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
-              <Checkbox
-                validators={validators.publicLivery}
-                stateKey={stateKeys.PUBLIC_LIVERY}
-                defaultIsChecked
-                colorScheme="red"
-                my={1}
-              >
-                {<FormattedMessage {...formStrings.makeThisLiveryPublic} />}
-              </Checkbox>
-              <Checkbox
-                validators={validators.privateGarage}
-                stateKey={stateKeys.PRIVATE_GARAGE}
-                colorScheme="red"
-                my={1}
-              >
-                {
-                  <FormattedMessage
-                    {...formStrings.addThisLiveryToAPrivateGarage}
-                  />
-                }
-              </Checkbox>
+              <LiveryPublic />
+              <LiveryPrivate />
             </GridItem>
             <GridItem rowSpan={1} colSpan={3}>
-              <Select
-                validators={validators.garage}
-                stateKey={stateKeys.GARAGE}
-                label={<FormattedMessage {...formStrings.garage} />}
-                size={'md'}
-                placeholder={intl.formatMessage({
-                  ...formStrings.garagePlaceholder
-                })}
-              >
-                <option value="option1">Option 1</option>
-              </Select>
+              <LiverySelectGarage />
             </GridItem>
             <GridItem rowSpan={1} colSpan={4}>
-              <Input
-                validators={validators.garageKey}
-                stateKey={stateKeys.GARAGE_KEY}
-                label={<FormattedMessage {...formStrings.garageKey} />}
-                placeholder={intl.formatMessage({
-                  ...formStrings.garageKey
-                })}
-              />
-            </GridItem>
-
-            <GridItem rowSpan={1} colSpan={12}>
-              <NumberInput
-                validators={validators.price}
-                stateKey={stateKeys.PRICE}
-                label={<FormattedMessage {...formStrings.price} />}
-                precision={2}
-                defaultValue={intl.formatMessage({
-                  ...formStrings.pricePlaceholder
-                })}
-                w={48}
-                step={0.01}
-                min={0}
-              >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+              <LiveryGarageKey />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12}>
-              <Tags<typeof stateKeys.SEARCH_TAGS>
-                validators={validators.searchTags}
-                stateKey={stateKeys.SEARCH_TAGS}
-                label={<FormattedMessage {...formStrings.searchTags} />}
-                placeholder={intl.formatMessage({
-                  ...formStrings.searchTagsPlaceholder
-                })}
-                w={48}
-              >
-                {(state) => {
-                  if (!state) return null;
-                  const { [stateKeys.SEARCH_TAGS]: tags } = state;
-                  const tagsArray = tags.split(',').filter((e) => e.trim());
-                  return (
-                    <Flex mt={2}>
-                      {tagsArray.map((tag, i) => {
-                        return <Tag key={tag + i} tag={tag} />;
-                      })}
-                    </Flex>
-                  );
-                }}
-              </Tags>
+              <LiveryPrice />
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={12}>
+              <LiverySearchTags />
             </GridItem>
             <GridItem rowSpan={1} colSpan={12} mt={5} mb={3}>
-              <SelectFiles<typeof stateKeys.IMAGE_FILES>
-                validators={validators.imageFiles}
-                stateKey={stateKeys.IMAGE_FILES}
-                label={<FormattedMessage {...commonStrings.selectImages} />}
-                max={4}
-                accept="image/*"
-                helperText={
-                  <FormattedMessage {...formStrings.selectImageHelperText} />
-                }
-              >
-                {(state, onRemove) => {
-                  if (!state) return null;
-                  const { [stateKeys.IMAGE_FILES]: images } = { ...state };
-                  return (
-                    <Grid
-                      templateColumns="repeat(4, 1fr)"
-                      templateRows="repeat(1, minmax(8rem, auto))"
-                      gap={3}
-                      pt={3}
-                      w="3xl"
-                    >
-                      {images.map((image, i) => (
-                        <GridItem
-                          key={i}
-                          colSpan={1}
-                          rowSpan={1}
-                          display="flex"
-                          flexDir="column"
-                          borderRadius={4}
-                          overflow="hidden"
-                          position="relative"
-                          border="1px solid"
-                          borderColor="gray.200"
-                        >
-                          <ImageWithFallback
-                            h="full"
-                            w="full"
-                            imgUrl={URL.createObjectURL(image)}
-                          />
-                          <Button
-                            size="sm"
-                            borderRadius={0}
-                            onClick={() => onRemove(i)}
-                            colorScheme="blackAlpha"
-                            fontWeight="normal"
-                          >
-                            {<FormattedMessage {...commonStrings.remove} />}
-                          </Button>
-                        </GridItem>
-                      ))}
-                    </Grid>
-                  );
-                }}
-              </SelectFiles>
+              <LiverySelectImages />
               <Divider mt={3} />
             </GridItem>
             <GridItem rowSpan={1} colSpan={3}>
-              <SubmitButton
-                onClick={() => null}
-                colorScheme="red"
-                w="2xs"
-                lineHeight={1}
-              >
-                {<FormattedMessage {...liveryStrings.uploadLivery} />}
-              </SubmitButton>
+              <LiverySubmit />
             </GridItem>
             <GridItem rowSpan={1} colSpan={3}>
               <Button
@@ -483,54 +138,4 @@ export const getStaticProps: GetStaticProps = async () => {
       car
     }
   };
-};
-
-interface TableRowProps {
-  requiredName: string;
-  selectedName?: string;
-  approved?: boolean;
-  onRemove?: () => void;
-}
-const TableRow: React.FC<TableRowProps> = ({
-  requiredName,
-  selectedName = '-',
-  approved,
-  onRemove
-}) => {
-  const isApproved = (bool?: boolean) => {
-    if (bool) return <CheckIcon w={3} h={3} color="green" />;
-    return <CloseIcon w={3} h={2} color="red" />;
-  };
-  return (
-    <GridItem colSpan={12} rowSpan={1}>
-      <Grid
-        templateColumns="repeat(12, 1fr)"
-        templateRows="repeat(1,minmax(2rem, 2rem))"
-      >
-        <GridItem fontSize={'sm'} rowSpan={1} colSpan={4}>
-          {requiredName}
-        </GridItem>
-        <GridItem fontSize={'sm'} rowSpan={1} colSpan={6}>
-          {selectedName}
-        </GridItem>
-        <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
-          {isApproved(approved)}
-        </GridItem>
-        <GridItem fontSize={'sm'} rowSpan={1} colSpan={1}>
-          {selectedName !== '-' && (
-            <Button
-              h={4}
-              variant="ghost"
-              lineHeight={1}
-              fontSize={'xs'}
-              colorScheme="red"
-              onClick={onRemove}
-            >
-              Remove
-            </Button>
-          )}
-        </GridItem>
-      </Grid>
-    </GridItem>
-  );
 };

@@ -4,7 +4,8 @@ import { formStrings } from '../../../../utils/intl';
 // liveryname.json
 // /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g
 
-export const liveryFilenames = [
+export const DYNAMIC_LIVERY_FILE_NAME = '[your-livery-name].json';
+export const LIVERY_FILE_NAMES = [
   'sponsors.json',
   'sponsors.png',
   'decals.json',
@@ -13,8 +14,8 @@ export const liveryFilenames = [
 
 export const findDynamicLiveryFile = (files: File[]) =>
   files.find((f) => {
-    const name = f.name as typeof liveryFilenames[number];
-    return !liveryFilenames.includes(name);
+    const name = f.name as typeof LIVERY_FILE_NAMES[number];
+    return !LIVERY_FILE_NAMES.includes(name);
   });
 export const validatedDynamicLiveryFilename = (string: string) =>
   string.match(/^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g);
@@ -38,7 +39,7 @@ const validatorFunctions = {
     // value will be initialised as empty array after first render, undefined should not trigger validation
     if (value === undefined) return true;
 
-    const missingFiles = liveryFilenames.reduce((prev, filename) => {
+    const missingFiles = LIVERY_FILE_NAMES.reduce((prev, filename) => {
       const output = [...prev];
       if (!value.find((file: any) => file.name === filename))
         output.push(filename);
@@ -46,7 +47,7 @@ const validatorFunctions = {
     }, [] as string[]);
 
     if (!findDynamicLiveryFile(value))
-      missingFiles.unshift('[your-livery-name].json');
+      missingFiles.unshift(DYNAMIC_LIVERY_FILE_NAME);
 
     if (!missingFiles.length) return true;
     return {
