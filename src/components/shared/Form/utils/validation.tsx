@@ -1,9 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import { formStrings } from '../../../../utils/intl';
 
-// liveryname.json
-// /^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g
-
 export const DYNAMIC_LIVERY_FILE_NAME = '[your-livery-name].json';
 export const LIVERY_FILE_NAMES = [
   'sponsors.json',
@@ -12,11 +9,22 @@ export const LIVERY_FILE_NAMES = [
   'decals.png'
 ] as const;
 
+/**
+ * Used to find the 5th file required for livery upload, which does not have a fixed name, in a list of Files.
+ * @param files - Array of Files
+ * @returns File | undefined
+ */
 export const findDynamicLiveryFile = (files: File[]) =>
   files.find((f) => {
     const name = f.name as typeof LIVERY_FILE_NAMES[number];
     return !LIVERY_FILE_NAMES.includes(name);
   });
+
+/**
+ * Validates that the provided string only contains - _ space and number and letters. Must also end with .json.
+ * @param string - String to validate
+ * @returns RegExpMatchArray | null
+ */
 export const validatedDynamicLiveryFilename = (string: string) =>
   string.match(/^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g);
 
@@ -28,6 +36,9 @@ export type IsFieldValidReturnType = {
 };
 
 const validatorFunctions = {
+  /**
+   * value must be string and longer than 0
+   */
   NON_NULL_STRING: (value: any) => {
     if (typeof value === 'string' && value.length > 0) return true;
     return {
@@ -35,6 +46,9 @@ const validatorFunctions = {
       priority: 0
     };
   },
+  /**
+   * All 4 fixed file name required files must be present, and one other .json file
+   */
   NON_NULL_LIVERY_FILES: (value: any) => {
     // value will be initialised as empty array after first render, undefined should not trigger validation
     if (value === undefined) return true;
@@ -60,6 +74,9 @@ const validatorFunctions = {
       priority: 0
     };
   },
+  /**
+   * dynamic named .json file must exist, and be alpha-numeric with - _ and space as the only other characters
+   */
   DYNAMIC_LIVERY_FILE_NAME: (value: any) => {
     // value will be initialised as empty array after first render, undefined should not trigger validation
     if (value === undefined) return true;
@@ -78,10 +95,22 @@ export const validatorOptions = Object.fromEntries(
   Object.keys(validatorFunctions).map((key) => [key, key])
 ) as Record<ValidationOptionsType, ValidationOptionsType>;
 
+/**
+ * Runs the validator function for the provided validator against the provided value.
+ * @param value - any
+ * @param validator - Key of validatorFunctions
+ * @returns true if valid | object with an error message, and a number indicating the priority of the error. Lower is higher priority
+ */
 const validate = (value: any, validator: ValidationOptionsType) => {
   return validatorFunctions[validator](value);
 };
 
+/**
+ *
+ * @param value - any
+ * @param validators - array of validators (key of validatorFunctions)
+ * @returns Object { valid: boolean, message: string, priority: number }. This output, where valid === false, will contain the message and priority of the highest priority failed validator.
+ */
 export const isFieldValid = (
   value: any,
   validators: ValidationOptionsType[] | undefined
