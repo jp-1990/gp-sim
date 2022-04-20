@@ -1,16 +1,16 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { SelectFiles } from '../../../shared';
-import { commonStrings, formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { SelectFiles } from '../../../../../shared';
+import { commonStrings, formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 import { Button, Grid, GridItem } from '@chakra-ui/react';
-import { ImageWithFallback } from '../../../core';
+import { ImageWithFallback } from '../../../../../core';
 
 /**
  * Select images input for liveries/create page. Uses SelectFiles inside a form provider and displays the selected images to the user.
  */
-const LiverySelectImages = () => {
+const SelectLiveryImages = () => {
   return (
     <SelectFiles<typeof stateKeys.IMAGE_FILES>
       validators={validators.imageFiles}
@@ -67,4 +67,4 @@ const LiverySelectImages = () => {
   );
 };
 
-export default LiverySelectImages;
+export default SelectLiveryImages;

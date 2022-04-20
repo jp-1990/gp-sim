@@ -1,15 +1,15 @@
 import React from 'react';
-import { Button, Flex, Grid, GridItem } from '@chakra-ui/react';
+import { Button, Grid, GridItem } from '@chakra-ui/react';
 import { FormattedMessage } from 'react-intl';
 
-import { SelectFiles } from '../../../shared';
-import { commonStrings, formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { SelectFiles } from '../../../../../shared';
+import { commonStrings, formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   DYNAMIC_LIVERY_FILE_NAME,
   LIVERY_FILE_NAMES
-} from '../../../shared/Form/utils';
+} from '../../../../../shared/Form/utils';
 
 interface TableRowProps {
   requiredName: string;
@@ -82,7 +82,7 @@ const TableRow: React.FC<TableRowProps> = ({
 /**
  * Livery files input for liveries/create page. Uses SelectFiles inside a form provider and renders a table-like Grid to display the currently selected files, and if these meet the requirements to upload the livery.
  */
-const LiverySelectFiles = () => {
+const SelectLiveryFiles = () => {
   return (
     <SelectFiles<typeof stateKeys.LIVERY_FILES>
       max={5}
@@ -207,4 +207,4 @@ const LiverySelectFiles = () => {
   );
 };
 
-export default LiverySelectFiles;
+export default SelectLiveryFiles;

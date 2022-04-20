@@ -1,14 +1,14 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Input } from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { Input } from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 
 /**
  * Title input for liveries/create page. Uses Input inside a form provider
  */
-const LiveryTitle = () => {
+const Title = () => {
   const intl = useIntl();
   return (
     <Input
@@ -24,4 +24,4 @@ const LiveryTitle = () => {
   );
 };
 
-export default LiveryTitle;
+export default Title;

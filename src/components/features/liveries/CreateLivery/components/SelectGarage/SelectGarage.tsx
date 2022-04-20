@@ -1,14 +1,14 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Select, useForm } from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { Select, useForm } from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 
 /**
  * Select garage input for liveries/create page. Uses Select inside a form provider
  */
-const LiverySelectGarage = () => {
+const SelectGarage = () => {
   const intl = useIntl();
   const { state } = useForm();
 
@@ -28,4 +28,4 @@ const LiverySelectGarage = () => {
   );
 };
 
-export default LiverySelectGarage;
+export default SelectGarage;

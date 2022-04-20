@@ -1,14 +1,14 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Checkbox } from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { Checkbox } from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 
 /**
  * Private livery checkbox for liveries/create page. Uses Checkbox inside a form provider
  */
-const LiveryPrivate = () => {
+const PrivateLivery = () => {
   return (
     <Checkbox
       validators={validators.privateGarage}
@@ -21,4 +21,4 @@ const LiveryPrivate = () => {
   );
 };
 
-export default LiveryPrivate;
+export default PrivateLivery;

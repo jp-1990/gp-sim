@@ -7,14 +7,14 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper
-} from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+} from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 
 /**
  * Price input for liveries/create page. Uses NumberInput inside a form provider
  */
-const LiveryPrice = () => {
+const Price = () => {
   const intl = useIntl();
   return (
     <NumberInput
@@ -38,4 +38,4 @@ const LiveryPrice = () => {
   );
 };
 
-export default LiveryPrice;
+export default Price;

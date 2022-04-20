@@ -1,7 +1,7 @@
 import { FormattedMessage } from 'react-intl';
-import { commonStrings, liveryStrings } from '../../../utils/intl';
-import { LIVERIES_URL } from '../../../utils/nav';
-import { validatorOptions } from '../../shared/Form/utils';
+import { commonStrings, liveryStrings } from '../../../../utils/intl';
+import { LIVERIES_URL } from '../../../../utils/nav';
+import { validatorOptions } from '../../../shared/Form/utils';
 
 export const breadcrumbOptions = [
   {

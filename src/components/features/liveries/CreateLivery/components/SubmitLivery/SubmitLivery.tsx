@@ -1,18 +1,18 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { SubmitButton, useForm } from '../../../shared';
-import { liveryStrings } from '../../../../utils/intl';
-import { CreateLiveryDataType } from '../../../../types';
-import { useDispatch } from 'react-redux';
-import { createLivery } from '../../../../store/livery/slice';
+import { SubmitButton, useForm } from '../../../../../shared';
+import { liveryStrings } from '../../../../../../utils/intl';
+import { CreateLiveryDataType } from '../../../../../../types';
+import { createLivery } from '../../../../../../store/livery/slice';
+import { useAppDispatch } from '../../../../../../store/store';
 
 /**
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to dispatch an action to submit the state of the form.
  */
-const LiverySubmit = () => {
+const SubmitLivery = () => {
   const { state, setState } = useForm();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onClick = async () => {
     const createLiveryInput: CreateLiveryDataType = {
@@ -62,4 +62,4 @@ const LiverySubmit = () => {
   );
 };
 
-export default LiverySubmit;
+export default SubmitLivery;

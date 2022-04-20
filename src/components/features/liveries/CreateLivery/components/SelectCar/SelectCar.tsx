@@ -1,10 +1,10 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Select } from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
-import { CarDataType } from '../../../../types';
+import { Select } from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
+import { CarDataType } from '../../../../../../types';
 
 interface Props {
   ids: string[];
@@ -15,7 +15,7 @@ interface Props {
  * @param {Props['cars']} Props.cars - { id: CarData }[ ].
  * @param {Props['ids']} Props.ids - string[ ]. Car ids
  */
-const LiverySelectCar: React.FC<Props> = ({ ids, cars }) => {
+const SelectCar: React.FC<Props> = ({ ids, cars }) => {
   const intl = useIntl();
   return (
     <Select
@@ -40,4 +40,4 @@ const LiverySelectCar: React.FC<Props> = ({ ids, cars }) => {
   );
 };
 
-export default LiverySelectCar;
+export default SelectCar;

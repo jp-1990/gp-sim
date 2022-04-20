@@ -2,14 +2,14 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Checkbox, useForm } from '../../../shared';
-import { formStrings } from '../../../../utils/intl';
-import { stateKeys, validators } from '../config';
+import { Checkbox, useForm } from '../../../../../shared';
+import { formStrings } from '../../../../../../utils/intl';
+import { stateKeys, validators } from '../../config';
 
 /**
  * Public checkbox for liveries/create page. Uses Checkbox inside a form provider
  */
-const LiveryPublic = () => {
+const PublicLivery = () => {
   const { setState } = useForm();
 
   useEffect(() => {
@@ -32,4 +32,4 @@ const LiveryPublic = () => {
   );
 };
 
-export default LiveryPublic;
+export default PublicLivery;
