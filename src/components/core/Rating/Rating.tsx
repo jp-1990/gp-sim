@@ -9,7 +9,7 @@ export const FILLED_STAR = `${STAR_ICON}-${FILLED}`;
 export const DEFAULT_STAR = `${STAR_ICON}-${DEFAULT}`;
 
 interface Props {
-  rating: number;
+  rating?: number;
   color?: string;
   alignItems?: 'flex-end' | 'flex-start';
 }
@@ -34,18 +34,22 @@ const Rating: React.FC<Props> = ({
       justifyContent="flex-start"
       h="full"
     >
-      <Box display="flex" alignItems="center">
-        {Array(5)
-          .fill('')
-          .map((_, i) => (
-            <StarIcon
-              data-testid={`${STAR_ICON}-${i > 4 - rating ? FILLED : DEFAULT}`}
-              key={i}
-              mx={0.5}
-              color={i > 4 - rating ? color : 'gray.200'}
-            />
-          ))}
-      </Box>
+      {rating !== undefined && (
+        <Box display="flex" alignItems="center">
+          {Array(5)
+            .fill('')
+            .map((_, i) => (
+              <StarIcon
+                data-testid={`${STAR_ICON}-${
+                  i > 4 - rating ? FILLED : DEFAULT
+                }`}
+                key={i}
+                mx={0.5}
+                color={i > 4 - rating ? color : 'gray.200'}
+              />
+            ))}
+        </Box>
+      )}
     </Flex>
   );
 };
