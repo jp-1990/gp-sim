@@ -10,6 +10,11 @@ interface Props {
   ids: string[];
   cars: Record<string, CarDataType>;
 }
+/**
+ * Select car input for liveries/create page. Uses Select inside a form provider
+ * @param {Props['cars']} Props.cars - { id: CarData }[ ].
+ * @param {Props['ids']} Props.ids - string[ ]. Car ids
+ */
 const LiverySelectCar: React.FC<Props> = ({ ids, cars }) => {
   const intl = useIntl();
   return (

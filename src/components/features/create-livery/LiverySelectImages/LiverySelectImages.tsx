@@ -7,6 +7,9 @@ import { stateKeys, validators } from '../config';
 import { Button, Grid, GridItem } from '@chakra-ui/react';
 import { ImageWithFallback } from '../../../core';
 
+/**
+ * Select images input for liveries/create page. Uses SelectFiles inside a form provider and displays the selected images to the user.
+ */
 const LiverySelectImages = () => {
   return (
     <SelectFiles<typeof stateKeys.IMAGE_FILES>

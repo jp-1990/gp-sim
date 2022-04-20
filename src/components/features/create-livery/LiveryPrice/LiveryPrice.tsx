@@ -11,6 +11,9 @@ import {
 import { formStrings } from '../../../../utils/intl';
 import { stateKeys, validators } from '../config';
 
+/**
+ * Price input for liveries/create page. Uses NumberInput inside a form provider
+ */
 const LiveryPrice = () => {
   const intl = useIntl();
   return (

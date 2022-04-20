@@ -5,6 +5,9 @@ import { Input } from '../../../shared';
 import { formStrings } from '../../../../utils/intl';
 import { stateKeys, validators } from '../config';
 
+/**
+ * Title input for liveries/create page. Uses Input inside a form provider
+ */
 const LiveryTitle = () => {
   const intl = useIntl();
   return (

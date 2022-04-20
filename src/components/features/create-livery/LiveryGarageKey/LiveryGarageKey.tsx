@@ -5,6 +5,9 @@ import { Input, useForm } from '../../../shared';
 import { formStrings } from '../../../../utils/intl';
 import { stateKeys, validators } from '../config';
 
+/**
+ * GarageKey input for liveries/create page. Uses Input inside a form provider
+ */
 const LiveryGarageKey = () => {
   const intl = useIntl();
   const { state } = useForm();

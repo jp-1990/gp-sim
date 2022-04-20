@@ -17,6 +17,9 @@ interface TableRowProps {
   approved?: boolean;
   onRemove?: () => void;
 }
+/**
+ * A row to render in the selected files Grid
+ */
 const TableRow: React.FC<TableRowProps> = ({
   requiredName,
   selectedName = '-',
@@ -76,6 +79,9 @@ const TableRow: React.FC<TableRowProps> = ({
   );
 };
 
+/**
+ * Livery files input for liveries/create page. Uses SelectFiles inside a form provider and renders a table-like Grid to display the currently selected files, and if these meet the requirements to upload the livery.
+ */
 const LiverySelectFiles = () => {
   return (
     <SelectFiles<typeof stateKeys.LIVERY_FILES>

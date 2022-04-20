@@ -5,6 +5,9 @@ import { Textarea } from '../../../shared';
 import { formStrings, liveryStrings } from '../../../../utils/intl';
 import { stateKeys, validators } from '../config';
 
+/**
+ * Description input for liveries/create page. Uses Textarea inside a form provider
+ */
 const LiveryDescription = () => {
   const intl = useIntl();
 

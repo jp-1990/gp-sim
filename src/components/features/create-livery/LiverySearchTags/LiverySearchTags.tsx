@@ -7,6 +7,9 @@ import { stateKeys, validators } from '../config';
 import { Flex } from '@chakra-ui/react';
 import { Tag } from '../../../core';
 
+/**
+ * Search tags input for liveries/create page. Uses Tags inside a form provider and renders the user entered tags underneath the input field
+ */
 const LiverySearchTags = () => {
   const intl = useIntl();
   return (

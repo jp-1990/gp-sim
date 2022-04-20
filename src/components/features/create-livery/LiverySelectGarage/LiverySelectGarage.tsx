@@ -5,6 +5,9 @@ import { Select, useForm } from '../../../shared';
 import { formStrings } from '../../../../utils/intl';
 import { stateKeys, validators } from '../config';
 
+/**
+ * Select garage input for liveries/create page. Uses Select inside a form provider
+ */
 const LiverySelectGarage = () => {
   const intl = useIntl();
   const { state } = useForm();
