@@ -1,13 +1,21 @@
 export interface LiveryDataType {
   id: string;
-  rating: number;
+  title: string;
+  car: string;
+  description: string;
+  rating: number | undefined;
   downloads: number;
   imgUrls: string[];
   price: string;
   author: string;
-  title: string;
-  car: string;
   tags: string[];
-  description: string;
 }
 export type LiveriesDataType = LiveryDataType[];
+
+export interface CreateLiveryDataType extends LiveryDataType {
+  files: File[];
+  publicLivery: boolean;
+  privateGarage: boolean;
+  garageName: string;
+  garageKey: string;
+}

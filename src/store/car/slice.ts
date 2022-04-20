@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CarDataType } from '../../types';
 import { normalise } from '../../utils/helpers';
 
-import { getCars } from '../../api-calls/cars/get';
+import { getCars } from '../../fetching/cars/get';
 
 export const fetchCars = createAsyncThunk('livery/fetchCars', async () => {
   const cars = await getCars();

@@ -7,7 +7,8 @@ import {
   GetLiveriesArgs,
   getLivery,
   GetLiveryArgs
-} from '../../api-calls/liveries/get';
+} from '../../fetching/liveries/get';
+import { postLivery, PostLiveryArgs } from '../../fetching/liveries/post';
 
 export const fetchLiveries = createAsyncThunk(
   'livery/fetchLiveries',
@@ -21,6 +22,14 @@ export const fetchLivery = createAsyncThunk(
   'livery/fetchLivery',
   async ({ id }: GetLiveryArgs) => {
     const livery = await getLivery({ id });
+    return livery;
+  }
+);
+
+export const createLivery = createAsyncThunk(
+  'livery/createLivery',
+  async (newLivery: PostLiveryArgs) => {
+    const livery = await postLivery(newLivery);
     return livery;
   }
 );
@@ -52,6 +61,11 @@ const liverySlice = createSlice({
     });
     builder.addCase(fetchLivery.fulfilled, (state, action) => {
       const { payload } = action;
+      state.liveries[payload.id] = payload;
+    });
+    builder.addCase(createLivery.fulfilled, (state, action) => {
+      const { payload } = action;
+      state.ids.push(payload.id);
       state.liveries[payload.id] = payload;
     });
   }
