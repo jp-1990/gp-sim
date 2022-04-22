@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Checkbox, useForm } from '../../../../../shared';
 import { formStrings } from '../../../../../../utils/intl';
@@ -10,6 +10,7 @@ import { stateKeys, validators } from '../../config';
  * Public checkbox for liveries/create page. Uses Checkbox inside a form provider
  */
 const PublicLivery = () => {
+  const intl = useIntl();
   const { setState } = useForm();
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const PublicLivery = () => {
     <Checkbox
       validators={validators.publicLivery}
       stateKey={stateKeys.PUBLIC_LIVERY}
+      aria-label={intl.formatMessage(formStrings.makeThisLiveryPublic)}
       colorScheme="red"
       my={1}
     >

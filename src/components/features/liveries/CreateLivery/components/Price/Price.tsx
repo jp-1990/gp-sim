@@ -21,6 +21,7 @@ const Price = () => {
       validators={validators.price}
       stateKey={stateKeys.PRICE}
       label={<FormattedMessage {...formStrings.price} />}
+      aria-label={intl.formatMessage(formStrings.price)}
       precision={2}
       defaultValue={intl.formatMessage({
         ...formStrings.pricePlaceholder

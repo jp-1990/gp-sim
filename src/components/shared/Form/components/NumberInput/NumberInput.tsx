@@ -45,6 +45,7 @@ const NumberInput: ComponentWithAs<
     <ControlWrapper
       htmlFor={fieldId}
       label={label}
+      ariaLabel={chakraProps['aria-label' as keyof typeof chakraProps]}
       isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
@@ -54,7 +55,6 @@ const NumberInput: ComponentWithAs<
         id={fieldId}
         onChange={onChange}
         value={state[stateKey] || chakraProps.defaultValue || ''}
-        aria-labelledby={'field-1-label'}
         focusBorderColor={FOCUS_BORDER_COLOR}
         {...chakraProps}
       />

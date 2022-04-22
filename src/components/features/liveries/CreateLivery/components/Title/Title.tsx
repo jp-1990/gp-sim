@@ -16,6 +16,7 @@ const Title = () => {
       validators={validators.title}
       stateKey={stateKeys.TITLE}
       label={<FormattedMessage {...formStrings.title} />}
+      aria-label={intl.formatMessage(formStrings.title)}
       placeholder={intl.formatMessage({
         ...formStrings.titlePlaceholder
       })}

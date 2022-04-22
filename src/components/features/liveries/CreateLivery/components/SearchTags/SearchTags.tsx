@@ -17,6 +17,7 @@ const SearchTags = () => {
       validators={validators.searchTags}
       stateKey={stateKeys.SEARCH_TAGS}
       label={<FormattedMessage {...formStrings.searchTags} />}
+      aria-label={intl.formatMessage(formStrings.searchTags)}
       placeholder={intl.formatMessage({
         ...formStrings.searchTagsPlaceholder
       })}

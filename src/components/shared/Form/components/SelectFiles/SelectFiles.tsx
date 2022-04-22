@@ -22,6 +22,7 @@ import { commonStrings } from '../../../../../utils/intl';
 
 interface SelectFilesProps<T extends string> extends DefaultInputProps {
   accept?: string;
+  'aria-label'?: string;
   helperText?: React.ReactNode;
   max?: number;
   children?:
@@ -36,6 +37,7 @@ const SelectFiles = <T extends string>({
   accept,
   helperText,
   label = <FormattedMessage {...commonStrings.selectFiles} />,
+  ['aria-label']: ariaLabel,
   max,
   stateKey,
   validators,
@@ -68,6 +70,7 @@ const SelectFiles = <T extends string>({
   return (
     <ControlWrapper
       htmlFor={fieldId}
+      ariaLabel={ariaLabel}
       isValid={isValid.valid}
       errorText={isValid.message}
     >

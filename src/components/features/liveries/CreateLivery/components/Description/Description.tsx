@@ -15,6 +15,7 @@ const Description = () => {
     <Textarea
       validators={validators.description}
       stateKey={stateKeys.DESCRIPTION}
+      aria-label={intl.formatMessage(formStrings.description)}
       label={<FormattedMessage {...formStrings.description} />}
       w="3xl"
       placeholder={intl.formatMessage({

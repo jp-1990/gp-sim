@@ -40,6 +40,7 @@ const Checkbox: ComponentWithAs<
   return (
     <ControlWrapper
       htmlFor={fieldId}
+      ariaLabel={chakraProps['aria-label' as keyof typeof chakraProps]}
       isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}
@@ -49,6 +50,7 @@ const Checkbox: ComponentWithAs<
         id={fieldId}
         onChange={onChange}
         value={state[stateKey]}
+        isChecked={state[stateKey]}
         focusBorderColor={FOCUS_BORDER_COLOR}
         css={`
           > span:first-of-type {

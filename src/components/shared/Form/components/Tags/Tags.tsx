@@ -70,6 +70,7 @@ const Tags = <T extends string>({
       htmlFor={fieldId}
       isValid={isValid.valid}
       label={label}
+      ariaLabel={chakraProps['aria-label']}
       helperText={helperText}
       errorText={isValid.message}
     >

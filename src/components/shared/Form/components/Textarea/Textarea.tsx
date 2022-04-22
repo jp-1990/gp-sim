@@ -41,6 +41,7 @@ const TextArea: ComponentWithAs<
     <ControlWrapper
       htmlFor={fieldId}
       label={label}
+      ariaLabel={chakraProps['aria-label' as keyof typeof chakraProps]}
       isRequired={chakraProps.isRequired}
       isValid={isValid.valid}
       errorText={isValid.message}

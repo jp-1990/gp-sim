@@ -14,6 +14,7 @@ interface ControlWrapperProps {
   helperText?: ReactNode;
   errorText?: ReactNode;
   label?: ReactNode;
+  ariaLabel?: string;
   htmlFor: string;
 }
 
@@ -23,6 +24,7 @@ const ControlWrapper: React.FC<ControlWrapperProps> = ({
   helperText,
   errorText = <FormattedMessage {...formStrings.invalidInput} />,
   label,
+  ariaLabel,
   htmlFor,
   children
 }) => {
@@ -33,12 +35,22 @@ const ControlWrapper: React.FC<ControlWrapperProps> = ({
       </FormLabel>
       {children}
       {!isValid && (
-        <FormErrorMessage px={1} fontSize="sm">
+        <FormErrorMessage
+          role="status"
+          px={1}
+          fontSize="sm"
+          aria-label={`${ariaLabel}-error`}
+        >
           {errorText}
         </FormErrorMessage>
       )}
       {isValid && helperText && (
-        <FormHelperText px={1} fontSize="sm">
+        <FormHelperText
+          role="note"
+          px={1}
+          fontSize="sm"
+          aria-label={`${ariaLabel}-helper`}
+        >
           {helperText}
         </FormHelperText>
       )}

@@ -23,6 +23,7 @@ const SelectCar: React.FC<Props> = ({ ids, cars }) => {
       validators={validators.car}
       stateKey={stateKeys.CAR}
       label={<FormattedMessage {...formStrings.car} />}
+      aria-label={intl.formatMessage(formStrings.carPlaceholder)}
       placeholder={intl.formatMessage({
         ...formStrings.carPlaceholder
       })}

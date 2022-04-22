@@ -18,6 +18,7 @@ const GarageKey = () => {
       validators={validators.garageKey}
       stateKey={stateKeys.GARAGE_KEY}
       label={<FormattedMessage {...formStrings.garageKey} />}
+      aria-label={intl.formatMessage(formStrings.garageKey)}
       placeholder={intl.formatMessage({
         ...formStrings.garageKey
       })}

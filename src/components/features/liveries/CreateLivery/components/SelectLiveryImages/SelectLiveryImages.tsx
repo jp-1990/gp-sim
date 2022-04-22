@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { SelectFiles } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
@@ -11,11 +11,13 @@ import { ImageWithFallback } from '../../../../../core';
  * Select images input for liveries/create page. Uses SelectFiles inside a form provider and displays the selected images to the user.
  */
 const SelectLiveryImages = () => {
+  const intl = useIntl();
   return (
     <SelectFiles<typeof stateKeys.IMAGE_FILES>
       validators={validators.imageFiles}
       stateKey={stateKeys.IMAGE_FILES}
       label={<FormattedMessage {...commonStrings.selectImages} />}
+      aria-label={intl.formatMessage(commonStrings.selectImages)}
       max={4}
       accept="image/*"
       helperText={<FormattedMessage {...formStrings.selectImageHelperText} />}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Grid, GridItem } from '@chakra-ui/react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { SelectFiles } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
@@ -69,6 +69,7 @@ const TableRow: React.FC<TableRowProps> = ({
               fontSize={'xs'}
               colorScheme="red"
               onClick={onRemove}
+              aria-label={`remove-${requiredName}`}
             >
               <FormattedMessage {...commonStrings.remove} />
             </Button>
@@ -83,12 +84,14 @@ const TableRow: React.FC<TableRowProps> = ({
  * Livery files input for liveries/create page. Uses SelectFiles inside a form provider and renders a table-like Grid to display the currently selected files, and if these meet the requirements to upload the livery.
  */
 const SelectLiveryFiles = () => {
+  const intl = useIntl();
   return (
     <SelectFiles<typeof stateKeys.LIVERY_FILES>
       max={5}
       validators={validators.liveryFiles}
       stateKey={stateKeys.LIVERY_FILES}
       label={<FormattedMessage {...formStrings.selectLiveryFiles} />}
+      aria-label={intl.formatMessage(formStrings.selectLiveryFiles)}
       accept=".json,.dds,.png"
       helperText={
         <FormattedMessage {...formStrings.selectLiveryFilesHelperText} />
