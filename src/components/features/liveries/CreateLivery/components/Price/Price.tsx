@@ -29,6 +29,8 @@ const Price = () => {
       w={48}
       step={0.01}
       min={0}
+      allowMouseWheel
+      isValidCharacter={(str) => !!str.match(/^[0-9\.]*$/g)}
     >
       <NumberInputField />
       <NumberInputStepper>
