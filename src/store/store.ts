@@ -4,12 +4,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import liverySlice from './livery/slice';
 import carSlice from './car/slice';
 
-const store = configureStore({
+export const storeConfig = {
   reducer: {
     [liverySlice.name]: liverySlice.reducer,
     [carSlice.name]: carSlice.reducer
   }
-});
+};
+const store = configureStore(storeConfig);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

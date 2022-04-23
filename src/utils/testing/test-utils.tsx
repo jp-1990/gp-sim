@@ -5,12 +5,14 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { UserProvider } from '@auth0/nextjs-auth0';
 import { Provider } from 'react-redux';
 
-import store from '../../store/store';
+import { storeConfig } from '../../store/store';
 import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
-import { AnyAction, Store } from '@reduxjs/toolkit';
+import { configureStore, Store } from '@reduxjs/toolkit';
+import { cars } from '../dev-data/liveries';
+import { CarState } from '../../store/types';
 
 interface Auth0User {
   name?: string;
@@ -43,14 +45,31 @@ jest.mock('@auth0/nextjs-auth0', () => ({
 export const setTestUser = (user: Auth0User | undefined) =>
   (testUser.user = user);
 
+const defaultPreloadedState = {
+  car: cars.reduce(
+    (acc, car, idx) => {
+      return {
+        ids: [...acc.ids, `${idx}`],
+        cars: {
+          ...acc.cars,
+          [`${idx}`]: { id: `${idx}`, name: car, class: 'GT4' }
+        }
+      };
+    },
+    { ids: [], cars: {} } as CarState
+  )
+};
+
 interface Props {
-  locale: string;
-  reduxStore: Store<any, AnyAction>;
+  locale?: string;
+  preloadedState?: Record<string, any>;
+  testStore: Store;
 }
 const TestProviders: React.FC<Props> = ({
-  children,
-  reduxStore = store,
-  locale = 'en'
+  locale = 'en',
+  preloadedState = defaultPreloadedState,
+  testStore = configureStore({ ...storeConfig, preloadedState }),
+  children
 }) => {
   const messages = useMemo(() => {
     switch (locale) {
@@ -64,7 +83,7 @@ const TestProviders: React.FC<Props> = ({
   }, [locale]);
 
   return (
-    <Provider store={reduxStore}>
+    <Provider store={testStore}>
       <UserProvider>
         <ChakraProvider theme={theme}>
           <IntlProvider
@@ -81,8 +100,8 @@ const TestProviders: React.FC<Props> = ({
 };
 
 interface CustomRenderOptions {
-  testProviderProps: Props;
-  testingLibraryOptions: Omit<RenderOptions, 'wrapper'>;
+  testProviderProps?: Props;
+  testingLibraryOptions?: Omit<RenderOptions, 'wrapper'>;
 }
 export const customRender = (
   ui: React.ReactElement,
