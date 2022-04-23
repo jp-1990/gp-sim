@@ -33,6 +33,19 @@ const NumberInput: ComponentWithAs<
   const { state, setState } = useForm();
   const fieldId = `${stateKey}-number-input`;
 
+  const setDefaultValueToState = () => {
+    !state[stateKey] &&
+      setState((prev) => {
+        const prevState = { ...prev };
+        prevState[stateKey] = chakraProps.defaultValue;
+        return prevState;
+      });
+  };
+
+  useEffect(() => {
+    setDefaultValueToState();
+  }, []);
+
   const onChange = numberInputOnChange(setState, stateKey);
   const isValid = isFieldValid(state[stateKey], validators);
 
@@ -54,8 +67,9 @@ const NumberInput: ComponentWithAs<
         test-id={fieldId}
         id={fieldId}
         onChange={onChange}
-        value={state[stateKey] || chakraProps.defaultValue || ''}
+        value={state[stateKey]}
         focusBorderColor={FOCUS_BORDER_COLOR}
+        onBlur={setDefaultValueToState}
         {...chakraProps}
       />
     </ControlWrapper>
