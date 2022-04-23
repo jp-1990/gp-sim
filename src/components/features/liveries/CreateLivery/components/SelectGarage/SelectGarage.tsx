@@ -20,6 +20,7 @@ const SelectGarage = () => {
       label={<FormattedMessage {...formStrings.garage} />}
       aria-label={intl.formatMessage(formStrings.garage)}
       size={'md'}
+      isDisabled={state.garageKey}
       placeholder={intl.formatMessage({
         ...formStrings.garagePlaceholder
       })}

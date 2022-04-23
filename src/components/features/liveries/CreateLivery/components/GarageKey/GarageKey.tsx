@@ -19,6 +19,7 @@ const GarageKey = () => {
       stateKey={stateKeys.GARAGE_KEY}
       label={<FormattedMessage {...formStrings.garageKey} />}
       aria-label={intl.formatMessage(formStrings.garageKey)}
+      isDisabled={state.garage}
       placeholder={intl.formatMessage({
         ...formStrings.garageKey
       })}

@@ -307,6 +307,45 @@ describe('CreateLivery', () => {
     }
   });
 
+  it('shows garage key or garage field as disabled when the other field has a value', async () => {
+    render(<CreateLivery />);
+    const user = userEvent.setup();
+
+    const checkbox: HTMLInputElement = screen.getByRole('checkbox', {
+      name: formStrings.addThisLiveryToAPrivateGarage.defaultMessage
+    });
+    expect(checkbox).toBeInTheDocument();
+    await user.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+
+    for (const key in hiddenFormLabels) {
+      const element = screen.queryByLabelText(hiddenFormLabels[key]);
+      expect(element).toBeInTheDocument();
+      expect(element).not.toBeDisabled();
+    }
+
+    await user.selectOptions(
+      screen.getByLabelText(hiddenFormLabels.garage),
+      'Option 1'
+    );
+    expect(screen.getByLabelText(hiddenFormLabels.garageKey)).toBeDisabled();
+    await user.selectOptions(
+      screen.getByLabelText(hiddenFormLabels.garage),
+      formStrings.garagePlaceholder.defaultMessage
+    );
+    expect(
+      screen.getByLabelText(hiddenFormLabels.garageKey)
+    ).not.toBeDisabled();
+
+    await user.type(
+      screen.getByLabelText(hiddenFormLabels.garageKey),
+      'garage'
+    );
+    expect(screen.getByLabelText(hiddenFormLabels.garage)).toBeDisabled();
+    await user.clear(screen.getByLabelText(hiddenFormLabels.garageKey));
+    expect(screen.getByLabelText(hiddenFormLabels.garage)).not.toBeDisabled();
+  });
+
   it('correctly renders the price input', async () => {
     render(<CreateLivery />);
     const user = userEvent.setup();
@@ -474,7 +513,7 @@ describe('CreateLivery', () => {
     ).toBeDisabled();
   });
 
-  it.only('correctly renders the SubmitButton as enabled when fields are valid', async () => {
+  it('correctly renders the SubmitButton as enabled when fields are valid', async () => {
     render(<CreateLivery />);
     const user = userEvent.setup();
 
