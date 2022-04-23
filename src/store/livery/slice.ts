@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { LiveryDataType } from '../../types';
-import { normalise } from '../../utils/helpers';
+import { normalise } from '../../utils/functions';
 
 import {
   getLiveries,

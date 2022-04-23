@@ -4,7 +4,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import store from '../../store/store';
 import { fetchLiveries, fetchLivery } from '../../store/livery/slice';
 
-import { isString } from '../../utils/helpers';
+import { isString } from '../../utils/functions';
 import {
   Box,
   Button,

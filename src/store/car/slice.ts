@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CarDataType } from '../../types';
-import { normalise } from '../../utils/helpers';
+import { normalise } from '../../utils/functions';
 
 import { getCars } from '../../fetching/cars/get';
 
