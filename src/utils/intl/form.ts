@@ -89,7 +89,7 @@ const invalidField = {
     id: 'utils.intl.form.fieldNull',
     defaultMessage: 'The following files are missing: {files}'
   },
-  dynamicLiveryFileName: {
+  invalidDynamicLiveryFileName: {
     id: 'utils.intl.form.fieldNull',
     defaultMessage:
       '[your-livery-name].json can only contain letters, numbers, -, _ and space. It must be in json format.'

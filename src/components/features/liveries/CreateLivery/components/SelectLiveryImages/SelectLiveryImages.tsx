@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { SelectFiles } from '../../../../../shared';
@@ -19,7 +19,7 @@ const SelectLiveryImages = () => {
       label={<FormattedMessage {...commonStrings.selectImages} />}
       aria-label={intl.formatMessage(commonStrings.selectImages)}
       max={4}
-      accept="image/*"
+      accept="image/png,image/jpeg,image/webp"
       helperText={<FormattedMessage {...formStrings.selectImageHelperText} />}
     >
       {(state, onRemove) => {
@@ -50,6 +50,7 @@ const SelectLiveryImages = () => {
                   h="full"
                   w="full"
                   imgUrl={URL.createObjectURL(image)}
+                  imgAlt={image.name}
                 />
                 <Button
                   size="sm"
@@ -57,6 +58,7 @@ const SelectLiveryImages = () => {
                   onClick={() => onRemove(i)}
                   colorScheme="blackAlpha"
                   fontWeight="normal"
+                  aria-label={`remove-${image.name}`}
                 >
                   {<FormattedMessage {...commonStrings.remove} />}
                 </Button>

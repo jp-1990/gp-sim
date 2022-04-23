@@ -28,7 +28,7 @@ const SearchTags = () => {
         const { [stateKeys.SEARCH_TAGS]: tags } = state;
         const tagsArray = tags.split(',').filter((e) => e.trim());
         return (
-          <Flex mt={2}>
+          <Flex role="list" mt={2}>
             {tagsArray.map((tag, i) => {
               return <Tag key={tag + i} tag={tag} />;
             })}
