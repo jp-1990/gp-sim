@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import _cloneDeep from 'lodash/cloneDeep';
 import { FormValueType, FormStateType } from './types';
 
 const FormContext = React.createContext<FormValueType | null>(null);
@@ -21,7 +22,21 @@ export const initialFormState = {
 const FormProvider: React.FC = ({ children }) => {
   const [state, setState] = useState<FormStateType>(initialFormState);
 
-  const value = { state, setState };
+  /**
+   * A convenience wrapper for setState, which makes a deep copy of existing state using lodash _cloneDeep, which is then passed into the provided callback as state. This allows direct mutations to be made within the callback function, which should then return the state.
+   * @param callback - function which should accept state as an argument, and return state.
+   */
+  const setStateImmutably = (
+    callback: (formState: typeof state) => typeof state
+  ) => {
+    setState((prev) => {
+      const prevState = _cloneDeep(prev);
+      const newState = callback(prevState);
+      return newState;
+    });
+  };
+
+  const value = { state, setState, setStateImmutably };
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
 };
 

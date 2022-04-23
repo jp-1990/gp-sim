@@ -11,7 +11,7 @@ import { useAppDispatch } from '../../../../../../store/store';
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to dispatch an action to submit the state of the form.
  */
 const SubmitLivery = () => {
-  const { state, setState } = useForm();
+  const { state, setStateImmutably } = useForm();
   const dispatch = useAppDispatch();
 
   const onClick = async () => {
@@ -33,24 +33,21 @@ const SubmitLivery = () => {
       garageKey: state.garageKey
     };
 
-    setState((prev) => {
-      const prevState = { ...prev };
-      prevState.loading = true;
-      return prevState;
+    setStateImmutably((prev) => {
+      prev.loading = true;
+      return prev;
     });
     try {
       dispatch(createLivery(createLiveryInput));
-      setState((prev) => {
-        const prevState = { ...prev };
-        prevState.loading = false;
-        return prevState;
+      setStateImmutably((prev) => {
+        prev.loading = false;
+        return prev;
       });
     } catch (err) {
-      setState((prev) => {
-        const prevState = { ...prev };
-        prevState.loading = false;
-        prevState.error = true;
-        return prevState;
+      setStateImmutably((prev) => {
+        prev.loading = false;
+        prev.error = true;
+        return prev;
       });
     }
   };

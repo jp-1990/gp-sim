@@ -14,6 +14,9 @@ export type FormStateType = FormInitialStateType & Record<string, any>;
 export interface FormValueType {
   state: FormStateType;
   setState: React.Dispatch<React.SetStateAction<FormStateType>>;
+  setStateImmutably: (
+    callback: (formState: FormStateType) => FormStateType
+  ) => void;
 }
 
 export type StateWithStateKey<T extends string, K> = FormValueType['state'] &
