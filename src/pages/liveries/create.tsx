@@ -2,48 +2,23 @@
 import React, { useEffect } from 'react';
 import { GetStaticProps, NextPage } from 'next';
 import { FormattedMessage } from 'react-intl';
-import {
-  Box,
-  Button,
-  chakra,
-  Divider,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Text
-} from '@chakra-ui/react';
-import { useDispatch } from 'react-redux';
+import { Box, chakra, Flex, Heading, Text } from '@chakra-ui/react';
 
 import { MainLayout } from '../../components/layout';
 import { Breadcrumbs } from '../../components/core';
-import { Form } from '../../components/shared';
-import {
-  breadcrumbOptions,
-  LiveryDescription,
-  LiveryGarageKey,
-  LiveryPrice,
-  LiveryPrivate,
-  LiveryPublic,
-  LiverySearchTags,
-  LiverySelectCar,
-  LiverySelectFiles,
-  LiverySelectGarage,
-  LiverySelectImages,
-  LiverySubmit,
-  LiveryTitle
-} from '../../components/features/create-livery';
+import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
 
-import store from '../../store/store';
+import store, { useAppDispatch } from '../../store/store';
 import { CarState, fetchCars, rehydrateCarSlice } from '../../store/car/slice';
-import { commonStrings, liveryStrings } from '../../utils/intl';
+import { liveryStrings } from '../../utils/intl';
 import { LIVERY_UPLOAD_URL } from '../../utils/nav';
+import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 
 interface Props {
   car: CarState;
 }
 const Create: NextPage<Props> = ({ car }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(rehydrateCarSlice({ cars: car.cars, ids: car.ids }));
@@ -67,62 +42,7 @@ const Create: NextPage<Props> = ({ car }) => {
             </Text>
           </Flex>
         </chakra.section>
-        <Form>
-          <Grid
-            templateColumns="repeat(12, 1fr)"
-            templateRows="repeat(11)"
-            gap={4}
-            w="5xl"
-            my={8}
-          >
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiveryTitle />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiverySelectCar ids={car.ids} cars={car.cars} />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiveryDescription />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12} my={5}>
-              <LiverySelectFiles />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiveryPublic />
-              <LiveryPrivate />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={3}>
-              <LiverySelectGarage />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={4}>
-              <LiveryGarageKey />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiveryPrice />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12}>
-              <LiverySearchTags />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={12} mt={5} mb={3}>
-              <LiverySelectImages />
-              <Divider mt={3} />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={3}>
-              <LiverySubmit />
-            </GridItem>
-            <GridItem rowSpan={1} colSpan={3}>
-              <Button
-                mx={2}
-                colorScheme="red"
-                variant="outline"
-                w="3xs"
-                lineHeight={1}
-              >
-                {<FormattedMessage {...commonStrings.cancel} />}
-              </Button>
-            </GridItem>
-          </Grid>
-        </Form>
+        <CreateLivery />
       </Box>
     </MainLayout>
   );
