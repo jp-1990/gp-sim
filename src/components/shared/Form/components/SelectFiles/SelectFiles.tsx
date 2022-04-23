@@ -86,7 +86,13 @@ const SelectFiles = <T extends string>({
         >
           {label}
         </Button>
-        <FormHelperText pl={4} fontSize="sm">
+
+        <FormHelperText
+          role="note"
+          aria-label={`${ariaLabel}-helper`}
+          pl={4}
+          fontSize="sm"
+        >
           {helperText}
         </FormHelperText>
       </Flex>
@@ -94,6 +100,7 @@ const SelectFiles = <T extends string>({
         hidden
         multiple
         type="file"
+        aria-invalid={!isValid.valid}
         accept={accept}
         id={fieldId}
         onChange={onChange}
