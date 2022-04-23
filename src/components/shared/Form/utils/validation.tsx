@@ -17,7 +17,7 @@ export const LIVERY_FILE_NAMES = [
 export const findDynamicLiveryFile = (files: File[]) =>
   files.find((f) => {
     const name = f.name as typeof LIVERY_FILE_NAMES[number];
-    return !LIVERY_FILE_NAMES.includes(name);
+    return !LIVERY_FILE_NAMES.includes(name) && name.match(/(\.json)$/g);
   });
 
 /**
@@ -26,7 +26,7 @@ export const findDynamicLiveryFile = (files: File[]) =>
  * @returns RegExpMatchArray | null
  */
 export const validatedDynamicLiveryFilename = (string: string) =>
-  string.match(/^[a-zA-Z0-9]+([-_\s]{1}[a-zA-Z0-9]+)(\.json)/g);
+  string.match(/^[a-zA-Z0-9]+(([-_\s]{1}|)[a-zA-Z0-9])*(\.json)/g);
 
 export type ValidationOptionsType = keyof typeof validatorFunctions;
 export type IsFieldValidReturnType = {
@@ -86,7 +86,9 @@ const validatorFunctions = {
 
     if (isValid) return true;
     return {
-      message: <FormattedMessage {...formStrings.dynamicLiveryFileName} />,
+      message: (
+        <FormattedMessage {...formStrings.invalidDynamicLiveryFileName} />
+      ),
       priority: 1
     };
   }
