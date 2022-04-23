@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Select } from '../../../../../shared';
@@ -16,7 +16,13 @@ interface Props {
  * @param {Props['ids']} Props.ids - string[ ]. Car ids
  */
 const SelectCar: React.FC<Props> = ({ ids, cars }) => {
+  const [safeToRender, setSafeToRender] = useState<boolean | undefined>();
   const intl = useIntl();
+
+  useEffect(() => {
+    setSafeToRender(true);
+  }, []);
+
   return (
     <Select
       isRequired
@@ -29,14 +35,15 @@ const SelectCar: React.FC<Props> = ({ ids, cars }) => {
       })}
       w="sm"
     >
-      {ids.map((id) => {
-        const targetCar = cars[id];
-        return (
-          <option key={id + targetCar.name} value={targetCar.name}>
-            {targetCar.name}
-          </option>
-        );
-      })}
+      {safeToRender &&
+        ids.map((id) => {
+          const targetCar = cars[id];
+          return (
+            <option key={id + targetCar.name} value={targetCar.name}>
+              {targetCar.name}
+            </option>
+          );
+        })}
     </Select>
   );
 };
