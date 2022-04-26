@@ -1,29 +1,33 @@
-export type FormStatusType = {
+export interface FormStatusType {
   loading: boolean;
   error: boolean;
   invalidFields: string[];
-};
+}
 export type SetFormStatusType = (
   status: keyof Omit<FormStatusType, 'invalidFields'>,
   value: boolean
 ) => void;
 
+export type FormDefaultStateType = Record<string | number | symbol, any>;
 export type FormInitialStateType = FormStatusType;
-export type FormStateType = FormInitialStateType & Record<string, any>;
+export type FormStateType<T extends FormDefaultStateType> =
+  FormInitialStateType & T;
 
-export interface FormValueType {
-  state: FormStateType;
-  setState: React.Dispatch<React.SetStateAction<FormStateType>>;
+export interface FormValueType<T extends FormDefaultStateType> {
+  state: FormStateType<T>;
+  setState: React.Dispatch<React.SetStateAction<FormStateType<T>>>;
   setStateImmutably: (
-    callback: (formState: FormStateType) => FormStateType
+    callback: (formState: FormStateType<T>) => FormStateType<T>
   ) => void;
 }
 
-export type StateWithStateKey<T extends string, K> = FormValueType['state'] &
-  Record<T, K>;
+export type StateWithStateKey<
+  T extends string,
+  K
+> = FormValueType<FormDefaultStateType>['state'] & Record<T, K>;
 
 export const isStateWithStateKey = <T extends string, K>(
-  state: FormValueType['state'],
+  state: FormValueType<FormDefaultStateType>['state'],
   stateKey: string
 ): state is StateWithStateKey<T, K> => {
   return (state as StateWithStateKey<T, K>)[stateKey] !== undefined;
