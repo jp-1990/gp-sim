@@ -18,9 +18,12 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage } from 'react-intl';
 
 import store, { useAppDispatch } from '../../store/store';
-import { fetchLiveries, rehydrateLiverySlice } from '../../store/livery/slice';
-import { fetchCars, rehydrateCarSlice } from '../../store/car/slice';
-import { CarState, LiveryState } from '../../store/types';
+import {
+  getLiveriesThunk,
+  rehydrateLiverySlice
+} from '../../store/livery/slice';
+import { getCarsThunk, rehydrateCarSlice } from '../../store/car/slice';
+import { CarSliceState, LiverySliceState } from '../../store/types';
 
 import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -30,17 +33,15 @@ import { LIVERIES_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 
 interface Props {
-  car: CarState;
-  livery: LiveryState;
+  car: CarSliceState;
+  livery: LiverySliceState;
 }
 const Liveries: NextPage<Props> = ({ car, livery }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(
-      rehydrateLiverySlice({ liveries: livery.liveries, ids: livery.ids })
-    );
-    dispatch(rehydrateCarSlice({ cars: car.cars, ids: car.ids }));
+    dispatch(rehydrateLiverySlice(livery));
+    dispatch(rehydrateCarSlice(car));
   }, []);
 
   return (
@@ -134,18 +135,18 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
           w="5xl"
         >
           {livery.ids.map((e: string) => {
-            const { id, author, rating, title, car, imgUrls, price } =
+            const { id, creator, rating, title, car, images, price } =
               livery.liveries[e];
             return (
               <LiveryCard
                 key={e}
-                author={author}
+                car={car}
+                creator={creator}
                 rating={rating}
                 id={id}
-                title={title}
-                car={car}
-                imgUrl={imgUrls[0]}
+                image={images[0]}
                 price={price}
+                title={title}
               />
             );
           })}
@@ -159,8 +160,8 @@ export default Liveries;
 
 export const getStaticProps = async () => {
   await Promise.all([
-    store.dispatch(fetchLiveries({ filters: {}, quantity: 100 })),
-    store.dispatch(fetchCars())
+    store.dispatch(getLiveriesThunk({ filters: {}, quantity: 100 })),
+    store.dispatch(getCarsThunk())
   ]);
 
   const car = store.getState().car;
