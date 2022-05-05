@@ -1,42 +1,40 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { CarDataType } from '../../types';
+import { CarSliceState, initialState } from './state';
 import { normalise } from '../../utils/functions';
 
 import { getCars } from '../../fetching/cars/get';
 
-export const fetchCars = createAsyncThunk('livery/fetchCars', async () => {
-  const cars = await getCars();
-  return cars;
-});
+const CAR_SLICE_NAME = 'car';
 
-export interface CarState {
-  ids: string[];
-  cars: Record<string, CarDataType>;
-}
-
-const initialState: CarState = {
-  ids: [],
-  cars: {}
-};
+export const getCarsThunk = createAsyncThunk(
+  `${CAR_SLICE_NAME}/fetchCars`,
+  async () => {
+    const cars = await getCars();
+    return cars;
+  }
+);
 
 const carSlice = createSlice({
-  name: 'car',
+  name: CAR_SLICE_NAME,
   initialState,
   reducers: {
-    rehydrateCarSlice: (state, action: PayloadAction<CarState>) => {
+    rehydrateCarSlice: (state, action: PayloadAction<CarSliceState>) => {
       state.ids = action.payload.ids;
       state.cars = action.payload.cars;
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCars.fulfilled, (state, action) => {
+    builder.addCase(getCarsThunk.fulfilled, (state, action) => {
+      if (!action.payload) return;
       const { items, ids } = normalise(action.payload);
-      state.cars = items;
       state.ids = ids;
+      state.cars = items;
     });
   }
 });
 
 export const { rehydrateCarSlice } = carSlice.actions;
-export const liveryReducer = carSlice.reducer;
+export const carReducer = carSlice.reducer;
 export default carSlice;
+
+export type { CarSliceState } from './state';

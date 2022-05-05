@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { LiveryDataType } from '../../types';
+import { initialState, LiverySliceState } from './state';
 import { normalise } from '../../utils/functions';
 
 import {
@@ -10,60 +10,52 @@ import {
 } from '../../fetching/liveries/get';
 import { postLivery, PostLiveryArgs } from '../../fetching/liveries/post';
 
-export const fetchLiveries = createAsyncThunk(
-  'livery/fetchLiveries',
+const LIVERY_SLICE_NAME = 'livery';
+
+export const getLiveriesThunk = createAsyncThunk(
+  `${LIVERY_SLICE_NAME}/getLiveries`,
   async ({ filters, quantity }: GetLiveriesArgs) => {
     const liveries = await getLiveries({ filters, quantity });
     return liveries;
   }
 );
 
-export const fetchLivery = createAsyncThunk(
-  'livery/fetchLivery',
+export const getLiveryThunk = createAsyncThunk(
+  `${LIVERY_SLICE_NAME}/getLivery`,
   async ({ id }: GetLiveryArgs) => {
     const livery = await getLivery({ id });
     return livery;
   }
 );
 
-export const createLivery = createAsyncThunk(
-  'livery/createLivery',
+export const postLiveryThunk = createAsyncThunk(
+  `${LIVERY_SLICE_NAME}/postLivery`,
   async (newLivery: PostLiveryArgs) => {
     const livery = await postLivery(newLivery);
     return livery;
   }
 );
 
-export interface LiveryState {
-  ids: string[];
-  liveries: Record<string, LiveryDataType>;
-}
-
-const initialState: LiveryState = {
-  ids: [],
-  liveries: {}
-};
-
 const liverySlice = createSlice({
-  name: 'livery',
+  name: LIVERY_SLICE_NAME,
   initialState,
   reducers: {
-    rehydrateLiverySlice: (state, action: PayloadAction<LiveryState>) => {
+    rehydrateLiverySlice: (state, action: PayloadAction<LiverySliceState>) => {
       state.ids = action.payload.ids;
       state.liveries = action.payload.liveries;
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchLiveries.fulfilled, (state, action) => {
+    builder.addCase(getLiveriesThunk.fulfilled, (state, action) => {
       const { items, ids } = normalise(action.payload);
       state.liveries = items;
       state.ids = ids;
     });
-    builder.addCase(fetchLivery.fulfilled, (state, action) => {
+    builder.addCase(getLiveryThunk.fulfilled, (state, action) => {
       const { payload } = action;
       state.liveries[payload.id] = payload;
     });
-    builder.addCase(createLivery.fulfilled, (state, action) => {
+    builder.addCase(postLiveryThunk.fulfilled, (state, action) => {
       const { payload } = action;
       state.ids.push(payload.id);
       state.liveries[payload.id] = payload;
@@ -74,3 +66,5 @@ const liverySlice = createSlice({
 export const { rehydrateLiverySlice } = liverySlice.actions;
 export const liveryReducer = liverySlice.reducer;
 export default liverySlice;
+
+export type { LiverySliceState } from './state';

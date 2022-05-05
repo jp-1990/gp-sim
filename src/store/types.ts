@@ -1,2 +1,2 @@
-export type { CarState } from './car/slice';
-export type { LiveryState } from './livery/slice';
+export type { CarSliceState } from './car/state';
+export type { LiverySliceState } from './livery/state';
