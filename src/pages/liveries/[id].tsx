@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import store from '../../store/store';
-import { fetchLiveries, fetchLivery } from '../../store/livery/slice';
+import { getLiveriesThunk, getLiveryThunk } from '../../store/livery/slice';
 
-import { isString } from '../../utils/functions';
+import { isString, numberToPrice } from '../../utils/functions';
 import {
   Box,
   Button,
@@ -23,18 +23,30 @@ import { FormattedMessage } from 'react-intl';
 import { commonStrings } from '../../utils/intl';
 import { LIVERIES_URL, LIVERY_URL } from '../../utils/nav';
 
-type Props = LiveryDataType;
+type Props = Pick<
+  LiveryDataType,
+  | 'car'
+  | 'creator'
+  | 'title'
+  | 'rating'
+  | 'id'
+  | 'downloads'
+  | 'price'
+  | 'images'
+  | 'description'
+  | 'tags'
+>;
 const Livery: NextPage<Props> = ({
   car,
-  title,
-  rating,
-  id,
-  imgUrls,
-  author,
+  creator,
+  description,
   downloads,
-  price,
+  id,
+  images,
+  price = 'Free',
+  rating,
   tags,
-  description
+  title
 }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
@@ -86,7 +98,7 @@ const Livery: NextPage<Props> = ({
                   {Array(4)
                     .fill('')
                     .map((_, i) => {
-                      const src = imgUrls[i];
+                      const src = images[i];
                       return (
                         <Box
                           key={title + i}
@@ -117,7 +129,7 @@ const Livery: NextPage<Props> = ({
                   h="full"
                 >
                   <ImageWithFallback
-                    imgUrl={imgUrls[selectedImage]}
+                    imgUrl={images[selectedImage]}
                     imgAlt={title}
                     bg="gray.200"
                     h="full"
@@ -127,16 +139,16 @@ const Livery: NextPage<Props> = ({
               </GridItem>
               <GridItem colSpan={5} rowSpan={4} pl={0}>
                 <Heading size="md" pb={4}>
-                  {author}
+                  {creator.displayName}
                 </Heading>
                 <Text fontSize="sm" pb={4}>
                   {description}
                 </Text>
               </GridItem>
             </Grid>
-            <Tags pb={12} tags={tags} />
+            <Tags pb={12} tags={tags?.split(',') || []} />
             <Heading size="md" pb={4}>
-              {price}
+              {typeof price !== 'string' ? numberToPrice(price) : price}
             </Heading>
             <Button bg="gray.900" color="white" size="md" w={40} lineHeight={1}>
               <FormattedMessage {...commonStrings.addToBasket} />
@@ -154,29 +166,29 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const paramsId = params?.id;
   let id = '';
   if (isString(paramsId)) id = paramsId;
-  await store.dispatch(fetchLivery({ id }));
+  await store.dispatch(getLiveryThunk({ id }));
   const { liveries } = store.getState().livery;
   const {
     car,
+    creator,
     title,
     rating,
-    author,
     downloads,
     price,
-    imgUrls,
+    images,
     description,
     tags
   } = liveries[id];
   return {
     props: {
       car,
+      creator,
       title,
       rating,
       id,
-      author,
       downloads,
       price,
-      imgUrls,
+      images,
       description,
       tags
     }
@@ -184,7 +196,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  await store.dispatch(fetchLiveries({ filters: {}, quantity: 100 }));
+  await store.dispatch(getLiveriesThunk({ filters: {}, quantity: 100 }));
   const { ids } = store.getState().livery;
 
   return {

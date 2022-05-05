@@ -5,30 +5,41 @@ import Livery from '../../../pages/liveries/[id]';
 
 describe('Livery', () => {
   const testLivery = {
-    id: '0',
+    id: 'd03bfb4f-3b88-41ec-92bb-14b3438696ec',
+    createdAt: 1651734649485,
+    updatedAt: 1651734649485,
+    creator: {
+      id: '0',
+      displayName: 'Julius Little',
+      image: '/car2.png'
+    },
+    title: 'Harlequin',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    car: 'Audi R8 LMS GT4',
+    price: 598,
+    tags: 'Red,2010s,Blue',
+    searchHelpers: ['Red', '2010s', 'Blue', 'Harlequin', 'Julius Little'],
+    isPublic: true,
+    images: ['/car2.png', '/car5.png', '/car3.png', '/car6.png'],
+    liveryFiles: '/test-livery-title.zip',
     rating: 3,
-    downloads: 100,
-    imgUrls: [],
-    price: '5.00',
-    author: 'test-author',
-    title: 'test-title',
-    car: 'car-name',
-    tags: ['tag-0', 'tag-1'],
-    description: 'test-description'
+    downloads: 1965
   };
+
   it('renders the expected items based on props', () => {
     render(<Livery {...testLivery} />);
-    const { queryAllByText } = screen;
-    const { id, rating, downloads, imgUrls, tags, title, car, ...testValues } =
+    const { downloads, car, title, creator, price, description, tags } =
       testLivery;
     const downloadNum = `${downloads} Downloads`;
     const carAndTitle = `${car} - ${title}`;
 
-    expect(queryAllByText(carAndTitle)).toHaveLength(2);
+    expect(screen.queryAllByText(carAndTitle)).toHaveLength(2);
     expectAllToBeInDocument([
-      ...Object.values(testValues),
-      ...tags,
-      downloadNum
+      downloadNum,
+      creator.displayName,
+      description,
+      `£${(testLivery.price / 100).toFixed(2)}`,
+      ...tags.split(',')
     ]);
   });
 });
