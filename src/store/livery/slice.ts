@@ -10,7 +10,7 @@ import {
 } from '../../fetching/liveries/get';
 import { postLivery, PostLiveryArgs } from '../../fetching/liveries/post';
 
-const LIVERY_SLICE_NAME = 'livery';
+export const LIVERY_SLICE_NAME = 'livery';
 
 export const getLiveriesThunk = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/getLiveries`,

@@ -4,7 +4,7 @@ import { normalise } from '../../utils/functions';
 
 import { getCars } from '../../fetching/cars/get';
 
-const CAR_SLICE_NAME = 'car';
+export const CAR_SLICE_NAME = 'car';
 
 export const getCarsThunk = createAsyncThunk(
   `${CAR_SLICE_NAME}/fetchCars`,

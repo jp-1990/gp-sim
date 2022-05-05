@@ -1,8 +1,10 @@
+import fs from 'fs';
 import React, { useMemo } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { ChakraProvider } from '@chakra-ui/react';
 import { UserProvider } from '@auth0/nextjs-auth0';
+import { configureStore, Store } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import { storeConfig } from '../../store/store';
@@ -10,9 +12,11 @@ import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
-import { configureStore, Store } from '@reduxjs/toolkit';
-import { cars } from '../dev-data/liveries';
-import { CarState } from '../../store/types';
+import { CAR_SLICE_NAME } from '../../store/car/slice';
+import { LIVERY_SLICE_NAME } from '../../store/livery/slice';
+
+import { CarsDataType } from '../../types';
+import { normalise } from '../functions';
 
 interface Auth0User {
   name?: string;
@@ -45,19 +49,19 @@ jest.mock('@auth0/nextjs-auth0', () => ({
 export const setTestUser = (user: Auth0User | undefined) =>
   (testUser.user = user);
 
+const carData = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
+const cars = JSON.parse(carData) as CarsDataType;
+const { items, ids } = normalise(cars || []);
+
 const defaultPreloadedState = {
-  car: cars.reduce(
-    (acc, car, idx) => {
-      return {
-        ids: [...acc.ids, `${idx}`],
-        cars: {
-          ...acc.cars,
-          [`${idx}`]: { id: `${idx}`, name: car, class: 'GT4' }
-        }
-      };
-    },
-    { ids: [], cars: {} } as CarState
-  )
+  [CAR_SLICE_NAME]: {
+    ids,
+    cars: items
+  },
+  [LIVERY_SLICE_NAME]: {
+    ids: [],
+    liveries: {}
+  }
 };
 
 interface Props {
