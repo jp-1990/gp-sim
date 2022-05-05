@@ -10,5 +10,5 @@ export const initialState: CarSliceState = {
   cars: {},
   loading: false,
   error: false,
-  currentRequestId: undefined
+  currentRequestId: null
 };

@@ -10,5 +10,5 @@ export const initialState: LiverySliceState = {
   liveries: {},
   loading: false,
   error: false,
-  currentRequestId: undefined
+  currentRequestId: null
 };
