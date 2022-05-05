@@ -13,18 +13,19 @@ import {
 import { ImageWithFallback, Rating } from '../../../core';
 import { LiveryDataType } from '../../../../types';
 import { LIVERY_URL } from '../../../../utils/nav';
+import { numberToPrice } from '../../../../utils/functions';
 
-type Props = Omit<
+type Props = Pick<
   LiveryDataType,
-  'downloads' | 'description' | 'tags' | 'imgUrls'
-> & { imgUrl: string };
+  'title' | 'car' | 'id' | 'price' | 'rating' | 'creator'
+> & { image: string };
 
 /**
  *
- * @param {Props['author']} props.author
  * @param {Props['car']} props.car
+ * @param {Props['creator']} props.creator
  * @param {Props['id']} props.id
- * @param {Props['imgUrl']} props.imgUrl
+ * @param {Props['image']} props.image
  * @param {Props['price']} props.price
  * @param {Props['rating']} props.rating
  * @param {Props['title']} props.title
@@ -33,10 +34,10 @@ type Props = Omit<
  * @description A card to render a livery preview. Intended to be used in a list to render previews of multiple liveries.
  */
 const LiveryCard: React.FC<Props> = ({
-  author,
   car,
+  creator,
   id,
-  imgUrl = '',
+  image = '',
   price = 'Free',
   rating,
   title
@@ -92,7 +93,7 @@ const LiveryCard: React.FC<Props> = ({
                     isTruncated
                     noOfLines={1}
                   >
-                    {author}
+                    {creator.displayName}
                   </Text>
                   <Text
                     color={'white'}
@@ -134,14 +135,14 @@ const LiveryCard: React.FC<Props> = ({
                     isTruncated
                     noOfLines={1}
                   >
-                    {price}
+                    {typeof price !== 'string' ? numberToPrice(price) : price}
                   </Text>
                 </Flex>
               </GridItem>
             </Grid>
             <ImageWithFallback
               imgAlt={title}
-              imgUrl={imgUrl}
+              imgUrl={image}
               position="absolute"
               top="0"
               left="0"
