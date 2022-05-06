@@ -9,19 +9,23 @@ import { Breadcrumbs } from '../../components/core';
 import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
 
 import store, { useAppDispatch } from '../../store/store';
-import { CarState, fetchCars, rehydrateCarSlice } from '../../store/car/slice';
+import {
+  CarSliceState,
+  getCarsThunk,
+  rehydrateCarSlice
+} from '../../store/car/slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_UPLOAD_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 
 interface Props {
-  car: CarState;
+  car: CarSliceState;
 }
 const Create: NextPage<Props> = ({ car }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(rehydrateCarSlice({ cars: car.cars, ids: car.ids }));
+    dispatch(rehydrateCarSlice(car));
   }, []);
 
   return (
@@ -51,7 +55,7 @@ const Create: NextPage<Props> = ({ car }) => {
 export default Create;
 
 export const getStaticProps: GetStaticProps = async () => {
-  await store.dispatch(fetchCars());
+  await store.dispatch(getCarsThunk());
   const car = store.getState().car;
   return {
     props: {
