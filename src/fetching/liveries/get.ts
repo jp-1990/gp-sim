@@ -23,6 +23,6 @@ export const getLivery = async ({ id }: GetLiveryArgs) => {
     const livery = JSON.parse(data).find(
       (item: LiveryDataType) => item.id === id
     );
-    setTimeout(() => resolve(livery), 500);
+    setTimeout(() => resolve(livery), 200);
   });
 };

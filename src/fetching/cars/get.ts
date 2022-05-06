@@ -1,13 +1,10 @@
+import fs from 'fs';
 import { CarsDataType } from '../../types';
-import { cars } from '../../utils/dev-data/liveries';
 
 export const getCars = async () => {
   return new Promise<CarsDataType>((resolve) => {
-    const carsData = cars.map((car, i) => ({
-      id: `${i}`,
-      name: car,
-      class: 'GT4'
-    }));
-    setTimeout(() => resolve(carsData), 100);
+    const data = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
+    const cars = JSON.parse(data);
+    setTimeout(() => resolve(cars), 200);
   });
 };
