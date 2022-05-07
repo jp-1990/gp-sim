@@ -8,7 +8,7 @@ export interface UserDataType {
   displayName: string;
   email: string;
   about: string | undefined;
-  image: string | undefined;
+  image: string | null | undefined;
   garages: string[];
   liveries: string[];
 }

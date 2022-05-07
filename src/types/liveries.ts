@@ -22,7 +22,14 @@ export type LiveriesDataType = LiveryDataType[];
 export interface CreateLiveryDataType
   extends Omit<
     LiveryDataType,
-    'id' | 'images' | 'liveryFiles' | 'rating' | 'downloads'
+    | 'id'
+    | 'images'
+    | 'liveryFiles'
+    | 'rating'
+    | 'downloads'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'searchHelpers'
   > {
   imageFiles: Array<File>;
   liveryZip: Blob;
