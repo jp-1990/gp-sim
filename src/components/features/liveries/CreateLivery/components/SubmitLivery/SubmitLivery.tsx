@@ -1,36 +1,44 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useUser } from '@auth0/nextjs-auth0';
 
 import { SubmitButton, useForm } from '../../../../../shared';
 import { liveryStrings } from '../../../../../../utils/intl';
-import { CreateLiveryDataType } from '../../../../../../types';
-import { createLivery } from '../../../../../../store/livery/slice';
+import { postLiveryThunk } from '../../../../../../store/livery/slice';
 import { useAppDispatch } from '../../../../../../store/store';
+import {
+  mapCreateLiveryFormStateToActionInput,
+  zipLiveryFiles
+} from '../../utils';
+import { CreateLiveryFormStateType } from '../../types';
 
 /**
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to dispatch an action to submit the state of the form.
  */
 const SubmitLivery = () => {
-  const { state, setStateImmutably } = useForm();
+  const { user } = useUser();
+  const { state, setStateImmutably } = useForm<CreateLiveryFormStateType>();
   const dispatch = useAppDispatch();
 
   const onClick = async () => {
-    const createLiveryInput: CreateLiveryDataType = {
-      id: '',
-      title: state.title,
-      car: state.car,
-      description: state.description,
-      rating: undefined,
-      downloads: 0,
-      imgUrls: state.imageFiles,
-      price: state.price,
-      author: 'test-author',
-      tags: state.searchTags,
-      files: state.liveryFiles.map(({ name }: any) => name),
-      publicLivery: state.publicLivery,
-      privateGarage: state.privateGarage,
-      garageName: state.garageName,
-      garageKey: state.garageKey
+    // prepare livery files
+    const liveryZip = await zipLiveryFiles({
+      folderName: state.title,
+      liveryFiles: state.liveryFiles
+    });
+
+    // prepare image files?
+    const imageFiles = state.imageFiles || [];
+
+    const createLiveryInput = {
+      // map state into upload format
+      ...mapCreateLiveryFormStateToActionInput({
+        formState: state,
+        user
+      }),
+      liveryZip,
+      imageFiles
     };
 
     setStateImmutably((prev) => {
@@ -38,7 +46,7 @@ const SubmitLivery = () => {
       return prev;
     });
     try {
-      dispatch(createLivery(createLiveryInput));
+      dispatch(postLiveryThunk(createLiveryInput));
       setStateImmutably((prev) => {
         prev.loading = false;
         return prev;

@@ -13,6 +13,6 @@ export interface CreateLiveryFormStateType {
   [stateKeys.GARAGE]?: string;
   [stateKeys.GARAGE_KEY]?: string;
   [stateKeys.PRICE]?: number | string;
-  [stateKeys.SEARCH_TAGS]?: string[];
+  [stateKeys.SEARCH_TAGS]?: string;
   [stateKeys.IMAGE_FILES]?: CreateLiveryFormImageFiles;
 }
