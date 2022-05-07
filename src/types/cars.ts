@@ -3,4 +3,4 @@ export interface CarDataType {
   class: string;
   name: string;
 }
-export type CarsDataType = CarDataType[] | undefined;
+export type CarsDataType = CarDataType[];

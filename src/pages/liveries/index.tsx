@@ -20,10 +20,16 @@ import { FormattedMessage } from 'react-intl';
 import store, { useAppDispatch } from '../../store/store';
 import {
   getLiveriesThunk,
-  rehydrateLiverySlice
+  rehydrateLiverySlice,
+  LIVERY_SLICE_NAME,
+  LiverySliceStateType
 } from '../../store/livery/slice';
-import { getCarsThunk, rehydrateCarSlice } from '../../store/car/slice';
-import { CarSliceState, LiverySliceState } from '../../store/types';
+import {
+  getCarsThunk,
+  rehydrateCarSlice,
+  CAR_SLICE_NAME,
+  CarSliceStateType
+} from '../../store/car/slice';
 
 import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -33,8 +39,8 @@ import { LIVERIES_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 
 interface Props {
-  car: CarSliceState;
-  livery: LiverySliceState;
+  car: CarSliceStateType;
+  livery: LiverySliceStateType;
 }
 const Liveries: NextPage<Props> = ({ car, livery }) => {
   const dispatch = useAppDispatch();
@@ -76,10 +82,11 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
           <GridItem colSpan={3} rowSpan={1}>
             <Select placeholder="Select car">
               {car.ids.map((id) => {
-                const targetCar = car.cars[id];
+                const target = car.entities[id];
+                if (!target) return null;
                 return (
-                  <option key={id + targetCar.name} value={targetCar.name}>
-                    {targetCar.name}
+                  <option key={id + target.name} value={target.name}>
+                    {target.name}
                   </option>
                 );
               })}
@@ -134,9 +141,10 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
           gap={4}
           w="5xl"
         >
-          {livery.ids.map((e: string) => {
-            const { id, creator, rating, title, car, images, price } =
-              livery.liveries[e];
+          {livery.ids.map((e) => {
+            const target = livery.entities[e.valueOf()];
+            if (!target) return null;
+            const { id, creator, rating, title, car, images, price } = target;
             return (
               <LiveryCard
                 key={e}
@@ -164,8 +172,8 @@ export const getStaticProps = async () => {
     store.dispatch(getCarsThunk())
   ]);
 
-  const car = store.getState().car;
-  const livery = store.getState().livery;
+  const car = store.getState()[CAR_SLICE_NAME];
+  const livery = store.getState()[LIVERY_SLICE_NAME];
   return {
     props: { livery, car }
   };

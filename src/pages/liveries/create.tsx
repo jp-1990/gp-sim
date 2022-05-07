@@ -10,16 +10,17 @@ import CreateLivery from '../../components/features/liveries/CreateLivery/Create
 
 import store, { useAppDispatch } from '../../store/store';
 import {
-  CarSliceState,
   getCarsThunk,
-  rehydrateCarSlice
+  rehydrateCarSlice,
+  CAR_SLICE_NAME,
+  CarSliceStateType
 } from '../../store/car/slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_UPLOAD_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 
 interface Props {
-  car: CarSliceState;
+  car: CarSliceStateType;
 }
 const Create: NextPage<Props> = ({ car }) => {
   const dispatch = useAppDispatch();
@@ -56,7 +57,7 @@ export default Create;
 
 export const getStaticProps: GetStaticProps = async () => {
   await store.dispatch(getCarsThunk());
-  const car = store.getState().car;
+  const car = store.getState()[CAR_SLICE_NAME];
   return {
     props: {
       car

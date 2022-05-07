@@ -18,3 +18,12 @@ export interface LiveryDataType {
   downloads: number;
 }
 export type LiveriesDataType = LiveryDataType[];
+
+export interface CreateLiveryDataType
+  extends Omit<
+    LiveryDataType,
+    'id' | 'images' | 'liveryFiles' | 'rating' | 'downloads'
+  > {
+  imageFiles: Array<File>;
+  liveryZip: Blob;
+}

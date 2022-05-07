@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '../../../utils/testing/test-utils';
 import Create from '../../../pages/liveries/create';
 import { commonStrings, liveryStrings } from '../../../utils/intl';
+import { RequestStatus } from '../../../types';
 
 const testCar = {
   id: '0',
@@ -11,7 +12,19 @@ const testCar = {
 
 describe('Create livery', () => {
   it('renders a heading, submit and cancel buttons', async () => {
-    render(<Create car={{ ids: ['0'], cars: { '0': testCar } }} />);
+    render(
+      <Create
+        car={{
+          ids: ['0'],
+          entities: { '0': testCar },
+          getCars: {
+            status: RequestStatus.IDLE,
+            currentRequestId: null,
+            error: null
+          }
+        }}
+      />
+    );
     expect(
       screen.getAllByText(liveryStrings.uploadHeading.defaultMessage)
     ).toHaveLength(2);

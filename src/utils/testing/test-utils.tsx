@@ -12,11 +12,16 @@ import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
-import { CAR_SLICE_NAME } from '../../store/car/slice';
-import { LIVERY_SLICE_NAME } from '../../store/livery/slice';
+import {
+  CAR_SLICE_NAME,
+  initialState as initialCarState
+} from '../../store/car/slice';
+import {
+  LIVERY_SLICE_NAME,
+  initialState as initialLiveryState
+} from '../../store/livery/slice';
 
-import { CarsDataType } from '../../types';
-import { normalise } from '../functions';
+import { CarDataType, CarsDataType } from '../../types';
 
 interface Auth0User {
   name?: string;
@@ -51,16 +56,25 @@ export const setTestUser = (user: Auth0User | undefined) =>
 
 const carData = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
 const cars = JSON.parse(carData) as CarsDataType;
-const { items, ids } = normalise(cars || []);
 
 const defaultPreloadedState = {
   [CAR_SLICE_NAME]: {
-    ids,
-    cars: items
+    ...initialCarState,
+    ...cars.reduce(
+      (acc, curr, i) => {
+        const prev = { ...acc };
+        prev.ids.push(`${i}`);
+        prev.entities[`${i}`] = curr;
+        return prev;
+      },
+      { ids: [], entities: {} } as {
+        ids: string[];
+        entities: Record<string, CarDataType>;
+      }
+    )
   },
   [LIVERY_SLICE_NAME]: {
-    ids: [],
-    liveries: {}
+    ...initialLiveryState
   }
 };
 

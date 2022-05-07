@@ -1,6 +1,10 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { initialState, LiverySliceState } from './state';
-import { normalise } from '../../utils/functions';
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk,
+  createEntityAdapter,
+  SerializedError
+} from '@reduxjs/toolkit';
 
 import {
   getLiveries,
@@ -9,8 +13,26 @@ import {
   GetLiveryArgs
 } from '../../fetching/liveries/get';
 import { postLivery, PostLiveryArgs } from '../../fetching/liveries/post';
+import { LiveryDataType, RequestStatus } from '../../types';
 
-export const LIVERY_SLICE_NAME = 'livery';
+export const LIVERY_SLICE_NAME = 'liverySlice';
+
+// ADAPTER
+
+const liveriesAdapter = createEntityAdapter<LiveryDataType>({
+  sortComparer: (a, b) => b.downloads - a.downloads
+});
+export const initialState = liveriesAdapter.getInitialState({
+  getLiveries: {
+    status: RequestStatus.IDLE,
+    currentRequestId: null,
+    error: null as null | SerializedError
+  }
+});
+export type LiverySliceStateType = typeof initialState;
+type RootStateFromLiverySlice = { [LIVERY_SLICE_NAME]: LiverySliceStateType };
+
+// THUNKS
 
 export const getLiveriesThunk = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/getLiveries`,
@@ -36,35 +58,59 @@ export const postLiveryThunk = createAsyncThunk(
   }
 );
 
+// SLICE
+
 const liverySlice = createSlice({
   name: LIVERY_SLICE_NAME,
   initialState,
   reducers: {
-    rehydrateLiverySlice: (state, action: PayloadAction<LiverySliceState>) => {
+    rehydrateLiverySlice: (
+      state,
+      action: PayloadAction<LiverySliceStateType>
+    ) => {
       state.ids = action.payload.ids;
-      state.liveries = action.payload.liveries;
+      state.entities = action.payload.entities;
     }
   },
   extraReducers: (builder) => {
+    // GET LIVERIES
+    builder.addCase(getLiveriesThunk.pending, (state) => {
+      state.getLiveries.status = RequestStatus.PENDING;
+    });
     builder.addCase(getLiveriesThunk.fulfilled, (state, action) => {
-      const { items, ids } = normalise(action.payload);
-      state.liveries = items;
-      state.ids = ids;
+      state.getLiveries.status = RequestStatus.FULFILLED;
+      liveriesAdapter.upsertMany(state, action.payload);
     });
+    builder.addCase(getLiveriesThunk.rejected, (state, action) => {
+      state.getLiveries.status = RequestStatus.REJECTED;
+      state.getLiveries.error = action.error;
+    });
+
+    // GET LIVERY
     builder.addCase(getLiveryThunk.fulfilled, (state, action) => {
-      const { payload } = action;
-      state.liveries[payload.id] = payload;
+      liveriesAdapter.addOne(state, action.payload);
     });
+
+    // POST LIVERY
     builder.addCase(postLiveryThunk.fulfilled, (state, action) => {
-      const { payload } = action;
-      state.ids.push(payload.id);
-      state.liveries[payload.id] = payload;
+      liveriesAdapter.addOne(state, action.payload);
     });
   }
 });
 
+// SELECTORS
+
+export const {
+  selectById,
+  selectAll: selectAllLiveries,
+  selectIds: selectLiveryIds
+} = liveriesAdapter.getSelectors<RootStateFromLiverySlice>(
+  (state) => state[LIVERY_SLICE_NAME]
+);
+export const selectLiveryById =
+  (id: LiveryDataType['id']) => (state: RootStateFromLiverySlice) =>
+    selectById(state, id);
+
 export const { rehydrateLiverySlice } = liverySlice.actions;
 export const liveryReducer = liverySlice.reducer;
 export default liverySlice;
-
-export type { LiverySliceState } from './state';

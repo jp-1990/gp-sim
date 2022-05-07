@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { render } from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import Liveries from '../../../pages/liveries/index';
+import { RequestStatus } from '../../../types';
 
 const testLivery = {
   id: 'd03bfb4f-3b88-41ec-92bb-14b3438696ec',
@@ -38,17 +39,21 @@ describe('Liveries', () => {
       <Liveries
         livery={{
           ids: ['0'],
-          liveries: { '0': testLivery },
-          loading: false,
-          error: false,
-          currentRequestId: null
+          entities: { '0': testLivery },
+          getLiveries: {
+            status: RequestStatus.IDLE,
+            error: null,
+            currentRequestId: null
+          }
         }}
         car={{
           ids: ['0'],
-          cars: { '0': testCar },
-          loading: false,
-          error: false,
-          currentRequestId: null
+          entities: { '0': testCar },
+          getCars: {
+            status: RequestStatus.IDLE,
+            error: null,
+            currentRequestId: null
+          }
         }}
       />
     );

@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import store from '../../store/store';
-import { getLiveriesThunk, getLiveryThunk } from '../../store/livery/slice';
+import {
+  getLiveriesThunk,
+  getLiveryThunk,
+  LIVERY_SLICE_NAME
+} from '../../store/livery/slice';
 
 import { isString, numberToPrice } from '../../utils/functions';
 import {
@@ -167,7 +171,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   let id = '';
   if (isString(paramsId)) id = paramsId;
   await store.dispatch(getLiveryThunk({ id }));
-  const { liveries } = store.getState().livery;
+  const { entities } = store.getState()[LIVERY_SLICE_NAME];
   const {
     car,
     creator,
@@ -178,7 +182,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     images,
     description,
     tags
-  } = liveries[id];
+  } = entities[id] as LiveryDataType;
   return {
     props: {
       car,
@@ -197,12 +201,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   await store.dispatch(getLiveriesThunk({ filters: {}, quantity: 100 }));
-  const { ids } = store.getState().livery;
+  const { ids } = store.getState()[LIVERY_SLICE_NAME];
 
   return {
     paths: ids.map((id) => ({
       params: {
-        id
+        id: `${id.valueOf()}`
       }
     })),
     fallback: 'blocking'

@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Divider, Grid, GridItem } from '@chakra-ui/react';
 import { FormattedMessage } from 'react-intl';
 
-import { useAppSelector } from '../../../../store/store';
 import { commonStrings } from '../../../../utils/intl';
 import { Form } from '../../../shared';
 
@@ -20,8 +19,6 @@ import SubmitLivery from './components/SubmitLivery/SubmitLivery';
 import Title from './components/Title/Title';
 
 const CreateLivery: React.FC = () => {
-  const { cars, ids } = useAppSelector((state) => state.car);
-
   return (
     <Form>
       <Grid
@@ -35,7 +32,7 @@ const CreateLivery: React.FC = () => {
           <Title />
         </GridItem>
         <GridItem rowSpan={1} colSpan={12}>
-          <SelectCar ids={ids} cars={cars} />
+          <SelectCar />
         </GridItem>
         <GridItem rowSpan={1} colSpan={12}>
           <Description />

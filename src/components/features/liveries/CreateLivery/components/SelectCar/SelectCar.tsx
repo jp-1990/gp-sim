@@ -4,20 +4,19 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Select } from '../../../../../shared';
 import { formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
-import { CarDataType } from '../../../../../../types';
+import { useAppSelector } from '../../../../../../store/store';
+import { selectAllCars, selectCarIds } from '../../../../../../store/car/slice';
+import { EntityId } from '@reduxjs/toolkit';
 
-interface Props {
-  ids: string[];
-  cars: Record<string, CarDataType>;
-}
 /**
  * Select car input for liveries/create page. Uses Select inside a form provider
- * @param {Props['cars']} Props.cars - { id: CarData }[ ].
- * @param {Props['ids']} Props.ids - string[ ]. Car ids
  */
-const SelectCar: React.FC<Props> = ({ ids, cars }) => {
+const SelectCar: React.FC = () => {
   const [safeToRender, setSafeToRender] = useState<boolean | undefined>();
   const intl = useIntl();
+
+  const cars = useAppSelector(selectAllCars);
+  const ids = useAppSelector(selectCarIds);
 
   useEffect(() => {
     setSafeToRender(true);
@@ -36,8 +35,8 @@ const SelectCar: React.FC<Props> = ({ ids, cars }) => {
       w="sm"
     >
       {safeToRender &&
-        ids.map((id) => {
-          const targetCar = cars[id];
+        ids.map((id: EntityId) => {
+          const targetCar = cars[+id];
           return (
             <option key={id + targetCar.name} value={targetCar.name}>
               {targetCar.name}
