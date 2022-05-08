@@ -29,7 +29,9 @@ export const mapCreateLiveryFormStateToActionInput = ({
       image: user.picture
     },
     tags: formState.searchTags,
-    isPublic: formState.publicLivery
+    isPublic: formState.publicLivery,
+    garage: formState.privateGarage ? formState.garage : undefined,
+    garageKey: formState.privateGarage ? formState.garageKey : undefined
   };
 };
 

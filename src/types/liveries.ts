@@ -33,4 +33,6 @@ export interface CreateLiveryDataType
   > {
   imageFiles: Array<File>;
   liveryZip: Blob;
+  garage?: string;
+  garageKey?: string;
 }
