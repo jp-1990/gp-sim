@@ -15,6 +15,10 @@ import theme from '../styles/chakra-theme';
 import English from '../../lang/en.json';
 import French from '../../lang/fr.json';
 
+if (process.env.NODE_ENV === 'development') {
+  require('../mocks');
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
   const { locale, defaultLocale } = useRouter();
 
