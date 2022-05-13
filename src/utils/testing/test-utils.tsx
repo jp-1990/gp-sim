@@ -7,16 +7,11 @@ import { UserProvider } from '@auth0/nextjs-auth0';
 import { configureStore, Store } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
-import { storeConfig } from '../../store/store';
+import { apiSlice, storeConfig } from '../../store/store';
 import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
-
-import {
-  LIVERY_SLICE_NAME,
-  initialState as initialLiveryState
-} from '../../store/livery/slice';
 
 import { CarDataType, CarsDataType } from '../../types';
 
@@ -92,9 +87,6 @@ const defaultPreloadedState = {
       keepUnusedDataFor: 60,
       reducerPath: 'api'
     }
-  },
-  [LIVERY_SLICE_NAME]: {
-    ...initialLiveryState
   }
 };
 
@@ -106,7 +98,12 @@ interface Props {
 const TestProviders: React.FC<Props> = ({
   locale = 'en',
   preloadedState = defaultPreloadedState,
-  testStore = configureStore({ ...storeConfig, preloadedState }),
+  testStore = configureStore({
+    ...storeConfig,
+    preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(apiSlice.middleware)
+  }),
   children
 }) => {
   const messages = useMemo(() => {
