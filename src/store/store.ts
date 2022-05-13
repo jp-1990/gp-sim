@@ -1,16 +1,44 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 import liverySlice from './livery/slice';
-import carSlice from './car/slice';
-import { CarsDataType, LiveriesDataType, LiveryDataType } from '../types';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
+
+const axiosBaseQuery =
+  (
+    { baseUrl }: { baseUrl: string } = { baseUrl: '' }
+  ): BaseQueryFn<
+    {
+      url: string;
+      method: AxiosRequestConfig['method'];
+      data?: AxiosRequestConfig['data'];
+      params?: AxiosRequestConfig['params'];
+    },
+    unknown,
+    unknown
+  > =>
+  async ({ url, method, data, params }) => {
+    try {
+      const result = await axios({ url: baseUrl + url, method, data, params });
+      return { data: result.data };
+    } catch (axiosError) {
+      let err = axiosError as AxiosError;
+      return {
+        error: {
+          status: err.response?.status,
+          data: err.response?.data || err.message
+        }
+      };
+    }
+  };
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+  baseQuery: axiosBaseQuery({
+    baseUrl:
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL ?? ''
   }),
   extractRehydrationInfo: (action, { reducerPath }) => {
     if (action.type === HYDRATE) {
@@ -18,34 +46,12 @@ export const apiSlice = createApi({
     }
   },
   tagTypes: [],
-  endpoints: (builder) => ({
-    getCars: builder.query<CarsDataType, void>({
-      query: () => ({
-        url: '/cars',
-        method: 'GET'
-      })
-    }),
-    getLiveries: builder.query<LiveriesDataType, void>({
-      query: () => ({
-        url: '/liveries',
-        method: 'GET'
-      })
-    }),
-    getLiveryById: builder.query<LiveryDataType, string>({
-      query: (id) => ({
-        url: `/liveries/${id}`,
-        method: 'GET'
-      })
-    })
-  })
+  endpoints: () => ({})
 });
-export const { useGetCarsQuery, useGetLiveriesQuery, useGetLiveryByIdQuery } =
-  apiSlice;
 
 export const storeConfig = {
   reducer: {
     [liverySlice.name]: liverySlice.reducer,
-    [carSlice.name]: carSlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer
   }
 };

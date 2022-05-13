@@ -12,10 +12,7 @@ import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
 import French from '../../../lang/fr.json';
-import {
-  CAR_SLICE_NAME,
-  initialState as initialCarState
-} from '../../store/car/slice';
+
 import {
   LIVERY_SLICE_NAME,
   initialState as initialLiveryState
@@ -58,20 +55,43 @@ const carData = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
 const cars = JSON.parse(carData) as CarsDataType;
 
 const defaultPreloadedState = {
-  [CAR_SLICE_NAME]: {
-    ...initialCarState,
-    ...cars.reduce(
-      (acc, curr, i) => {
-        const prev = { ...acc };
-        prev.ids.push(`${i}`);
-        prev.entities[`${i}`] = curr;
-        return prev;
-      },
-      { ids: [], entities: {} } as {
-        ids: string[];
-        entities: Record<string, CarDataType>;
+  api: {
+    queries: {
+      'getCars(undefined)': {
+        status: 'fulfilled',
+        endpointName: 'getCars',
+        requestId: 'HqeJivaMUHLfCw6zDHfwP',
+        startedTimeStamp: new Date(Date.now()).valueOf() - 200,
+        data: {
+          ...cars.reduce(
+            (acc, curr, i) => {
+              const prev = { ...acc };
+              prev.ids.push(`${i}`);
+              prev.entities[`${i}`] = curr;
+              return prev;
+            },
+            { ids: [], entities: {} } as {
+              ids: string[];
+              entities: Record<string, CarDataType>;
+            }
+          )
+        },
+        fulfilledTimeStamp: new Date(Date.now()).valueOf()
       }
-    )
+    },
+    mutations: {},
+    provided: {},
+    subscriptions: {},
+    config: {
+      online: true,
+      focused: true,
+      middlewareRegistered: true,
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMountOrArgChange: false,
+      keepUnusedDataFor: 60,
+      reducerPath: 'api'
+    }
   },
   [LIVERY_SLICE_NAME]: {
     ...initialLiveryState

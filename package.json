@@ -19,6 +19,7 @@
     "@emotion/styled": "^11",
     "@fontsource/lato": "^4.5.5",
     "@reduxjs/toolkit": "^1.8.1",
+    "axios": "^0.27.2",
     "file-saver": "^2.0.5",
     "framer-motion": "^6",
     "jszip": "^3.9.1",
