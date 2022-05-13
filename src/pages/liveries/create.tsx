@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
-import { GetStaticProps, NextPage } from 'next';
+import React from 'react';
+import { NextPage } from 'next';
 import { FormattedMessage } from 'react-intl';
 import { Box, chakra, Flex, Heading, Text } from '@chakra-ui/react';
 
@@ -8,26 +8,14 @@ import { MainLayout } from '../../components/layout';
 import { Breadcrumbs } from '../../components/core';
 import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
 
-import store, { useAppDispatch } from '../../store/store';
-import {
-  getCarsThunk,
-  rehydrateCarSlice,
-  CAR_SLICE_NAME,
-  CarSliceStateType
-} from '../../store/car/slice';
+import { apiSlice, wrapper } from '../../store/store';
+import { getCars, useGetCarsQuery } from '../../store/car/slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_UPLOAD_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 
-interface Props {
-  car: CarSliceStateType;
-}
-const Create: NextPage<Props> = ({ car }) => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(rehydrateCarSlice(car));
-  }, []);
+const Create: NextPage = () => {
+  useGetCarsQuery();
 
   return (
     <MainLayout
@@ -55,12 +43,10 @@ const Create: NextPage<Props> = ({ car }) => {
 
 export default Create;
 
-export const getStaticProps: GetStaticProps = async () => {
-  await store.dispatch(getCarsThunk());
-  const car = store.getState()[CAR_SLICE_NAME];
+export const getStaticProps = wrapper.getStaticProps((store) => async () => {
+  store.dispatch(getCars.initiate());
+  await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
-    props: {
-      car
-    }
+    props: {}
   };
-};
+});
