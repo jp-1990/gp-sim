@@ -25,9 +25,14 @@ export const liveriesHandlers = [
       return res(ctx.delay(), ctx.status(200), ctx.json(filteredLiveries));
     }
   ),
-  rest.get(`${process.env.API_BASE_URL}/liveries/:id`, (req, res, ctx) => {
-    const { id } = req.params;
-    const livery = data.find((el) => el.id === id);
-    return res(ctx.delay(), ctx.status(200), ctx.json(livery));
-  })
+  rest.get(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/liveries/:id`,
+    (req, res, ctx) => {
+      const { id } = req.params;
+      const livery = data.find((el) => el.id === id);
+      return res(ctx.delay(), ctx.status(200), ctx.json(livery));
+    }
+  )
 ];

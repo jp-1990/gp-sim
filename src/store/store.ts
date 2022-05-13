@@ -3,7 +3,6 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-import liverySlice from './livery/slice';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 
 const axiosBaseQuery =
@@ -51,7 +50,6 @@ export const apiSlice = createApi({
 
 export const storeConfig = {
   reducer: {
-    [liverySlice.name]: liverySlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer
   }
 };
@@ -79,4 +77,4 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default store;
 
-export const wrapper = createWrapper<AppStore>(makeStore, { debug: true });
+export const wrapper = createWrapper<AppStore>(makeStore);
