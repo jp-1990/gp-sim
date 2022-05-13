@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import { GetStaticPaths, NextPage } from 'next';
 
-import store from '../../store/store';
+import store, { apiSlice, wrapper } from '../../store/store';
 import {
-  getLiveriesThunk,
-  getLiveryThunk,
-  LIVERY_SLICE_NAME
+  getLiveries,
+  getLiveryById,
+  useGetLiveryByIdQuery
 } from '../../store/livery/slice';
 
 import { isString, numberToPrice } from '../../utils/functions';
@@ -22,37 +22,17 @@ import {
 import { MainLayout } from '../../components/layout';
 import { ImageWithFallback, Rating } from '../../components/core';
 import { Breadcrumbs, Tags } from '../../components/core';
-import { LiveryDataType } from '../../types';
 import { FormattedMessage } from 'react-intl';
 import { commonStrings } from '../../utils/intl';
 import { LIVERIES_URL, LIVERY_URL } from '../../utils/nav';
 
-type Props = Pick<
-  LiveryDataType,
-  | 'car'
-  | 'creator'
-  | 'title'
-  | 'rating'
-  | 'id'
-  | 'downloads'
-  | 'price'
-  | 'images'
-  | 'description'
-  | 'tags'
->;
-const Livery: NextPage<Props> = ({
-  car,
-  creator,
-  description,
-  downloads,
-  id,
-  images,
-  price = 'Free',
-  rating,
-  tags,
-  title
-}) => {
+interface Props {
+  id: string;
+}
+const Livery: NextPage<Props> = ({ id }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
+
+  const { data: livery } = useGetLiveryByIdQuery(id);
 
   const breadcrumbOptions = [
     {
@@ -60,14 +40,14 @@ const Livery: NextPage<Props> = ({
       href: LIVERIES_URL
     },
     {
-      name: `${car} - ${title}`,
+      name: `${livery?.car} - ${livery?.title}`,
       href: undefined
     }
   ];
 
   return (
     <MainLayout
-      pageTitle={`${car} - ${title}`}
+      pageTitle={`${livery?.car} - ${livery?.title}`}
       pageDescription={`View this livery!`}
       urlPath={LIVERY_URL(id)}
     >
@@ -76,13 +56,13 @@ const Livery: NextPage<Props> = ({
         <chakra.section pt={8}>
           <Flex direction="column" maxW="5xl">
             <Heading size="xl" pb={4}>
-              {`${car} - ${title}`}
+              {`${livery?.car} - ${livery?.title}`}
             </Heading>
-            <Rating rating={rating} alignItems="flex-start" />
+            <Rating rating={livery?.rating} alignItems="flex-start" />
             <Text fontSize="md" pt={1} pb={6}>
               <FormattedMessage
                 {...commonStrings.downloads}
-                values={{ downloads }}
+                values={{ downloads: livery?.downloads || '-' }}
               />
             </Text>
             <Grid
@@ -102,10 +82,10 @@ const Livery: NextPage<Props> = ({
                   {Array(4)
                     .fill('')
                     .map((_, i) => {
-                      const src = images[i];
+                      const src = livery?.images[i] || '';
                       return (
                         <Box
-                          key={title + i}
+                          key={(livery?.title ?? '') + i}
                           position="relative"
                           borderRadius={3}
                           overflow="hidden"
@@ -115,7 +95,7 @@ const Livery: NextPage<Props> = ({
                         >
                           <ImageWithFallback
                             imgUrl={src}
-                            imgAlt={title}
+                            imgAlt={livery?.title}
                             bg="gray.200"
                             h="full"
                             w="full"
@@ -133,8 +113,8 @@ const Livery: NextPage<Props> = ({
                   h="full"
                 >
                   <ImageWithFallback
-                    imgUrl={images[selectedImage]}
-                    imgAlt={title}
+                    imgUrl={livery?.images[selectedImage]}
+                    imgAlt={livery?.title}
                     bg="gray.200"
                     h="full"
                     w="full"
@@ -143,16 +123,18 @@ const Livery: NextPage<Props> = ({
               </GridItem>
               <GridItem colSpan={5} rowSpan={4} pl={0}>
                 <Heading size="md" pb={4}>
-                  {creator.displayName}
+                  {livery?.creator.displayName}
                 </Heading>
                 <Text fontSize="sm" pb={4}>
-                  {description}
+                  {livery?.description}
                 </Text>
               </GridItem>
             </Grid>
-            <Tags pb={12} tags={tags?.split(',') || []} />
+            <Tags pb={12} tags={livery?.tags?.split(',') || []} />
             <Heading size="md" pb={4}>
-              {typeof price !== 'string' ? numberToPrice(price) : price}
+              {typeof livery?.price !== 'string'
+                ? numberToPrice(livery?.price || 0)
+                : livery?.price}
             </Heading>
             <Button bg="gray.900" color="white" size="md" w={40} lineHeight={1}>
               <FormattedMessage {...commonStrings.addToBasket} />
@@ -166,43 +148,25 @@ const Livery: NextPage<Props> = ({
 
 export default Livery;
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const paramsId = params?.id;
-  let id = '';
-  if (isString(paramsId)) id = paramsId;
-  await store.dispatch(getLiveryThunk({ id }));
-  const { entities } = store.getState()[LIVERY_SLICE_NAME];
-  const {
-    car,
-    creator,
-    title,
-    rating,
-    downloads,
-    price,
-    images,
-    description,
-    tags
-  } = entities[id] as LiveryDataType;
-  return {
-    props: {
-      car,
-      creator,
-      title,
-      rating,
-      id,
-      downloads,
-      price,
-      images,
-      description,
-      tags
+export const getStaticProps = wrapper.getStaticProps(
+  (store) =>
+    async ({ params }) => {
+      const paramsId = params?.id;
+      let id = '';
+      if (isString(paramsId)) id = paramsId;
+      store.dispatch(getLiveryById.initiate(id));
+      await Promise.all(apiSlice.util.getRunningOperationPromises());
+      return {
+        props: {
+          id
+        }
+      };
     }
-  };
-};
+);
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  await store.dispatch(getLiveriesThunk({ filters: {}, quantity: 100 }));
-  const { ids } = store.getState()[LIVERY_SLICE_NAME];
-
+  const { data } = await store.dispatch(getLiveries.initiate());
+  const ids = data?.ids ?? [];
   return {
     paths: ids.map((id) => ({
       params: {

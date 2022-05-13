@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from 'react';
 import {
   chakra,
   InputGroup,
@@ -17,19 +15,9 @@ import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage } from 'react-intl';
 
-import store, { useAppDispatch } from '../../store/store';
-import {
-  getLiveriesThunk,
-  rehydrateLiverySlice,
-  LIVERY_SLICE_NAME,
-  LiverySliceStateType
-} from '../../store/livery/slice';
-import {
-  getCarsThunk,
-  rehydrateCarSlice,
-  CAR_SLICE_NAME,
-  CarSliceStateType
-} from '../../store/car/slice';
+import { apiSlice, wrapper } from '../../store/store';
+import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
+import { getCars, useGetCarsQuery } from '../../store/car/slice';
 
 import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -38,17 +26,9 @@ import { PageHeading } from '../../components/shared';
 import { LIVERIES_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 
-interface Props {
-  car: CarSliceStateType;
-  livery: LiverySliceStateType;
-}
-const Liveries: NextPage<Props> = ({ car, livery }) => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(rehydrateLiverySlice(livery));
-    dispatch(rehydrateCarSlice(car));
-  }, []);
+const Liveries: NextPage = () => {
+  const { data: cars } = useGetCarsQuery();
+  const { data: liveries } = useGetLiveriesQuery();
 
   return (
     <MainLayout
@@ -81,8 +61,8 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
           </GridItem>
           <GridItem colSpan={3} rowSpan={1}>
             <Select placeholder="Select car">
-              {car.ids.map((id) => {
-                const target = car.entities[id];
+              {cars?.ids.map((id) => {
+                const target = cars.entities[id];
                 if (!target) return null;
                 return (
                   <option key={id + target.name} value={target.name}>
@@ -141,8 +121,8 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
           gap={4}
           w="5xl"
         >
-          {livery.ids.map((e) => {
-            const target = livery.entities[e.valueOf()];
+          {liveries?.ids.map((e) => {
+            const target = liveries?.entities[e.valueOf()];
             if (!target) return null;
             const { id, creator, rating, title, car, images, price } = target;
             return (
@@ -166,15 +146,11 @@ const Liveries: NextPage<Props> = ({ car, livery }) => {
 
 export default Liveries;
 
-export const getStaticProps = async () => {
-  await Promise.all([
-    store.dispatch(getLiveriesThunk({ filters: {}, quantity: 100 })),
-    store.dispatch(getCarsThunk())
-  ]);
-
-  const car = store.getState()[CAR_SLICE_NAME];
-  const livery = store.getState()[LIVERY_SLICE_NAME];
+export const getStaticProps = wrapper.getStaticProps((store) => async () => {
+  store.dispatch(getCars.initiate());
+  store.dispatch(getLiveries.initiate());
+  await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
-    props: { livery, car }
+    props: {}
   };
-};
+});
