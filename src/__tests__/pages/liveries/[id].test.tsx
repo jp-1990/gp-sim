@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '../../../utils/testing/test-utils';
+import { render, screen, waitFor } from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import Livery from '../../../pages/liveries/[id]';
 
@@ -26,20 +26,19 @@ describe('Livery', () => {
     downloads: 1965
   };
 
-  it('renders the expected items based on props', () => {
-    render(<Livery {...testLivery} />);
-    const { downloads, car, title, creator, price, description, tags } =
-      testLivery;
+  it('renders the expected items based on props', async () => {
+    render(<Livery id="d03bfb4f-3b88-41ec-92bb-14b3438696ec" />);
+    const { downloads, car, title, creator, tags } = testLivery;
     const downloadNum = `${downloads} Downloads`;
     const carAndTitle = `${car} - ${title}`;
-
-    expect(screen.queryAllByText(carAndTitle)).toHaveLength(2);
-    expectAllToBeInDocument([
-      downloadNum,
-      creator.displayName,
-      description,
-      `£${(testLivery.price / 100).toFixed(2)}`,
-      ...tags.split(',')
-    ]);
+    await waitFor(() => {
+      expect(screen.queryAllByText(carAndTitle)).toHaveLength(2);
+      expectAllToBeInDocument([
+        downloadNum,
+        creator.displayName,
+        `£${(testLivery.price / 100).toFixed(2)}`,
+        ...tags.split(',')
+      ]);
+    });
   });
 });

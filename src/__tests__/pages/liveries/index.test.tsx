@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom';
-import { render } from '../../../utils/testing/test-utils';
-import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
+import { render, screen, waitFor } from '../../../utils/testing/test-utils';
 import Liveries from '../../../pages/liveries/index';
-import { RequestStatus } from '../../../types';
 
 const testLivery = {
   id: 'd03bfb4f-3b88-41ec-92bb-14b3438696ec',
@@ -14,8 +12,7 @@ const testLivery = {
     image: '/car2.png'
   },
   title: 'Harlequin',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n                  Mauris mauris eros, euismod ut mi vitae, convallis iaculis\n                  quam. Pellentesque consectetur iaculis tortor vitae euismod.\n                  Integer malesuada congue elementum. Pellentesque vulputate\n                  diam dignissim elit hendrerit iaculis.',
+  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   car: 'Audi R8 LMS GT4',
   price: 598,
   tags: 'Red,2010s,Blue',
@@ -27,41 +24,16 @@ const testLivery = {
   downloads: 1965
 };
 
-const testCar = {
-  id: '0',
-  class: 'GT4',
-  name: 'Aston Martin V8 Vantage GT4'
-};
-
 describe('Liveries', () => {
-  it('renders a livery', () => {
-    render(
-      <Liveries
-        livery={{
-          ids: ['0'],
-          entities: { '0': testLivery },
-          getLiveries: {
-            status: RequestStatus.IDLE,
-            error: null,
-            currentRequestId: null
-          }
-        }}
-        car={{
-          ids: ['0'],
-          entities: { '0': testCar },
-          getCars: {
-            status: RequestStatus.IDLE,
-            error: null,
-            currentRequestId: null
-          }
-        }}
-      />
-    );
-    const testValues = [
-      testLivery.creator.displayName,
-      testLivery.title,
-      `£${(testLivery.price / 100).toFixed(2)}`
-    ];
-    expectAllToBeInDocument(testValues);
+  it('renders a livery', async () => {
+    render(<Liveries />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(testLivery.creator.displayName)).toBeTruthy();
+      expect(screen.getAllByText(testLivery.title)).toBeTruthy();
+      expect(
+        screen.getAllByText(`£${(testLivery.price / 100).toFixed(2)}`)
+      ).toBeTruthy();
+    });
   });
 });
