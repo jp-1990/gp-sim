@@ -6,14 +6,14 @@ import { LIVERY_FILE_NAMES } from '../../../../shared/Form/utils';
 import { CreateLiveryFormStateType } from '../types';
 import { CreateLiveryDataType } from '../../../../../types';
 
-interface MapCreateLiveryFormStateToActionInputArgs {
+interface MapCreateLiveryFormStateToRequestInputArgs {
   formState: FormStateType<CreateLiveryFormStateType>;
   user: UserProfile | undefined;
 }
-export const mapCreateLiveryFormStateToActionInput = ({
+export const mapCreateLiveryFormStateToRequestInput = ({
   formState,
   user
-}: MapCreateLiveryFormStateToActionInputArgs): Omit<
+}: MapCreateLiveryFormStateToRequestInputArgs): Omit<
   CreateLiveryDataType,
   'liveryZip' | 'imageFiles'
 > => {

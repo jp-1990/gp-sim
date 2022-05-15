@@ -31,20 +31,26 @@ const FormProvider = <T extends FormDefaultStateType>({
   const [state, setState] = useState<FormStateType<T>>(initialFormState);
 
   /**
-   * A convenience wrapper for setState, which makes a deep copy of existing state using lodash _cloneDeep, which is then passed into the provided callback as state. This allows direct mutations to be made within the callback function, which should then return the state.
-   * @param callback - function which should accept state as an argument, and return state.
+   * A convenience wrapper for setState, which makes a deep copy of existing state using lodash _cloneDeep, which is then passed into the provided callback as state. This allows direct mutations to be made within the callback function, which should then return void or the new state.
+   * @param callback - function which should accept state as an argument, and return void or the new state.
    */
   const setStateImmutably = (
-    callback: (formState: typeof state) => typeof state
+    callback: (formState: typeof state) => typeof state | void
   ) => {
     setState((prev) => {
       const prevState = _cloneDeep(prev);
       const newState = callback(prevState);
-      return newState;
+      return newState ?? prevState;
     });
   };
 
-  const value = { state, setState, setStateImmutably };
+  /**
+   * A convenience helper to rest form state back to initial values
+   */
+  const resetState = () =>
+    setState({ ...initialFormState } as FormStateType<FormDefaultStateType>);
+
+  const value = { state, setState, setStateImmutably, resetState };
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
 };
 

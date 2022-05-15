@@ -2,7 +2,8 @@ import {
   FormValueType,
   FormStateType,
   FormStatusType,
-  SetFormStatusType
+  SetFormStatusType,
+  FormDefaultStateType
 } from '../types';
 import { IsFieldValidReturnType } from './validation';
 
@@ -158,10 +159,13 @@ export const setFormStatus =
  * @returns onClick function to provide to SubmitButton onClick event
  */
 export const submitButtonSubmitForm =
-  (
-    state: FormStateType,
+  <T extends FormDefaultStateType>(
+    state: FormStateType<T>,
     setFormStatus: SetFormStatusType,
-    onClick: (state: FormStateType, setFormStatus: SetFormStatusType) => void
+    onClick: (
+      state: FormStateType<T>,
+      setFormStatus?: SetFormStatusType
+    ) => void
   ) =>
   () =>
     onClick(state, setFormStatus);

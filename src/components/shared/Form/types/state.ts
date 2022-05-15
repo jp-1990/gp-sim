@@ -10,15 +10,19 @@ export type SetFormStatusType = (
 
 export type FormDefaultStateType = Record<string | number | symbol, any>;
 export type FormInitialStateType = FormStatusType;
-export type FormStateType<T extends FormDefaultStateType> =
-  FormInitialStateType & T;
+export type FormStateType<
+  T extends FormDefaultStateType = FormDefaultStateType
+> = FormInitialStateType & T;
 
-export interface FormValueType<T extends FormDefaultStateType> {
+export interface FormValueType<
+  T extends FormDefaultStateType = FormDefaultStateType
+> {
   state: FormStateType<T>;
   setState: React.Dispatch<React.SetStateAction<FormStateType<T>>>;
   setStateImmutably: (
     callback: (formState: FormStateType<T>) => FormStateType<T>
   ) => void;
+  resetState: () => void;
 }
 
 export type StateWithStateKey<

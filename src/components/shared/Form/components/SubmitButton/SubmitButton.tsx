@@ -21,7 +21,7 @@ type SubmitButtonProps<T> = MergeWithAs<
     loadingText?: React.ReactNode | string;
     onClick: (
       state: FormStateType<T>,
-      setFormStatus: SetFormStatusType
+      setFormStatus?: SetFormStatusType
     ) => void;
   },
   React.ElementType<HTMLButtonElement>
@@ -31,13 +31,13 @@ type SubmitButtonProps<T> = MergeWithAs<
  * Accepts any props accepted by ChakraUI Button. Submit action must be handled by passing an onClick function as props with a single 'state' argument.
  * @returns Function Component
  */
-const SubmitButton = <T,>({
+const SubmitButton = <StateType,>({
   loadingText,
   onClick,
   children,
   ...chakraProps
-}: SubmitButtonProps<T>) => {
-  const { state, setState } = useForm<T>();
+}: SubmitButtonProps<StateType>) => {
+  const { state, setState } = useForm<StateType>();
   const submitDisabled = !!state.invalidFields.length || state.error;
 
   const isLoadingState = chakraProps.isLoading ?? state.loading;
@@ -47,11 +47,17 @@ const SubmitButton = <T,>({
 
   const isDisabledState = chakraProps.isDisabled ?? submitDisabled;
 
-  const onSubmit = submitButtonSubmitForm(
-    state,
-    setFormStatus(setState),
-    onClick ?? (() => null)
-  );
+  const onSubmit = () => {
+    try {
+      submitButtonSubmitForm<StateType>(
+        state,
+        setFormStatus(setState),
+        onClick ?? (() => null)
+      )();
+    } catch (err) {
+      setFormStatus(setState)('error', true);
+    }
+  };
   return (
     <ChakraButton
       test-id={`form-submit-button`}
