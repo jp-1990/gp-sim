@@ -6,8 +6,7 @@ import {
 
 import { CarDataType, CarsDataType } from '../../types';
 import { apiSlice } from '../store';
-
-export const CAR_SLICE_NAME = 'carSlice';
+import { GET_CARS } from './constants';
 
 // ADAPTER
 
@@ -21,7 +20,7 @@ export type CarApiSliceStateType = typeof initialState;
 
 export const carApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getCars: builder.query<EntityState<CarDataType>, void>({
+    [GET_CARS]: builder.query<EntityState<CarDataType>, void>({
       query: () => ({
         url: '/cars',
         method: 'GET'

@@ -4,6 +4,7 @@ import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
+import { GET_LIVERIES } from './livery/constants';
 
 const axiosBaseQuery =
   (
@@ -51,7 +52,7 @@ export const apiSlice = createApi({
       return action.payload[reducerPath];
     }
   },
-  tagTypes: [],
+  tagTypes: [GET_LIVERIES],
   endpoints: () => ({})
 });
 

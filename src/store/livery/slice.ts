@@ -4,10 +4,13 @@ import {
   EntityState
 } from '@reduxjs/toolkit';
 
-import { LiveriesDataType, LiveryDataType } from '../../types';
+import {
+  LiveriesDataType,
+  LiveryDataType,
+  CreateLiveryDataType
+} from '../../types';
 import { apiSlice } from '../store';
-
-export const LIVERY_SLICE_NAME = 'liverySlice';
+import { GET_LIVERIES, GET_LIVERY_BY_ID, CREATE_LIVERY } from './constants';
 
 // ADAPTER
 
@@ -21,16 +24,17 @@ export type LiverySliceStateType = typeof initialState;
 
 export const liveryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getLiveries: builder.query<EntityState<LiveryDataType>, void>({
+    [GET_LIVERIES]: builder.query<EntityState<LiveryDataType>, void>({
       query: () => ({
         url: '/liveries',
         method: 'GET'
       }),
       transformResponse: (data: LiveriesDataType) =>
         liveriesAdapter.setAll(initialState, data),
-      keepUnusedDataFor: 300
+      keepUnusedDataFor: 300,
+      providesTags: [GET_LIVERIES]
     }),
-    getLiveryById: builder.query<LiveryDataType, string>({
+    [GET_LIVERY_BY_ID]: builder.query<LiveryDataType, string>({
       query: (id) => {
         return {
           url: `/liveries/${id}`,
@@ -38,6 +42,19 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
         };
       },
       keepUnusedDataFor: 180
+    }),
+    [CREATE_LIVERY]: builder.mutation<LiveryDataType, CreateLiveryDataType>({
+      query: (newLivery) => {
+        return {
+          url: `/liveries`,
+          method: 'POST',
+          data: newLivery,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+      },
+      invalidatesTags: [GET_LIVERIES]
     })
   })
 });
@@ -47,11 +64,16 @@ type LiveryApiSliceRootState = {
 
 // HOOKS
 
-export const { useGetLiveriesQuery, useGetLiveryByIdQuery } = liveryApiSlice;
+export const {
+  useGetLiveriesQuery,
+  useGetLiveryByIdQuery,
+  useCreateLiveryMutation
+} = liveryApiSlice;
 
 // ENDPOINTS
 
-export const { getLiveries, getLiveryById } = liveryApiSlice.endpoints;
+export const { getLiveries, getLiveryById, createLivery } =
+  liveryApiSlice.endpoints;
 
 // SELECTORS
 
