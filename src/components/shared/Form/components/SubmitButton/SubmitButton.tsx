@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  ComponentWithAs,
   Button as ChakraButton,
-  ButtonProps as ChakraButtonProps
+  ButtonProps as ChakraButtonProps,
+  MergeWithAs
 } from '@chakra-ui/react';
 import { FormattedMessage } from 'react-intl';
 
@@ -11,19 +11,33 @@ import { submitButtonSubmitForm, setFormStatus } from '../../utils';
 import { FormStateType, SetFormStatusType } from '../../types';
 import { commonStrings } from '../../../../../utils/intl';
 
-interface SubmitButtonProps {
-  loadingText?: React.ReactNode | string;
-  onClick: (state: FormStateType, setFormStatus: SetFormStatusType) => void;
-}
+type SubmitButtonProps<T> = MergeWithAs<
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >,
+  React.ComponentProps<any>,
+  Omit<ChakraButtonProps, 'onClick'> & {
+    loadingText?: React.ReactNode | string;
+    onClick: (
+      state: FormStateType<T>,
+      setFormStatus: SetFormStatusType
+    ) => void;
+  },
+  React.ElementType<HTMLButtonElement>
+>;
+
 /**
  * Accepts any props accepted by ChakraUI Button. Submit action must be handled by passing an onClick function as props with a single 'state' argument.
  * @returns Function Component
  */
-const SubmitButton: ComponentWithAs<
-  'button',
-  Omit<ChakraButtonProps, 'onClick'> & SubmitButtonProps
-> = ({ loadingText, onClick, children, ...chakraProps }) => {
-  const { state, setState } = useForm();
+const SubmitButton = <T,>({
+  loadingText,
+  onClick,
+  children,
+  ...chakraProps
+}: SubmitButtonProps<T>) => {
+  const { state, setState } = useForm<T>();
   const submitDisabled = !!state.invalidFields.length || state.error;
 
   const isLoadingState = chakraProps.isLoading ?? state.loading;
