@@ -5,6 +5,7 @@ import {
   MergeWithAs
 } from '@chakra-ui/react';
 import { FormattedMessage } from 'react-intl';
+import { debounce } from 'lodash';
 
 import { useForm } from '../../Form';
 import { submitButtonSubmitForm, setFormStatus } from '../../utils';
@@ -69,7 +70,10 @@ const SubmitButton = <StateType,>({
       isLoading={isLoadingState}
       isDisabled={isDisabledState}
       {...chakraProps}
-      onClick={onSubmit}
+      onClick={debounce(onSubmit, 1000, {
+        leading: true,
+        trailing: false
+      })}
     >
       {children}
     </ChakraButton>
