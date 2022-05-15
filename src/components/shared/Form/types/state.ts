@@ -22,7 +22,7 @@ export interface FormValueType<
   setStateImmutably: (
     callback: (formState: FormStateType<T>) => FormStateType<T>
   ) => void;
-  resetState: () => void;
+  resetState: (initialState: FormStateType<FormDefaultStateType>) => void;
 }
 
 export type StateWithStateKey<
