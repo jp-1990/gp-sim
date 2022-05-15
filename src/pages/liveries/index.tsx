@@ -9,7 +9,9 @@ import {
   RangeSlider,
   RangeSliderTrack,
   RangeSliderFilledTrack,
-  RangeSliderThumb
+  RangeSliderThumb,
+  Button,
+  Flex
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
@@ -23,8 +25,9 @@ import { LiveryCard } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
-import { LIVERIES_URL } from '../../utils/nav';
+import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
+import Link from 'next/link';
 
 const Liveries: NextPage = () => {
   const { data: cars } = useGetCarsQuery();
@@ -40,6 +43,15 @@ const Liveries: NextPage = () => {
         heading={<FormattedMessage {...liveryStrings.liveriesHeading} />}
         paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
       />
+      <Flex w="full" maxW="5xl" my={5}>
+        <Button colorScheme="red" w="3xs" lineHeight={1}>
+          <Link href={LIVERY_CREATE_URL}>
+            <a>
+              <FormattedMessage {...liveryStrings.uploadALivery} />
+            </a>
+          </Link>
+        </Button>
+      </Flex>
       <chakra.section pt={8} w="5xl" display="flex" justifyContent="flex-start">
         <Grid
           templateColumns="repeat(6, 1fr)"
