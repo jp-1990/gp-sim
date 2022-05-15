@@ -569,15 +569,5 @@ describe('CreateLivery', () => {
         })
       ).not.toBeDisabled();
     });
-
-    // it('submits with the expected values when submit is clicked', () => {
-    //   render(<CreateLivery />);
-    //   expect(true).toBe(false);
-    // });
-
-    // it('fires the expected function when cancel is clicked', () => {
-    //   render(<CreateLivery />);
-    //   expect(true).toBe(false);
-    // });
   });
 });

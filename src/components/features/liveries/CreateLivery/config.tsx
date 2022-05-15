@@ -28,6 +28,18 @@ export const stateKeys = {
   IMAGE_FILES: 'imageFiles'
 } as const;
 
+export const initialState = {
+  error: false,
+  invalidFields: [],
+  loading: false,
+  [stateKeys.CAR]: '',
+  [stateKeys.IMAGE_FILES]: [],
+  [stateKeys.LIVERY_FILES]: [],
+  [stateKeys.PRICE]: 'Free',
+  [stateKeys.PUBLIC_LIVERY]: true,
+  [stateKeys.SEARCH_TAGS]: ''
+};
+
 export const validators = {
   title: [validatorOptions.NON_NULL_STRING],
   car: [validatorOptions.NON_NULL_STRING],
