@@ -11,7 +11,7 @@ import CreateLivery from '../../components/features/liveries/CreateLivery/Create
 import { apiSlice, wrapper } from '../../store/store';
 import { getCars, useGetCarsQuery } from '../../store/car/slice';
 import { liveryStrings } from '../../utils/intl';
-import { LIVERY_UPLOAD_URL } from '../../utils/nav';
+import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 
 const Create: NextPage = () => {
@@ -21,7 +21,7 @@ const Create: NextPage = () => {
     <MainLayout
       pageTitle="Create Livery"
       pageDescription="Create and upload your own livery!"
-      urlPath={LIVERY_UPLOAD_URL}
+      urlPath={LIVERY_CREATE_URL}
     >
       <Box maxW="5xl" w="5xl" display="flex" flexDir={'column'}>
         <Breadcrumbs options={breadcrumbOptions} />
