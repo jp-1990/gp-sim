@@ -21,7 +21,7 @@ import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
 import { getCars, useGetCarsQuery } from '../../store/car/slice';
 
-import { LiveryCard } from '../../components/features';
+import { LiveryList } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
@@ -126,32 +126,7 @@ const Liveries: NextPage = () => {
           </GridItem>
         </Grid>
       </chakra.section>
-      <chakra.section pt={9}>
-        <Grid
-          templateColumns="repeat(3, 1fr)"
-          templateRows="repeat(3, 1fr)"
-          gap={4}
-          w="5xl"
-        >
-          {liveries?.ids.map((e) => {
-            const target = liveries?.entities[e.valueOf()];
-            if (!target) return null;
-            const { id, creator, rating, title, car, images, price } = target;
-            return (
-              <LiveryCard
-                key={e}
-                car={car}
-                creator={creator}
-                rating={rating}
-                id={id}
-                image={images[0]}
-                price={price}
-                title={title}
-              />
-            );
-          })}
-        </Grid>
-      </chakra.section>
+      <LiveryList liveries={liveries} />
     </MainLayout>
   );
 };
