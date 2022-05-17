@@ -35,7 +35,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-dev-data
 public/car1.png
 public/car2.png
 public/car3.png

@@ -1,8 +1,7 @@
 import { rest } from 'msw';
 import { applyFilters } from '../../utils/dev-data/utils';
 import data from '../../utils/dev-data/liveries.json';
-import { randomUUID } from 'crypto';
-import { CreateLiveryDataType, LiveryDataType } from '../../types';
+import { CreateLiveryDataType } from '../../types';
 
 export const liveriesHandlers = [
   rest.get(
