@@ -17,20 +17,31 @@ import { GET_LIVERIES, GET_LIVERY_BY_ID, CREATE_LIVERY } from './constants';
 const liveriesAdapter = createEntityAdapter<LiveryDataType>({
   sortComparer: (a, b) => b.downloads - a.downloads
 });
-const initialState = liveriesAdapter.getInitialState();
+const initialState = liveriesAdapter.getInitialState({
+  maxPrice: null
+});
 export type LiverySliceStateType = typeof initialState;
 
 // API SLICE
 
 export const liveryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    [GET_LIVERIES]: builder.query<EntityState<LiveryDataType>, void>({
+    [GET_LIVERIES]: builder.query<
+      EntityState<LiveryDataType> & { maxPrice: number | null },
+      void
+    >({
       query: () => ({
         url: '/liveries',
         method: 'GET'
       }),
-      transformResponse: (data: LiveriesDataType) =>
-        liveriesAdapter.setAll(initialState, data),
+      transformResponse: (data: LiveriesDataType) => {
+        const maxPrice = data.reduce((prev, cur) => {
+          if (!cur.price) return prev;
+          if (cur?.price > prev) return cur.price;
+          return prev;
+        }, 0);
+        return { ...liveriesAdapter.setAll(initialState, data), maxPrice };
+      },
       keepUnusedDataFor: 300,
       providesTags: [GET_LIVERIES]
     }),

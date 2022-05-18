@@ -43,4 +43,4 @@ const LiveryList: ComponentWithAs<'section', ChakraProps & Props> = ({
   );
 };
 
-export default LiveryList;
+export default React.memo(LiveryList);
