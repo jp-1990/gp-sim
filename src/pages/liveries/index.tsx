@@ -1,4 +1,10 @@
-import { ChangeEvent, useState } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState
+} from 'react';
 import {
   chakra,
   InputGroup,
@@ -19,6 +25,7 @@ import {
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage } from 'react-intl';
+import debounce from 'lodash/debounce';
 
 import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
@@ -31,52 +38,105 @@ import { PageHeading } from '../../components/shared';
 import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import Link from 'next/link';
-import { Order } from '../../types';
+import {
+  LiveriesFilters,
+  LiveriesFilterKeys,
+  isFilterKey,
+  Order
+} from '../../types';
+
+const initialState = {
+  search: '',
+  car: '',
+  priceMin: '00.00',
+  priceMax: '00.00',
+  created: Order.ASC,
+  rating: '0'
+};
+
+type Action = { type: LiveriesFilterKeys; payload: any };
+const filtersReducer = (state: typeof initialState, action: Action) => {
+  switch (action.type) {
+    case LiveriesFilterKeys.SEARCH: {
+      return { ...state, search: action.payload };
+    }
+    case LiveriesFilterKeys.CAR: {
+      return { ...state, car: action.payload };
+    }
+    case LiveriesFilterKeys.PRICE_MIN: {
+      return { ...state, priceMin: action.payload };
+    }
+    case LiveriesFilterKeys.PRICE_MAX: {
+      return { ...state, priceMax: action.payload };
+    }
+    case LiveriesFilterKeys.CREATED: {
+      return { ...state, created: action.payload };
+    }
+    case LiveriesFilterKeys.RATING: {
+      return { ...state, rating: action.payload };
+    }
+    default:
+      return state;
+  }
+};
 
 const Liveries: NextPage = () => {
+  // STATE
+  const [filters, dispatch] = useReducer(filtersReducer, initialState);
+  const [maxPriceCap, setMaxPriceCap] = useState<number>(0);
+
   // QUERIES
   const { data: cars } = useGetCarsQuery();
-  const { data: liveries } = useGetLiveriesQuery();
+  const { data: liveries } = useGetLiveriesQuery(filters);
 
-  // STATE
-  const maxPriceCap = (liveries?.maxPrice || 0) / 100;
-  const [search, setSearch] = useState<string>('');
-  const [car, setCar] = useState<string>('');
-  const [minPrice, setMinPrice] = useState<string>('00.00');
-  const [maxPrice, setMaxPrice] = useState<string>(`${maxPriceCap}`);
-  const [created, setCreated] = useState<Order>(Order.ASC);
-  const [rating, setRating] = useState<number>(0);
+  // EFFECTS
+  useEffect(() => {
+    if (liveries?.maxPrice && liveries.maxPrice / 100 > maxPriceCap) {
+      const value = (liveries?.maxPrice || 0) / 100;
+      setMaxPriceCap(value);
+    }
+  }, [liveries?.maxPrice, maxPriceCap]);
 
   // HANDLERS
   const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
+    dispatch({ type: LiveriesFilterKeys.SEARCH, payload: event.target.value });
   };
+
   const onCarChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setCar(event.target.value);
+    dispatch({ type: LiveriesFilterKeys.CAR, payload: event.target.value });
   };
   const onMinPriceChange = (value: string) => {
-    setMinPrice(value);
+    dispatch({ type: LiveriesFilterKeys.PRICE_MIN, payload: value });
   };
   const onMaxPriceChange = (value: string) => {
-    setMaxPrice(value);
+    dispatch({ type: LiveriesFilterKeys.PRICE_MAX, payload: value });
   };
   const onPriceRangeChange = (value: [number, number]) => {
-    setMinPrice(
-      value[0].toLocaleString('en-GB', {
+    dispatch({
+      type: LiveriesFilterKeys.PRICE_MIN,
+      payload: value[0].toLocaleString('en-GB', {
         style: 'decimal',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
-    );
-    setMaxPrice(`${value[1]}`);
+    });
+    dispatch({
+      type: LiveriesFilterKeys.PRICE_MAX,
+      payload: value[1].toLocaleString('en-GB', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    });
   };
   const onCreatedChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     if (value !== Order.ASC && value !== Order.DESC) return;
-    setCreated(value);
+    dispatch({ type: LiveriesFilterKeys.CREATED, payload: value });
   };
-  const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) =>
-    setRating(+event.target.value);
+  const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: LiveriesFilterKeys.RATING, payload: event.target.value });
+  };
 
   return (
     <MainLayout
@@ -116,12 +176,16 @@ const Liveries: NextPage = () => {
               <Input
                 placeholder="Search..."
                 onChange={onSearchChange}
-                value={search}
+                value={filters.search}
               />
             </InputGroup>
           </GridItem>
           <GridItem colSpan={3} rowSpan={1}>
-            <Select placeholder="Select car" onChange={onCarChange} value={car}>
+            <Select
+              placeholder="Select car"
+              onChange={onCarChange}
+              value={filters.car}
+            >
               {cars?.ids.map((id) => {
                 const target = cars.entities[id];
                 if (!target) return null;
@@ -139,7 +203,7 @@ const Liveries: NextPage = () => {
                 defaultValue={undefined}
                 min={0}
                 max={maxPriceCap}
-                value={minPrice}
+                value={filters.priceMin}
                 onChange={onMinPriceChange}
                 precision={2}
                 format={(str) => `£${str}`}
@@ -154,7 +218,7 @@ const Liveries: NextPage = () => {
                 defaultValue={undefined}
                 min={0}
                 max={maxPriceCap}
-                value={maxPrice}
+                value={filters.priceMax}
                 onChange={onMaxPriceChange}
                 precision={2}
                 format={(str) => `£${str}`}
@@ -168,11 +232,11 @@ const Liveries: NextPage = () => {
               // eslint-disable-next-line jsx-a11y/aria-proptypes
               aria-label={['min', 'max']}
               colorScheme="pink"
-              defaultValue={[+minPrice, maxPriceCap]}
+              defaultValue={[+filters.priceMin, maxPriceCap]}
               min={0}
               max={maxPriceCap}
               step={0.01}
-              value={[+minPrice, +maxPrice]}
+              value={[+filters.priceMin, +filters.priceMax]}
               onChange={onPriceRangeChange}
             >
               <RangeSliderTrack>
@@ -185,7 +249,7 @@ const Liveries: NextPage = () => {
           <GridItem colSpan={2} rowSpan={1}>
             <Select
               placeholder="Created"
-              value={created}
+              value={filters.created}
               onChange={onCreatedChange}
             >
               <option value={Order.ASC}>Most recent first</option>
@@ -195,7 +259,7 @@ const Liveries: NextPage = () => {
           <GridItem colSpan={2} rowSpan={1}>
             <Select
               placeholder="Rating"
-              value={rating}
+              value={filters.rating}
               onChange={onRatingChange}
             >
               <option value={5}>5 Star </option>
@@ -216,7 +280,7 @@ export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   store.dispatch(getCars.initiate());
-  store.dispatch(getLiveries.initiate());
+  store.dispatch(getLiveries.initiate({}));
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
     props: {}

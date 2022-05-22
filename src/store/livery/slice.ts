@@ -7,16 +7,15 @@ import {
 import {
   LiveriesDataType,
   LiveryDataType,
-  CreateLiveryDataType
+  CreateLiveryDataType,
+  LiveriesFilters
 } from '../../types';
 import { apiSlice } from '../store';
 import { GET_LIVERIES, GET_LIVERY_BY_ID, CREATE_LIVERY } from './constants';
 
 // ADAPTER
 
-const liveriesAdapter = createEntityAdapter<LiveryDataType>({
-  sortComparer: (a, b) => b.downloads - a.downloads
-});
+const liveriesAdapter = createEntityAdapter<LiveryDataType>();
 const initialState = liveriesAdapter.getInitialState({
   maxPrice: null
 });
@@ -28,11 +27,12 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     [GET_LIVERIES]: builder.query<
       EntityState<LiveryDataType> & { maxPrice: number | null },
-      void
+      Partial<Record<keyof LiveriesFilters, string>>
     >({
-      query: () => ({
+      query: (filters) => ({
         url: '/liveries',
-        method: 'GET'
+        method: 'GET',
+        params: filters
       }),
       transformResponse: (data: LiveriesDataType) => {
         const maxPrice = data.reduce((prev, cur) => {
@@ -88,7 +88,7 @@ export const { getLiveries, getLiveryById, createLivery } =
 
 // SELECTORS
 
-export const selectGetLiveriesResult = getLiveries.select();
+export const selectGetLiveriesResult = getLiveries.select({});
 const selectLiveriesData = createSelector(
   selectGetLiveriesResult,
   (getLiveriesResult) => getLiveriesResult.data

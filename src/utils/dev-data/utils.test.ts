@@ -40,21 +40,21 @@ describe('apply filters function', () => {
       });
     });
     it('should filter by priceMin', () => {
-      const price1 = '1000';
+      const price1 = '10.00';
       const result1 = applyFilters(data, [null, null, price1]);
 
       expect(result1).toHaveLength(3);
       result1.forEach((livery) => {
-        expect(livery.price).toBeGreaterThan(+price1);
+        expect(livery.price).toBeGreaterThan(+price1 * 100);
       });
     });
     it('should filter by priceMax', () => {
-      const price1 = '1000';
+      const price1 = '10.00';
       const result1 = applyFilters(data, [null, null, null, price1]);
 
       expect(result1).toHaveLength(2);
       result1.forEach((livery) => {
-        expect(livery.price).toBeLessThan(+price1);
+        expect(livery.price).toBeLessThan(+price1 * 100);
       });
     });
     it('should filter by rating', () => {
@@ -112,7 +112,7 @@ describe('apply filters function', () => {
       }
     });
     it('should order by rating', () => {
-      const rating1 = '0';
+      const rating1 = '2';
 
       const result1 = applyFilters(data, [
         null,
