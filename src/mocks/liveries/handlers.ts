@@ -9,21 +9,46 @@ export const liveriesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/liveries`,
     (req, res, ctx) => {
+      const perPage = 30;
       const params = [
         'search',
         'car',
         'priceMin',
         'priceMax',
         'created',
-        'rating',
-        'quantity'
+        'rating'
       ];
       const liveries = [...data];
       liveries.sort((a, b) => b.downloads - a.downloads);
-      const filteredLiveries = applyFilters(liveries, [
+      let filteredLiveries = applyFilters(liveries, [
         ...params.map((param) => req.url.searchParams.get(param))
       ]);
-      return res(ctx.delay(), ctx.status(200), ctx.json(filteredLiveries));
+      const maxPrice = filteredLiveries.reduce((prev, cur) => {
+        if (!cur.price) return prev;
+        if (cur?.price > prev) return cur.price;
+        return prev;
+      }, 0);
+      const total = filteredLiveries.length;
+      const page = req.url.searchParams.get('page');
+
+      if (page && !isNaN(+page)) {
+        filteredLiveries = filteredLiveries.slice(
+          +page * perPage,
+          +page * perPage + perPage
+        );
+      }
+
+      return res(
+        ctx.delay(),
+        ctx.status(200),
+        ctx.json({
+          maxPrice,
+          perPage,
+          total,
+          liveries: filteredLiveries,
+          page: +(req.url.searchParams.get('page') || '0')
+        })
+      );
     }
   ),
   rest.get(

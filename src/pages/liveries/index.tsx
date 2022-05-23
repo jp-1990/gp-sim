@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useReducer,
-  useState
-} from 'react';
+import { ChangeEvent, useEffect, useReducer, useState } from 'react';
 import {
   chakra,
   InputGroup,
@@ -25,7 +19,6 @@ import {
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage } from 'react-intl';
-import debounce from 'lodash/debounce';
 
 import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
@@ -38,12 +31,7 @@ import { PageHeading } from '../../components/shared';
 import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import Link from 'next/link';
-import {
-  LiveriesFilters,
-  LiveriesFilterKeys,
-  isFilterKey,
-  Order
-} from '../../types';
+import { LiveriesFilterKeys, Order } from '../../types';
 
 const initialState = {
   search: '',
@@ -51,7 +39,8 @@ const initialState = {
   priceMin: '00.00',
   priceMax: '00.00',
   created: Order.ASC,
-  rating: '0'
+  rating: '0',
+  page: 0
 };
 
 type Action = { type: LiveriesFilterKeys; payload: any };
@@ -74,6 +63,9 @@ const filtersReducer = (state: typeof initialState, action: Action) => {
     }
     case LiveriesFilterKeys.RATING: {
       return { ...state, rating: action.payload };
+    }
+    case LiveriesFilterKeys.PAGE: {
+      return { ...state, page: action.payload };
     }
     default:
       return state;
@@ -137,6 +129,13 @@ const Liveries: NextPage = () => {
   const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) => {
     dispatch({ type: LiveriesFilterKeys.RATING, payload: event.target.value });
   };
+  const onPageChange = (page: number) => () => {
+    dispatch({ type: LiveriesFilterKeys.PAGE, payload: page });
+  };
+
+  const pages = Array.from(
+    Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
+  );
 
   return (
     <MainLayout
@@ -272,6 +271,24 @@ const Liveries: NextPage = () => {
         </Grid>
       </chakra.section>
       <LiveryList liveries={liveries} />
+      <Flex w="5xl" justifyContent="flex-end">
+        <Flex mt={4}>
+          {pages.map((page) => {
+            return (
+              <Button
+                mx={1}
+                border="1px solid #c4c4c4"
+                key={page + 1}
+                colorScheme={(liveries?.page || 0) === page ? 'red' : undefined}
+                lineHeight={1}
+                onClick={onPageChange(page)}
+              >
+                {page + 1}
+              </Button>
+            );
+          })}
+        </Flex>
+      </Flex>
     </MainLayout>
   );
 };

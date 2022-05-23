@@ -10,6 +10,7 @@ export interface LiveriesFilters {
   priceMax?: number;
   created?: Order;
   rating?: number;
+  page?: number;
 }
 
 export enum LiveriesFilterKeys {
@@ -18,9 +19,6 @@ export enum LiveriesFilterKeys {
   PRICE_MIN = 'priceMin',
   PRICE_MAX = 'priceMax',
   CREATED = 'created',
-  RATING = 'rating'
+  RATING = 'rating',
+  PAGE = 'page'
 }
-
-export const isFilterKey = (key: string): key is keyof LiveriesFilters => {
-  return Object.values(LiveriesFilterKeys).includes(key as any);
-};

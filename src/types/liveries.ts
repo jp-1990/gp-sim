@@ -18,6 +18,13 @@ export interface LiveryDataType {
   downloads: number;
 }
 export type LiveriesDataType = LiveryDataType[];
+export type LiveriesResponseType = {
+  liveries: LiveriesDataType;
+  total: number;
+  maxPrice: number;
+  perPage: number;
+  page: number;
+};
 
 export interface CreateLiveryDataType
   extends Omit<

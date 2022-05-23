@@ -8,6 +8,7 @@ import {
   LiveriesDataType,
   LiveryDataType,
   CreateLiveryDataType,
+  LiveriesResponseType,
   LiveriesFilters
 } from '../../types';
 import { apiSlice } from '../store';
@@ -17,7 +18,10 @@ import { GET_LIVERIES, GET_LIVERY_BY_ID, CREATE_LIVERY } from './constants';
 
 const liveriesAdapter = createEntityAdapter<LiveryDataType>();
 const initialState = liveriesAdapter.getInitialState({
-  maxPrice: null
+  maxPrice: null as null | number,
+  perPage: null as null | number,
+  page: null as null | number,
+  total: null as null | number
 });
 export type LiverySliceStateType = typeof initialState;
 
@@ -26,21 +30,22 @@ export type LiverySliceStateType = typeof initialState;
 export const liveryApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     [GET_LIVERIES]: builder.query<
-      EntityState<LiveryDataType> & { maxPrice: number | null },
-      Partial<Record<keyof LiveriesFilters, string>>
+      LiverySliceStateType,
+      Partial<Record<keyof LiveriesFilters, string | number>>
     >({
       query: (filters) => ({
         url: '/liveries',
         method: 'GET',
         params: filters
       }),
-      transformResponse: (data: LiveriesDataType) => {
-        const maxPrice = data.reduce((prev, cur) => {
-          if (!cur.price) return prev;
-          if (cur?.price > prev) return cur.price;
-          return prev;
-        }, 0);
-        return { ...liveriesAdapter.setAll(initialState, data), maxPrice };
+      transformResponse: (data: LiveriesResponseType) => {
+        return {
+          ...liveriesAdapter.setAll(initialState, data.liveries),
+          maxPrice: data.maxPrice,
+          perPage: data.perPage,
+          page: data.page,
+          total: data.total
+        };
       },
       keepUnusedDataFor: 300,
       providesTags: [GET_LIVERIES]

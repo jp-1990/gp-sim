@@ -73,20 +73,6 @@ describe('apply filters function', () => {
         expect(livery.rating).toBeGreaterThanOrEqual(+rating1);
       });
     });
-    it('should filter by quantity', () => {
-      const quantity1 = '4';
-      const result1 = applyFilters(data, [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        quantity1
-      ]);
-
-      expect(result1).toHaveLength(4);
-    });
   });
   describe('ordering', () => {
     it('should order by createdAt', () => {

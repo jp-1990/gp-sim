@@ -9,9 +9,9 @@ export const applyFilters = (
   liveries: LiveriesDataType,
   args: (string | null)[]
 ) => {
-  const [search, car, priceMin, priceMax, created, rating, quantity] = args;
+  const [search, car, priceMin, priceMax, created, rating] = args;
 
-  const filteredLiveries = liveries.filter((livery, index) => {
+  const filteredLiveries = liveries.filter((livery) => {
     let shouldReturn = true;
     if (search) {
       shouldReturn = false;
@@ -27,7 +27,6 @@ export const applyFilters = (
       shouldReturn = (livery.price || 0) <= +priceMax * 100;
     }
     if (rating && !!+rating) shouldReturn = (livery.rating || 0) >= +rating;
-    if (quantity) shouldReturn = index < +quantity;
     return shouldReturn;
   });
 
@@ -70,5 +69,6 @@ export const applyFilters = (
       return sort;
     });
   }
+
   return filteredLiveries;
 };
