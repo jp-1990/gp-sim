@@ -1,11 +1,6 @@
-import {
-  createEntityAdapter,
-  createSelector,
-  EntityState
-} from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
 
 import {
-  LiveriesDataType,
   LiveryDataType,
   CreateLiveryDataType,
   LiveriesResponseType,
