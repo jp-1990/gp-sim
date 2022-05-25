@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
@@ -27,7 +27,7 @@ import {
   GARAGE_CREATE_URL,
   LIVERY_CREATE_URL
 } from '../../utils/nav';
-import { liveryStrings, garageStrings } from '../../utils/intl';
+import { liveryStrings, garageStrings, commonStrings } from '../../utils/intl';
 import Link from 'next/link';
 import { LiveriesFilterKeys, Order } from '../../types';
 
@@ -36,6 +36,8 @@ const initialState = {
   car: '',
   created: Order.ASC,
   rating: '0',
+  garages: '',
+  user: '0',
   page: 0
 };
 
@@ -54,6 +56,12 @@ const filtersReducer = (state: typeof initialState, action: Action) => {
     case LiveriesFilterKeys.RATING: {
       return { ...state, rating: action.payload };
     }
+    case LiveriesFilterKeys.GARAGES: {
+      return { ...state, garages: action.payload };
+    }
+    case LiveriesFilterKeys.USER: {
+      return { ...state, user: action.payload };
+    }
     case LiveriesFilterKeys.PAGE: {
       return { ...state, page: action.payload };
     }
@@ -65,6 +73,9 @@ const filtersReducer = (state: typeof initialState, action: Action) => {
 const Garages: NextPage = () => {
   // STATE
   const [filters, dispatch] = useReducer(filtersReducer, initialState);
+
+  // HOOKS
+  const intl = useIntl();
 
   // QUERIES
   const { data: cars } = useGetCarsQuery();
@@ -121,12 +132,12 @@ const Garages: NextPage = () => {
       </Flex>
       <chakra.section pt={8} w="5xl" display="flex" justifyContent="flex-start">
         <Grid
-          templateColumns="repeat(6, 1fr)"
-          templateRows="repeat(2, 1fr)"
+          templateColumns="repeat(9, 1fr)"
+          templateRows="repeat(1, 1fr)"
           gap={4}
-          w="2xl"
+          w="5xl"
         >
-          <GridItem colSpan={3} rowSpan={1}>
+          <GridItem colSpan={2} rowSpan={1}>
             <InputGroup>
               <InputLeftElement
                 pointerEvents="none"
@@ -136,7 +147,9 @@ const Garages: NextPage = () => {
                 <SearchIcon />
               </InputLeftElement>
               <Input
-                placeholder="Search..."
+                placeholder={intl.formatMessage(
+                  commonStrings.searchPlaceholder
+                )}
                 onChange={onSearchChange}
                 value={filters.search}
               />
@@ -144,7 +157,9 @@ const Garages: NextPage = () => {
           </GridItem>
           <GridItem colSpan={3} rowSpan={1}>
             <Select
-              placeholder="Select car"
+              placeholder={intl.formatMessage(
+                commonStrings.selectCarPlaceholder
+              )}
               onChange={onCarChange}
               value={filters.car}
             >
@@ -161,7 +176,9 @@ const Garages: NextPage = () => {
           </GridItem>
           <GridItem colSpan={2} rowSpan={1}>
             <Select
-              placeholder="Created"
+              placeholder={intl.formatMessage(
+                commonStrings.createdAtPlaceholder
+              )}
               value={filters.created}
               onChange={onCreatedChange}
             >
@@ -171,7 +188,7 @@ const Garages: NextPage = () => {
           </GridItem>
           <GridItem colSpan={2} rowSpan={1}>
             <Select
-              placeholder="Rating"
+              placeholder={intl.formatMessage(commonStrings.ratingPlaceholder)}
               value={filters.rating}
               onChange={onRatingChange}
             >

@@ -77,6 +77,7 @@ const Liveries: NextPage = () => {
   const [filters, dispatch] = useReducer(filtersReducer, initialState);
   const [maxPriceCap, setMaxPriceCap] = useState<number>(0);
 
+  // HOOKS
   const intl = useIntl();
 
   // QUERIES
