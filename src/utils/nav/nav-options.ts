@@ -8,7 +8,6 @@ export const navOptions = (intl: IntlShape) => [
     requiresUser: false,
     path: LIVERIES_URL
   },
-  //   { label: intl.formatMessage(commonStrings.setups), requiresUser: false, path:'/setups' },
   {
     label: intl.formatMessage(commonStrings.garages),
     requiresUser: false,

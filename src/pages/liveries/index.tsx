@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { SearchIcon } from '@chakra-ui/icons';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
@@ -29,7 +29,7 @@ import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
 import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
-import { liveryStrings } from '../../utils/intl';
+import { liveryStrings, commonStrings } from '../../utils/intl';
 import Link from 'next/link';
 import { LiveriesFilterKeys, Order } from '../../types';
 
@@ -76,6 +76,8 @@ const Liveries: NextPage = () => {
   // STATE
   const [filters, dispatch] = useReducer(filtersReducer, initialState);
   const [maxPriceCap, setMaxPriceCap] = useState<number>(0);
+
+  const intl = useIntl();
 
   // QUERIES
   const { data: cars } = useGetCarsQuery();
@@ -173,7 +175,9 @@ const Liveries: NextPage = () => {
                 <SearchIcon />
               </InputLeftElement>
               <Input
-                placeholder="Search..."
+                placeholder={intl.formatMessage(
+                  commonStrings.searchPlaceholder
+                )}
                 onChange={onSearchChange}
                 value={filters.search}
               />
@@ -181,7 +185,9 @@ const Liveries: NextPage = () => {
           </GridItem>
           <GridItem colSpan={3} rowSpan={1}>
             <Select
-              placeholder="Select car"
+              placeholder={intl.formatMessage(
+                commonStrings.selectCarPlaceholder
+              )}
               onChange={onCarChange}
               value={filters.car}
             >
@@ -247,7 +253,9 @@ const Liveries: NextPage = () => {
           </GridItem>
           <GridItem colSpan={2} rowSpan={1}>
             <Select
-              placeholder="Created"
+              placeholder={intl.formatMessage(
+                commonStrings.createdAtPlaceholder
+              )}
               value={filters.created}
               onChange={onCreatedChange}
             >
@@ -257,7 +265,7 @@ const Liveries: NextPage = () => {
           </GridItem>
           <GridItem colSpan={2} rowSpan={1}>
             <Select
-              placeholder="Rating"
+              placeholder={intl.formatMessage(commonStrings.ratingPlaceholder)}
               value={filters.rating}
               onChange={onRatingChange}
             >

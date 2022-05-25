@@ -82,9 +82,29 @@ const upload = {
   }
 };
 
+const filters = {
+  searchPlaceholder: {
+    id: 'utils.intl.commonStrings.searchPlaceholder',
+    defaultMessage: 'Search...'
+  },
+  selectCarPlaceholder: {
+    id: 'utils.intl.commonStrings.selectCarPlaceholder',
+    defaultMessage: 'Select car'
+  },
+  createdAtPlaceholder: {
+    id: 'utils.intl.commonStrings.createdAtPlaceholder',
+    defaultMessage: 'Created'
+  },
+  ratingPlaceholder: {
+    id: 'utils.intl.commonStrings.ratingPlaceholder',
+    defaultMessage: 'Rating'
+  }
+};
+
 export const commonStrings = defineMessages({
   ...actions,
   ...download,
+  ...filters,
   ...main,
   ...status,
   ...upload
