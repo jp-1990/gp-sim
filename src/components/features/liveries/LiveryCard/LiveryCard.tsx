@@ -55,7 +55,7 @@ const LiveryCard: React.FC<Props> = ({
             overflow="hidden"
           >
             <Grid
-              templateColumns="repeat(2, 1fr)"
+              templateColumns="repeat(6, 1fr)"
               templateRows="repeat(3, minmax(5rem, auto))"
               p={2}
               zIndex="1"
@@ -63,7 +63,7 @@ const LiveryCard: React.FC<Props> = ({
               top="0"
               left="0"
             >
-              <GridItem colSpan={1} rowSpan={1}>
+              <GridItem colSpan={4} rowSpan={1}>
                 <Flex
                   direction="column"
                   alignItems="flex-start"
@@ -71,11 +71,11 @@ const LiveryCard: React.FC<Props> = ({
                   h="full"
                 ></Flex>
               </GridItem>
-              <GridItem colSpan={1} rowSpan={1}>
+              <GridItem colSpan={2} rowSpan={1}>
                 <Rating rating={rating} />
               </GridItem>
-              <GridItem colSpan={2} rowSpan={1}></GridItem>
-              <GridItem colSpan={1} rowSpan={1}>
+              <GridItem colSpan={6} rowSpan={1}></GridItem>
+              <GridItem colSpan={5} rowSpan={1}>
                 <Flex
                   direction="column"
                   alignItems="flex-start"
