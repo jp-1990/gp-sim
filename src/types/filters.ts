@@ -10,8 +10,6 @@ export interface LiveriesFilters {
   priceMax?: number;
   created?: Order;
   rating?: number;
-  garages?: string;
-  user?: string;
   page?: number;
 }
 
@@ -22,7 +20,15 @@ export enum LiveriesFilterKeys {
   PRICE_MAX = 'priceMax',
   CREATED = 'created',
   RATING = 'rating',
-  GARAGES = 'garages',
-  USER = 'user',
   PAGE = 'page'
+}
+
+export interface GaragesFilters {
+  created?: Order;
+  creator?: string;
+}
+
+export enum GaragesFilterKeys {
+  CREATED = 'created',
+  CREATOR = 'creator'
 }

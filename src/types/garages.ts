@@ -11,5 +11,9 @@ export interface GarageDataType {
   drivers: string[];
   liveries: string[];
 }
-
 export type GaragesDataType = GarageDataType[];
+export type GaragesResponseType = { garages: GaragesDataType };
+
+export interface CreateGarageDataType {
+  WIP: null;
+}
