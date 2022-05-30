@@ -6,7 +6,7 @@ import {
   getLiveries,
   getLiveryById,
   useGetLiveryByIdQuery
-} from '../../store/livery/slice';
+} from '../../store/livery/api-slice';
 
 import { isString, numberToPrice } from '../../utils/functions';
 import {
@@ -165,7 +165,7 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await store.dispatch(getLiveries.initiate());
+  const { data } = await store.dispatch(getLiveries.initiate({}));
   const ids = data?.ids ?? [];
   return {
     paths: ids.map((id) => ({

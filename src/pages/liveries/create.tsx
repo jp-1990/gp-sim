@@ -9,7 +9,7 @@ import { Breadcrumbs } from '../../components/core';
 import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
 
 import { apiSlice, wrapper } from '../../store/store';
-import { getCars, useGetCarsQuery } from '../../store/car/slice';
+import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';

@@ -18,10 +18,7 @@ export type GarageSliceStateType = typeof initialState;
 
 export const garageApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    [GET_GARAGES]: builder.query<
-      GarageSliceStateType,
-      Partial<Record<keyof GaragesFilters, string | number>>
-    >({
+    [GET_GARAGES]: builder.query<GarageSliceStateType, GaragesFilters>({
       query: (filters) => ({
         url: '/garages',
         method: 'GET',

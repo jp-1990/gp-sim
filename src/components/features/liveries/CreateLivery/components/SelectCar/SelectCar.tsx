@@ -5,7 +5,10 @@ import { Select } from '../../../../../shared';
 import { formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
 import { useAppSelector } from '../../../../../../store/store';
-import { selectAllCars, selectCarIds } from '../../../../../../store/car/slice';
+import {
+  selectAllCars,
+  selectCarIds
+} from '../../../../../../store/car/api-slice';
 import { EntityId } from '@reduxjs/toolkit';
 
 /**

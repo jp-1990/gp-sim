@@ -5,7 +5,7 @@ import { useToast } from '@chakra-ui/react';
 
 import { SubmitButton, useForm } from '../../../../../shared';
 import { liveryStrings } from '../../../../../../utils/intl';
-import { useCreateLiveryMutation } from '../../../../../../store/livery/slice';
+import { useCreateLiveryMutation } from '../../../../../../store/livery/api-slice';
 import {
   mapCreateLiveryFormStateToRequestInput,
   zipLiveryFiles

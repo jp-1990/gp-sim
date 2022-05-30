@@ -6,6 +6,7 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { GET_LIVERIES } from './livery/constants';
 import { GET_GARAGES } from './garage/constants';
+import userSlice from './user/slice';
 
 const axiosBaseQuery =
   (
@@ -59,7 +60,8 @@ export const apiSlice = createApi({
 
 export const storeConfig = {
   reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    [userSlice.name]: userSlice.reducer
   }
 };
 const makeStore = () =>
@@ -79,7 +81,6 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   Action
 >;
 
-// export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
