@@ -6,7 +6,8 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { GET_LIVERIES } from './livery/constants';
 import { GET_GARAGES } from './garage/constants';
-import userSlice from './user/slice';
+import { CURRENT_USER_SLICE_NAME } from './user/constants';
+import { default as currentUserSlice } from './user/slice';
 
 const axiosBaseQuery =
   (
@@ -61,7 +62,7 @@ export const apiSlice = createApi({
 export const storeConfig = {
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    [userSlice.name]: userSlice.reducer
+    [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer
   }
 };
 const makeStore = () =>

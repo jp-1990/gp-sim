@@ -21,8 +21,8 @@ import { SearchIcon } from '@chakra-ui/icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { apiSlice, wrapper } from '../../store/store';
-import { getLiveries, useGetLiveriesQuery } from '../../store/livery/slice';
-import { getCars, useGetCarsQuery } from '../../store/car/slice';
+import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
+import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
 
 import { LiveryList } from '../../components/features';
 import { MainLayout } from '../../components/layout';
