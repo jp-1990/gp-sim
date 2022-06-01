@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import { applyFilters } from '../../utils/dev-data/utils';
+import { applyLiveryFilters } from '../../utils/dev-data/utils';
 import data from '../../utils/dev-data/liveries.json';
 import { CreateLiveryDataType } from '../../types';
 
@@ -20,9 +20,18 @@ export const liveriesHandlers = [
       ];
       const liveries = [...data];
       liveries.sort((a, b) => b.downloads - a.downloads);
-      let filteredLiveries = applyFilters(liveries, [
+
+      const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
-      ]);
+      ] as [
+        string | null,
+        string | null,
+        string | null,
+        string | null,
+        string | null,
+        string | null
+      ];
+      let filteredLiveries = applyLiveryFilters(liveries, extractedParams);
       const maxPrice = filteredLiveries.reduce((prev, cur) => {
         if (!cur.price) return prev;
         if (cur?.price > prev) return cur.price;

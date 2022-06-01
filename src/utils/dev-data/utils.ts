@@ -1,13 +1,20 @@
-import { LiveriesDataType } from '../../types';
+import { GaragesDataType, LiveriesDataType } from '../../types';
 
 export const randomNumber = (min: number, max: number) => {
   const range = Math.abs(max + 1 - min);
   return Math.floor(Math.random() * range) + min;
 };
 
-export const applyFilters = (
+export const applyLiveryFilters = (
   liveries: LiveriesDataType,
-  args: (string | null)[]
+  args: [
+    string | null,
+    string | null,
+    string | null,
+    string | null,
+    string | null,
+    string | null
+  ]
 ) => {
   const [search, car, priceMin, priceMax, created, rating] = args;
 
@@ -71,4 +78,30 @@ export const applyFilters = (
   }
 
   return filteredLiveries;
+};
+
+export const applyGarageFilters = (
+  garages: GaragesDataType,
+  args: [string | null, string | null]
+) => {
+  const [ids, created] = args;
+  const idArray = ids?.split('&');
+
+  const filteredGarages = garages.filter((garages) =>
+    idArray?.includes(garages.id)
+  );
+
+  if (created) {
+    filteredGarages.sort((a, b) => {
+      if (created === 'asc') {
+        return b.createdAt - a.createdAt;
+      }
+      if (created === 'desc') {
+        return a.createdAt - b.createdAt;
+      }
+      return 0;
+    });
+  }
+
+  return filteredGarages;
 };
