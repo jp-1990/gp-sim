@@ -1,10 +1,17 @@
-import { applyFilters } from './utils';
+import { applyLiveryFilters } from './utils';
 
 describe('apply filters function', () => {
   describe('filtering', () => {
     it('should filter by searchHelpers', () => {
       const search1 = 'blue';
-      const result1 = applyFilters(data, [search1]);
+      const result1 = applyLiveryFilters(data, [
+        search1,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]);
 
       expect(result1).toHaveLength(2);
       result1.forEach((livery) => {
@@ -14,7 +21,14 @@ describe('apply filters function', () => {
       });
 
       const search2 = 'not a tag';
-      const result2 = applyFilters(data, [search2]);
+      const result2 = applyLiveryFilters(data, [
+        search2,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]);
 
       expect(result2).toHaveLength(0);
       result2.forEach((livery) => {
@@ -25,14 +39,28 @@ describe('apply filters function', () => {
     });
     it('should filter by car', () => {
       const car1 = 'Audi R8 LMS GT4';
-      const result1 = applyFilters(data, [null, car1]);
+      const result1 = applyLiveryFilters(data, [
+        null,
+        car1,
+        null,
+        null,
+        null,
+        null
+      ]);
 
       expect(result1).toHaveLength(1);
       result1.forEach((livery) => {
         expect(livery.car).toEqual(car1);
       });
       const car2 = 'not a car';
-      const result2 = applyFilters(data, [null, car2]);
+      const result2 = applyLiveryFilters(data, [
+        null,
+        car2,
+        null,
+        null,
+        null,
+        null
+      ]);
 
       expect(result2).toHaveLength(0);
       result2.forEach((livery) => {
@@ -41,7 +69,14 @@ describe('apply filters function', () => {
     });
     it('should filter by priceMin', () => {
       const price1 = '10.00';
-      const result1 = applyFilters(data, [null, null, price1]);
+      const result1 = applyLiveryFilters(data, [
+        null,
+        null,
+        price1,
+        null,
+        null,
+        null
+      ]);
 
       expect(result1).toHaveLength(3);
       result1.forEach((livery) => {
@@ -50,7 +85,14 @@ describe('apply filters function', () => {
     });
     it('should filter by priceMax', () => {
       const price1 = '10.00';
-      const result1 = applyFilters(data, [null, null, null, price1]);
+      const result1 = applyLiveryFilters(data, [
+        null,
+        null,
+        null,
+        price1,
+        null,
+        null
+      ]);
 
       expect(result1).toHaveLength(2);
       result1.forEach((livery) => {
@@ -59,7 +101,7 @@ describe('apply filters function', () => {
     });
     it('should filter by rating', () => {
       const rating1 = '3';
-      const result1 = applyFilters(data, [
+      const result1 = applyLiveryFilters(data, [
         null,
         null,
         null,
@@ -77,13 +119,27 @@ describe('apply filters function', () => {
   describe('ordering', () => {
     it('should order by createdAt', () => {
       const order1 = 'asc';
-      const result1 = applyFilters(data, [null, null, null, null, order1]);
+      const result1 = applyLiveryFilters(data, [
+        null,
+        null,
+        null,
+        null,
+        order1,
+        null
+      ]);
       for (let i = 1, j = result1.length; i < j; i++) {
         expect(result1[i].createdAt).toBeLessThan(result1[i - 1].createdAt);
       }
 
       const order2 = 'desc';
-      const result2 = applyFilters(data, [null, null, null, null, order2]);
+      const result2 = applyLiveryFilters(data, [
+        null,
+        null,
+        null,
+        null,
+        order2,
+        null
+      ]);
       for (let i = 1, j = result2.length; i < j; i++) {
         expect(result2[i].createdAt).toBeGreaterThan(result2[i - 1].createdAt);
       }
@@ -92,7 +148,14 @@ describe('apply filters function', () => {
       const priceMin1 = '0';
       const priceMax1 = '5000';
 
-      const result1 = applyFilters(data, [null, null, priceMin1, priceMax1]);
+      const result1 = applyLiveryFilters(data, [
+        null,
+        null,
+        priceMin1,
+        priceMax1,
+        null,
+        null
+      ]);
       for (let i = 1, j = result1.length; i < j; i++) {
         expect(result1[i].price).toBeLessThan(result1[i - 1].price as number);
       }
@@ -100,7 +163,7 @@ describe('apply filters function', () => {
     it('should order by rating', () => {
       const rating1 = '2';
 
-      const result1 = applyFilters(data, [
+      const result1 = applyLiveryFilters(data, [
         null,
         null,
         null,
