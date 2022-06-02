@@ -87,8 +87,8 @@ export const applyGarageFilters = (
   const [ids, created] = args;
   const idArray = ids?.split('&');
 
-  const filteredGarages = garages.filter((garages) =>
-    idArray?.includes(garages.id)
+  const filteredGarages = garages.filter((garage) =>
+    idArray?.includes(garage.id)
   );
 
   if (created) {
