@@ -21,7 +21,7 @@ const ImageWithFallback: Props = ({ imgUrl, imgAlt = '', ...props }) => {
   const onError = () => setUrl(fallbackUrl);
 
   return url ? (
-    <Center bg="gray.200" {...props}>
+    <Center bg="gray.200" overflow="hidden" {...props}>
       <Image
         alt={imgAlt}
         src={url}
