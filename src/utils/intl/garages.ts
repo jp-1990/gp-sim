@@ -11,6 +11,14 @@ const garages = {
   garagesSummary: {
     id: 'utils.intl.garages.garagesSummary',
     defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+  },
+  yourCollection: {
+    id: 'utils.intl.garages.yourCollection',
+    defaultMessage: `Your Collection`
+  },
+  yourCollectionDescription: {
+    id: 'utils.intl.garages.yourCollectionDescription',
+    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
   }
 };
 
