@@ -24,9 +24,8 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
         params: filters
       }),
-      transformResponse: (data: GaragesResponseType) => {
-        return garagesAdapter.setAll(initialState, data.garages);
-      },
+      transformResponse: (data: GaragesResponseType) =>
+        garagesAdapter.setAll(initialState, data.garages),
       keepUnusedDataFor: 300,
       providesTags: [GET_GARAGES]
     }),

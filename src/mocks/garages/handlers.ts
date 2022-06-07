@@ -8,12 +8,13 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/garages`,
     (req, res, ctx) => {
-      const params = ['created', 'ids'];
+      const params = ['ids', 'created'];
       const garages = [...data];
 
       const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
       ] as [string | null, string | null];
+
       let filteredGarages = applyGarageFilters(garages, extractedParams);
 
       const total = filteredGarages.length;
@@ -23,7 +24,7 @@ export const garagesHandlers = [
         ctx.status(200),
         ctx.json({
           total,
-          filteredGarages
+          garages: filteredGarages
         })
       );
     }

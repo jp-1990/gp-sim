@@ -11,6 +11,7 @@ export const liveriesHandlers = [
     (req, res, ctx) => {
       const perPage = 30;
       const params = [
+        'ids',
         'search',
         'car',
         'priceMin',
@@ -24,6 +25,7 @@ export const liveriesHandlers = [
       const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
       ] as [
+        string | null,
         string | null,
         string | null,
         string | null,
