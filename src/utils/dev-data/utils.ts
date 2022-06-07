@@ -13,13 +13,16 @@ export const applyLiveryFilters = (
     string | null,
     string | null,
     string | null,
+    string | null,
     string | null
   ]
 ) => {
-  const [search, car, priceMin, priceMax, created, rating] = args;
+  const [ids, search, car, priceMin, priceMax, created, rating] = args;
+  const idArray = ids?.split('&');
 
   const filteredLiveries = liveries.filter((livery) => {
     let shouldReturn = true;
+    if (ids && !idArray?.includes(livery.id)) return false;
     if (search) {
       shouldReturn = false;
       livery.searchHelpers.forEach((el) => {

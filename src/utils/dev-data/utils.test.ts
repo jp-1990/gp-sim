@@ -2,9 +2,28 @@ import { applyLiveryFilters, applyGarageFilters } from './utils';
 
 describe('apply livery filters function', () => {
   describe('filtering', () => {
+    it('should filter by ids', () => {
+      const ids =
+        'd03bfb4f-3b88-41ec-92bb-14b3438696ec&e129b18d-e008-495d-9fd4-346eb18e60e5';
+      const result = applyLiveryFilters(liveriesData, [
+        ids,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]);
+
+      expect(result).toHaveLength(2);
+      result.forEach((livery) => {
+        expect(ids.split('&').includes(livery.id)).toBeTruthy();
+      });
+    });
     it('should filter by searchHelpers', () => {
       const search1 = 'blue';
       const result1 = applyLiveryFilters(liveriesData, [
+        null,
         search1,
         null,
         null,
@@ -22,6 +41,7 @@ describe('apply livery filters function', () => {
 
       const search2 = 'not a tag';
       const result2 = applyLiveryFilters(liveriesData, [
+        null,
         search2,
         null,
         null,
@@ -41,6 +61,7 @@ describe('apply livery filters function', () => {
       const car1 = 'Audi R8 LMS GT4';
       const result1 = applyLiveryFilters(liveriesData, [
         null,
+        null,
         car1,
         null,
         null,
@@ -54,6 +75,7 @@ describe('apply livery filters function', () => {
       });
       const car2 = 'not a car';
       const result2 = applyLiveryFilters(liveriesData, [
+        null,
         null,
         car2,
         null,
@@ -70,6 +92,7 @@ describe('apply livery filters function', () => {
     it('should filter by priceMin', () => {
       const price1 = '10.00';
       const result1 = applyLiveryFilters(liveriesData, [
+        null,
         null,
         null,
         price1,
@@ -89,6 +112,7 @@ describe('apply livery filters function', () => {
         null,
         null,
         null,
+        null,
         price1,
         null,
         null
@@ -102,6 +126,7 @@ describe('apply livery filters function', () => {
     it('should filter by rating', () => {
       const rating1 = '3';
       const result1 = applyLiveryFilters(liveriesData, [
+        null,
         null,
         null,
         null,
@@ -124,6 +149,7 @@ describe('apply livery filters function', () => {
         null,
         null,
         null,
+        null,
         order1,
         null
       ]);
@@ -133,6 +159,7 @@ describe('apply livery filters function', () => {
 
       const order2 = 'desc';
       const result2 = applyLiveryFilters(liveriesData, [
+        null,
         null,
         null,
         null,
@@ -151,6 +178,7 @@ describe('apply livery filters function', () => {
       const result1 = applyLiveryFilters(liveriesData, [
         null,
         null,
+        null,
         priceMin1,
         priceMax1,
         null,
@@ -164,6 +192,7 @@ describe('apply livery filters function', () => {
       const rating1 = '2';
 
       const result1 = applyLiveryFilters(liveriesData, [
+        null,
         null,
         null,
         null,
