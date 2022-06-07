@@ -7,7 +7,7 @@ export interface UserDataType {
   surname: string;
   displayName: string;
   email: string;
-  about: string | undefined;
+  about: string | null | undefined;
   image: string | null | undefined;
   garages: string[];
   liveries: string[];
@@ -15,3 +15,5 @@ export interface UserDataType {
 export type UsersDataType = UserDataType[];
 
 export type CreatorType = Pick<UserDataType, 'id' | 'displayName' | 'image'>;
+
+export interface UserLoginArgs {}

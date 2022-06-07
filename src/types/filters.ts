@@ -4,6 +4,7 @@ export enum Order {
 }
 
 export interface LiveriesFilters {
+  ids?: string;
   search?: string;
   car?: string;
   priceMin?: number;
@@ -26,6 +27,7 @@ export enum LiveriesFilterKeys {
 export interface GaragesFilters {
   created?: Order;
   creator?: string;
+  ids?: string;
 }
 
 export enum GaragesFilterKeys {
