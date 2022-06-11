@@ -12,6 +12,10 @@ const fieldLabels = {
     id: 'utils.intl.form.car',
     defaultMessage: 'Car'
   },
+  creator: {
+    id: 'utils.intl.form.creator',
+    defaultMessage: 'Creator'
+  },
   description: {
     id: 'utils.intl.form.description',
     defaultMessage: 'Description'
@@ -23,6 +27,10 @@ const fieldLabels = {
   garageKey: {
     id: 'utils.intl.form.garageKey',
     defaultMessage: 'Garage Key'
+  },
+  image: {
+    id: 'utils.intl.form.image',
+    defaultMessage: 'Image'
   },
   price: {
     id: 'utils.intl.form.price',

@@ -12,13 +12,17 @@ const actions = {
     id: 'utils.intl.commonStrings.addToCollection',
     defaultMessage: 'Add to Collection'
   },
-  upload: {
-    id: 'utils.intl.commonStrings.upload',
-    defaultMessage: 'Upload'
-  },
   cancel: {
     id: 'utils.intl.commonStrings.cancel',
     defaultMessage: 'Cancel'
+  },
+  download: {
+    id: 'utils.intl.commonStrings.download',
+    defaultMessage: `Download`
+  },
+  upload: {
+    id: 'utils.intl.commonStrings.upload',
+    defaultMessage: 'Upload'
   },
   remove: {
     id: 'utils.intl.commonStrings.remove',
@@ -31,6 +35,10 @@ const actions = {
   selectFiles: {
     id: 'utils.intl.commonStrings.selectFiles',
     defaultMessage: 'Select Files'
+  },
+  view: {
+    id: 'utils.intl.commonStrings.view',
+    defaultMessage: 'View'
   }
 };
 
@@ -49,6 +57,10 @@ const main = {
   garages: {
     id: 'utils.intl.commonStrings.garages',
     defaultMessage: 'Garages'
+  },
+  livery: {
+    id: 'utils.intl.form.livery',
+    defaultMessage: 'Livery'
   },
   setups: {
     id: 'utils.intl.commonStrings.setups',
