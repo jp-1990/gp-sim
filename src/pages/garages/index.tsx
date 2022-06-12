@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useReducer, useState } from 'react';
+import { ChangeEvent, Fragment, useEffect, useReducer, useState } from 'react';
 import {
   chakra,
   Box,
@@ -11,7 +11,10 @@ import {
   Button,
   Flex,
   Text,
-  Heading
+  Heading,
+  Checkbox,
+  HStack,
+  Divider
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -22,7 +25,6 @@ import { apiSlice, wrapper, useAppSelector } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
 
-import { LiveryList } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 import { ImageWithFallback } from '../../components/core';
@@ -30,9 +32,15 @@ import { ImageWithFallback } from '../../components/core';
 import {
   GARAGES_URL,
   GARAGE_CREATE_URL,
-  LIVERY_CREATE_URL
+  LIVERY_CREATE_URL,
+  LIVERY_URL
 } from '../../utils/nav';
-import { liveryStrings, garageStrings, commonStrings } from '../../utils/intl';
+import {
+  liveryStrings,
+  garageStrings,
+  commonStrings,
+  formStrings
+} from '../../utils/intl';
 import { LiveriesFilterKeys, Order, KeyValueUnionOf } from '../../types';
 import { useGetGaragesQuery } from '../../store/garage/api-slice';
 
@@ -41,7 +49,6 @@ const initialState = {
   search: '',
   car: '',
   created: Order.ASC,
-  rating: '0',
   garages: '',
   user: '0',
   page: 0
@@ -63,6 +70,9 @@ const Garages: NextPage = () => {
   // STATE
   const [filters, dispatch] = useReducer(filtersReducer, initialState);
   const [selectedGarage, setSelectedGarage] = useState<string>('');
+  const [selectedLiveries, setSelectedLiveries] = useState<(string | number)[]>(
+    []
+  );
 
   // HOOKS
   const intl = useIntl();
@@ -109,26 +119,64 @@ const Garages: NextPage = () => {
       payload: { key: LiveriesFilterKeys.CREATED, value: value }
     });
   };
-  const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatch({
-      type: LiveriesFilterKeys.RATING,
-      payload: { key: LiveriesFilterKeys.RATING, value: event.target.value }
-    });
-  };
+
   const onPageChange = (page: number) => () => {
+    setSelectedLiveries([]);
     dispatch({
       type: LiveriesFilterKeys.PAGE,
       payload: { key: LiveriesFilterKeys.PAGE, value: page }
     });
   };
-  const onSelectGarage = (id: string | undefined) => () =>
+  const onSelectGarage = (id: string | undefined) => () => {
+    setSelectedLiveries([]);
     setSelectedGarage(id || '');
+    dispatch({
+      type: LiveriesFilterKeys.PAGE,
+      payload: { key: LiveriesFilterKeys.PAGE, value: 0 }
+    });
+  };
+
+  const onDownload = (targetLiveryId: string | number) => () => {
+    const liveriesToDownload = [
+      ...new Set([...selectedLiveries, targetLiveryId])
+    ];
+    const liveryFileURLs = liveriesToDownload.reduce((prev, id) => {
+      if (!currentUser.liveries.includes(`${id}`)) return prev;
+      const output = [...prev];
+      const URL = liveries?.entities[id]?.liveryFiles;
+      if (URL) output.push(URL);
+      return output;
+    }, [] as string[]);
+
+    for (let i = 0, j = liveryFileURLs.length; i < j; i++) {
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.location.href = liveryFileURLs[i];
+        }
+      }, 200 + i * 200);
+    }
+  };
+
+  const toggleSelectedLivery =
+    (id: string | number) => (e: ChangeEvent<HTMLInputElement>) => {
+      setSelectedLiveries((prev) => {
+        if (!e.target.checked && prev.includes(id))
+          return prev.filter((el) => el !== id);
+        return [...prev, id];
+      });
+    };
+  const toggleAllLiveries = () => {
+    if (selectedLiveries.length) return setSelectedLiveries([]);
+    return setSelectedLiveries(liveries?.ids || []);
+  };
 
   const pages = Array.from(
     Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
   );
 
-  const highlightedColor = 'red';
+  const highlightedColor = 'red.500';
+  const disableDownload = (liveryId: string | number) =>
+    !currentUser.liveries.find((id) => `${liveryId}` === id);
 
   return (
     <MainLayout
@@ -157,6 +205,7 @@ const Garages: NextPage = () => {
         </Button>
       </Flex>
 
+      {/* garage list */}
       {garages && (
         <chakra.section
           pt={8}
@@ -329,6 +378,7 @@ const Garages: NextPage = () => {
         </chakra.section>
       )}
 
+      {/* selected garage info */}
       <chakra.section
         w="5xl"
         pt={8}
@@ -348,6 +398,7 @@ const Garages: NextPage = () => {
         </Text>
       </chakra.section>
 
+      {/* search and filter */}
       <chakra.section pt={4} w="5xl" display="flex" justifyContent="flex-start">
         <Grid
           templateColumns="repeat(9, 1fr)"
@@ -404,22 +455,194 @@ const Garages: NextPage = () => {
               <option value={Order.DESC}>Oldest first</option>
             </Select>
           </GridItem>
-          <GridItem colSpan={2} rowSpan={1}>
-            <Select
-              placeholder={intl.formatMessage(commonStrings.ratingPlaceholder)}
-              value={filters.rating}
-              onChange={onRatingChange}
-            >
-              <option value={5}>5 Star </option>
-              <option value={4}>4 Star +</option>
-              <option value={3}>3 Star +</option>
-              <option value={2}>2 Star +</option>
-              <option value={1}>1 Star +</option>
-            </Select>
-          </GridItem>
+          <GridItem colSpan={2} rowSpan={1} />
         </Grid>
       </chakra.section>
-      <LiveryList liveries={liveries} />
+
+      {/* liveries list */}
+      <Grid templateColumns="repeat(18, 1fr)" maxW="5xl" mt={4}>
+        <GridItem colSpan={18}>
+          <Divider />
+        </GridItem>
+        <GridItem
+          bg="#fafafa"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          py={2}
+          px={2}
+          colSpan={1}
+          h={12}
+        >
+          <Checkbox
+            size="lg"
+            colorScheme={'red'}
+            isChecked={selectedLiveries.length === liveries?.ids.length}
+            isIndeterminate={
+              !!selectedLiveries.length &&
+              selectedLiveries.length !== liveries?.ids.length
+            }
+            onChange={toggleAllLiveries}
+          />
+          <Divider orientation="vertical" />
+        </GridItem>
+        <GridItem
+          bg="#fafafa"
+          fontWeight={'bold'}
+          color="gray.800"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          py={2}
+          px={2}
+          colSpan={6}
+          h={12}
+        >
+          <FormattedMessage {...commonStrings.livery} />
+          <Divider orientation="vertical" />
+        </GridItem>
+        <GridItem
+          bg="#fafafa"
+          fontWeight={'bold'}
+          color="gray.800"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          py={2}
+          px={2}
+          colSpan={4}
+          h={12}
+        >
+          <FormattedMessage {...formStrings.creator} />
+          <Divider orientation="vertical" />
+        </GridItem>
+        <GridItem
+          bg="#fafafa"
+          fontWeight={'bold'}
+          color="gray.800"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          py={2}
+          px={2}
+          colSpan={4}
+          h={12}
+        >
+          <FormattedMessage {...formStrings.car} />
+        </GridItem>
+        <GridItem
+          bg="#fafafa"
+          fontWeight={'bold'}
+          color="gray.800"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          py={2}
+          px={2}
+          colSpan={3}
+          h={12}
+        />
+        <GridItem colSpan={18}>
+          <Divider />
+        </GridItem>
+        {liveries?.ids.map((id) => {
+          return (
+            <Fragment key={id}>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={1}
+              >
+                <Checkbox
+                  size="lg"
+                  colorScheme={'red'}
+                  onChange={toggleSelectedLivery(id)}
+                  isChecked={selectedLiveries.includes(id)}
+                ></Checkbox>
+              </GridItem>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={2}
+              >
+                <Box
+                  position="relative"
+                  borderWidth="2px"
+                  borderRadius={6}
+                  borderColor={'blackAlpha.100'}
+                  overflow="hidden"
+                  h={20}
+                  w={28}
+                >
+                  <ImageWithFallback
+                    imgAlt={liveries.entities[id]?.title}
+                    imgUrl={liveries.entities[id]?.images[0]}
+                  />
+                </Box>
+              </GridItem>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={4}
+              >
+                {liveries.entities[id]?.title}
+              </GridItem>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={4}
+              >
+                {liveries.entities[id]?.creator.displayName}
+              </GridItem>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={4}
+              >
+                {liveries.entities[id]?.car}
+              </GridItem>
+              <GridItem
+                display="flex"
+                alignItems="center"
+                py={2}
+                px={2}
+                colSpan={3}
+              >
+                <HStack spacing={2}>
+                  <Link href={LIVERY_URL(`${id}`)} passHref>
+                    <Button variant={'outline'} size="sm" colorScheme="red">
+                      <FormattedMessage {...commonStrings.view} />
+                    </Button>
+                  </Link>
+                  <Button
+                    disabled={disableDownload(id)}
+                    onClick={onDownload(id)}
+                    variant={'solid'}
+                    size="sm"
+                    colorScheme="red"
+                  >
+                    <FormattedMessage {...commonStrings.download} />
+                  </Button>
+                </HStack>
+              </GridItem>
+              <GridItem colSpan={18}>
+                <Divider />
+              </GridItem>
+            </Fragment>
+          );
+        })}
+      </Grid>
+
       <Flex w="5xl" justifyContent="flex-end">
         <Flex mt={4}>
           {pages.map((page) => {
