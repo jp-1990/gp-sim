@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useReducer, useState } from 'react';
+import { ChangeEvent, useEffect, useReducer, useState } from 'react';
 import {
   chakra,
   Box,
@@ -11,10 +11,7 @@ import {
   Button,
   Flex,
   Text,
-  Heading,
-  Checkbox,
-  HStack,
-  Divider
+  Heading
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -41,8 +38,15 @@ import {
   commonStrings,
   formStrings
 } from '../../utils/intl';
-import { LiveriesFilterKeys, Order, KeyValueUnionOf } from '../../types';
+import {
+  LiveriesFilterKeys,
+  Order,
+  KeyValueUnionOf,
+  LiveriesDataType
+} from '../../types';
 import { useGetGaragesQuery } from '../../store/garage/api-slice';
+import { Table } from '../../components/shared/Table/Table';
+import { TableDataTypes } from '../../components/shared/Table/types';
 
 const initialState = {
   ids: '',
@@ -157,17 +161,14 @@ const Garages: NextPage = () => {
     }
   };
 
-  const toggleSelectedLivery =
-    (id: string | number) => (e: ChangeEvent<HTMLInputElement>) => {
-      setSelectedLiveries((prev) => {
-        if (!e.target.checked && prev.includes(id))
-          return prev.filter((el) => el !== id);
-        return [...prev, id];
-      });
-    };
-  const toggleAllLiveries = () => {
-    if (selectedLiveries.length) return setSelectedLiveries([]);
-    return setSelectedLiveries(liveries?.ids || []);
+  const toggleSelectedLiveries = (
+    id: (string | number) | (string | number)[]
+  ) => {
+    if (typeof id === 'object') return setSelectedLiveries(id);
+    setSelectedLiveries((prev) => {
+      if (prev.includes(id)) return prev.filter((id) => id !== id);
+      return [...prev, id];
+    });
   };
 
   const pages = Array.from(
@@ -460,189 +461,60 @@ const Garages: NextPage = () => {
       </chakra.section>
 
       {/* liveries list */}
-      <Grid templateColumns="repeat(18, 1fr)" maxW="5xl" mt={4}>
-        <GridItem colSpan={18}>
-          <Divider />
-        </GridItem>
-        <GridItem
-          bg="#fafafa"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
-          px={2}
-          colSpan={1}
-          h={12}
-        >
-          <Checkbox
-            size="lg"
-            colorScheme={'red'}
-            isChecked={selectedLiveries.length === liveries?.ids.length}
-            isIndeterminate={
-              !!selectedLiveries.length &&
-              selectedLiveries.length !== liveries?.ids.length
-            }
-            onChange={toggleAllLiveries}
-          />
-          <Divider orientation="vertical" />
-        </GridItem>
-        <GridItem
-          bg="#fafafa"
-          fontWeight={'bold'}
-          color="gray.800"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
-          px={2}
-          colSpan={6}
-          h={12}
-        >
-          <FormattedMessage {...commonStrings.livery} />
-          <Divider orientation="vertical" />
-        </GridItem>
-        <GridItem
-          bg="#fafafa"
-          fontWeight={'bold'}
-          color="gray.800"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
-          px={2}
-          colSpan={4}
-          h={12}
-        >
-          <FormattedMessage {...formStrings.creator} />
-          <Divider orientation="vertical" />
-        </GridItem>
-        <GridItem
-          bg="#fafafa"
-          fontWeight={'bold'}
-          color="gray.800"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
-          px={2}
-          colSpan={4}
-          h={12}
-        >
-          <FormattedMessage {...formStrings.car} />
-        </GridItem>
-        <GridItem
-          bg="#fafafa"
-          fontWeight={'bold'}
-          color="gray.800"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
-          px={2}
-          colSpan={3}
-          h={12}
-        />
-        <GridItem colSpan={18}>
-          <Divider />
-        </GridItem>
-        {liveries?.ids.map((id) => {
-          return (
-            <Fragment key={id}>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={1}
-              >
-                <Checkbox
-                  size="lg"
-                  colorScheme={'red'}
-                  onChange={toggleSelectedLivery(id)}
-                  isChecked={selectedLiveries.includes(id)}
-                ></Checkbox>
-              </GridItem>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={2}
-              >
-                <Box
-                  position="relative"
-                  borderWidth="2px"
-                  borderRadius={6}
-                  borderColor={'blackAlpha.100'}
-                  overflow="hidden"
-                  h={20}
-                  w={28}
-                >
-                  <ImageWithFallback
-                    imgAlt={liveries.entities[id]?.title}
-                    imgUrl={liveries.entities[id]?.images[0]}
-                  />
-                </Box>
-              </GridItem>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={4}
-              >
-                {liveries.entities[id]?.title}
-              </GridItem>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={4}
-              >
-                {liveries.entities[id]?.creator.displayName}
-              </GridItem>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={4}
-              >
-                {liveries.entities[id]?.car}
-              </GridItem>
-              <GridItem
-                display="flex"
-                alignItems="center"
-                py={2}
-                px={2}
-                colSpan={3}
-              >
-                <HStack spacing={2}>
-                  <Link href={LIVERY_URL(`${id}`)} passHref>
-                    <Button variant={'outline'} size="sm" colorScheme="red">
-                      <FormattedMessage {...commonStrings.view} />
-                    </Button>
-                  </Link>
-                  <Button
-                    disabled={disableDownload(id)}
-                    onClick={onDownload(id)}
-                    variant={'solid'}
-                    size="sm"
-                    colorScheme="red"
-                  >
-                    <FormattedMessage {...commonStrings.download} />
-                  </Button>
-                </HStack>
-              </GridItem>
-              <GridItem colSpan={18}>
-                <Divider />
-              </GridItem>
-            </Fragment>
-          );
-        })}
-      </Grid>
-
+      <Table<LiveriesDataType>
+        actions={[
+          ({ id }) => (
+            <Link href={LIVERY_URL(`${id}`)} passHref>
+              <Button variant={'outline'} size="sm" colorScheme="red">
+                <FormattedMessage {...commonStrings.view} />
+              </Button>
+            </Link>
+          ),
+          ({ id }) => (
+            <Button
+              disabled={disableDownload(id)}
+              onClick={onDownload(id)}
+              variant={'solid'}
+              size="sm"
+              colorScheme="red"
+            >
+              <FormattedMessage {...commonStrings.download} />
+            </Button>
+          )
+        ]}
+        columns={[
+          {
+            label: <FormattedMessage {...formStrings.title} />,
+            dataKey: 'images',
+            type: TableDataTypes.IMAGE
+          },
+          {
+            label: '',
+            dataKey: 'title',
+            type: TableDataTypes.STRING
+          },
+          {
+            label: <FormattedMessage {...formStrings.creator} />,
+            dataKey: 'creator.displayName',
+            type: TableDataTypes.STRING
+          },
+          {
+            label: <FormattedMessage {...formStrings.car} />,
+            dataKey: 'car',
+            type: TableDataTypes.STRING
+          }
+        ]}
+        data={
+          liveries?.ids.reduce((prev, id) => {
+            const output = [...prev];
+            const livery = liveries.entities[id];
+            if (livery) output.push(livery);
+            return output;
+          }, [] as LiveriesDataType) || []
+        }
+        onSelect={toggleSelectedLiveries}
+        selected={selectedLiveries}
+      />
       <Flex w="5xl" justifyContent="flex-end">
         <Flex mt={4}>
           {pages.map((page) => {
