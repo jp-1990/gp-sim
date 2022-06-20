@@ -1,7 +1,7 @@
 import { CreatorType } from './user';
 
 export interface LiveryDataType {
-  id: string;
+  id: string | number;
   createdAt: number;
   updatedAt: number;
   creator: CreatorType;

@@ -57,3 +57,11 @@ export const getColSpan = (
       return 3;
   }
 };
+
+/**
+ * @param id - row data id
+ * @returns string to use as checkbox aria label
+ */
+export const getCheckboxAriaLabel = (id: string | number) =>
+  `${id}-${TableDataTypes.CHECKBOX}`;
+export const SELECT_ALL_CHECKBOX = 'select-all-checkbox';
