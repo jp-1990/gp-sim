@@ -513,7 +513,7 @@ describe('CreateLivery', () => {
         })
       ).toHaveLength(0);
 
-      for (const file of liveryFiles) {
+      for (const file of imageFiles) {
         expect(screen.queryByAltText(file.name)).not.toBeInTheDocument();
       }
 
