@@ -27,16 +27,9 @@ export type LiveriesResponseType = {
 };
 
 export interface CreateLiveryDataType
-  extends Omit<
+  extends Pick<
     LiveryDataType,
-    | 'id'
-    | 'images'
-    | 'liveryFiles'
-    | 'rating'
-    | 'downloads'
-    | 'createdAt'
-    | 'updatedAt'
-    | 'searchHelpers'
+    'creator' | 'title' | 'description' | 'car' | 'price' | 'tags' | 'isPublic'
   > {
   imageFiles: Array<File>;
   liveryZip: Blob;

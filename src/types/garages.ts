@@ -14,6 +14,7 @@ export interface GarageDataType {
 export type GaragesDataType = GarageDataType[];
 export type GaragesResponseType = { garages: GaragesDataType };
 
-export interface CreateGarageDataType {
-  WIP: null;
+export interface CreateGarageDataType
+  extends Pick<GarageDataType, 'creator' | 'title' | 'description'> {
+  imageFiles: Array<File>;
 }
