@@ -32,6 +32,10 @@ const actions = {
     id: 'utils.intl.commonStrings.selectImages',
     defaultMessage: 'Select Images'
   },
+  selectImage: {
+    id: 'utils.intl.commonStrings.selectImage',
+    defaultMessage: 'Select Image'
+  },
   selectFiles: {
     id: 'utils.intl.commonStrings.selectFiles',
     defaultMessage: 'Select Files'
@@ -57,6 +61,10 @@ const main = {
   garages: {
     id: 'utils.intl.commonStrings.garages',
     defaultMessage: 'Garages'
+  },
+  garage: {
+    id: 'utils.intl.commonStrings.garages',
+    defaultMessage: 'Garage'
   },
   livery: {
     id: 'utils.intl.form.livery',

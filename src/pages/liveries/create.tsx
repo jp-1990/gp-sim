@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { NextPage } from 'next';
 import { FormattedMessage } from 'react-intl';

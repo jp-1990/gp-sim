@@ -20,7 +20,9 @@ const SelectLiveryImages = () => {
       aria-label={intl.formatMessage(commonStrings.selectImages)}
       max={4}
       accept="image/png,image/jpeg,image/webp"
-      helperText={<FormattedMessage {...formStrings.selectImageHelperText} />}
+      helperText={
+        <FormattedMessage {...formStrings.selectLiveryImagesHelperText} />
+      }
     >
       {(state, onRemove) => {
         if (!state) return null;

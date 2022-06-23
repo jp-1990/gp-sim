@@ -47,6 +47,10 @@ const fieldPlaceholders = {
     id: 'utils.intl.form.titlePlaceholder',
     defaultMessage: 'Title'
   },
+  descriptionPlaceholder: {
+    id: 'utils.intl.liveries.descriptionPlaceholder',
+    defaultMessage: 'Tell people about this {item}...'
+  },
   carPlaceholder: {
     id: 'utils.intl.form.carPlaceholder',
     defaultMessage: 'Select a car'
@@ -105,9 +109,13 @@ const invalidField = {
 };
 
 const helperText = {
-  selectImageHelperText: {
-    id: 'utils.intl.form.selectImageHelperText',
+  selectLiveryImagesHelperText: {
+    id: 'utils.intl.form.selectLiveryImagesHelperText',
     defaultMessage: 'Add up to 4 images of your livery*'
+  },
+  selectGarageImageHelperText: {
+    id: 'utils.intl.form.selectGarageImageHelperText',
+    defaultMessage: 'Add an image for your garage*'
   },
   selectLiveryFilesHelperText: {
     id: 'utils.intl.form.selectLiveryFilesHelperText',
@@ -120,10 +128,23 @@ const helperText = {
   }
 };
 
+const result = {
+  createSuccess: {
+    id: 'utils.intl.form.createSuccess',
+    defaultMessage: '{item} successfully created'
+  },
+  createError: {
+    id: 'utils.intl.form.createError',
+    defaultMessage:
+      "We're sorry, something went wrong when creating your {item}"
+  }
+};
+
 export const formStrings = defineMessages({
   ...fieldLabels,
   ...fieldPlaceholders,
   ...helperText,
   ...invalidField,
-  ...liveries
+  ...liveries,
+  ...result
 });

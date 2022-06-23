@@ -1,10 +1,14 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useToast } from '@chakra-ui/react';
 
 import { SubmitButton, useForm } from '../../../../../shared';
-import { liveryStrings } from '../../../../../../utils/intl';
+import {
+  liveryStrings,
+  formStrings,
+  commonStrings
+} from '../../../../../../utils/intl';
 import { useCreateLiveryMutation } from '../../../../../../store/livery/api-slice';
 import {
   mapCreateLiveryFormStateToRequestInput,
@@ -17,6 +21,7 @@ import { initialState } from '../../config';
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to submit the state of the form.
  */
 const SubmitLivery = () => {
+  const intl = useIntl();
   const toast = useToast({
     duration: 8000,
     isClosable: true,
@@ -54,15 +59,19 @@ const SubmitLivery = () => {
         await createLivery(createLiveryInput).unwrap();
         resetState(initialState);
         toast({
-          title: 'Livery successfully created',
+          title: intl.formatMessage(formStrings.createSuccess, {
+            item: intl.formatMessage(commonStrings.livery)
+          }),
           description: `${state.title}`,
           status: 'success'
         });
       }
     } catch (_) {
       toast({
-        title: 'Something went wrong!',
-        description: `We're sorry, something went wrong when creating your livery`,
+        title: intl.formatMessage(commonStrings.error),
+        description: intl.formatMessage(formStrings.createError, {
+          item: intl.formatMessage(commonStrings.livery)
+        }),
         status: 'error'
       });
     }
