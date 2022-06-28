@@ -125,7 +125,11 @@ export const Table = <DataT extends TableData>({
                     >
                       <ImageWithFallback
                         imgAlt={row['title'] ?? 'image'}
-                        imgUrl={accessRowDataByKey(column.dataKey, row)[0]}
+                        imgUrl={
+                          Array.isArray(accessRowDataByKey(column.dataKey, row))
+                            ? accessRowDataByKey(column.dataKey, row)[0]
+                            : accessRowDataByKey(column.dataKey, row)
+                        }
                       />
                     </Box>
                   )}
