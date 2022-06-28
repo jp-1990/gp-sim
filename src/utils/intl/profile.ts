@@ -23,6 +23,14 @@ const profile = {
   myLiveries: {
     id: 'utils.intl.profile.myLiveries',
     defaultMessage: 'My liveries'
+  },
+  profileHeading: {
+    id: 'utils.intl.profile.profileHeading',
+    defaultMessage: `Profile`
+  },
+  profileSummary: {
+    id: 'utils.intl.profile.profileSummary',
+    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
   }
 };
 

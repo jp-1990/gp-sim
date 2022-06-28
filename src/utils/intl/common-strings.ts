@@ -73,6 +73,10 @@ const main = {
   setups: {
     id: 'utils.intl.commonStrings.setups',
     defaultMessage: 'Setups'
+  },
+  profile: {
+    id: 'utils.intl.commonStrings.profile',
+    defaultMessage: 'Profile'
   }
 };
 

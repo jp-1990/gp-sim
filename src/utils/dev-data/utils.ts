@@ -22,7 +22,7 @@ export const applyLiveryFilters = (
 
   const filteredLiveries = liveries.filter((livery) => {
     let shouldReturn = true;
-    if (ids && !idArray?.includes(livery.id)) return false;
+    if (ids && !idArray?.includes(`${livery.id}`)) return false;
     if (search) {
       shouldReturn = false;
       livery.searchHelpers.forEach((el) => {
@@ -85,14 +85,17 @@ export const applyLiveryFilters = (
 
 export const applyGarageFilters = (
   garages: GaragesDataType,
-  args: [string | null, string | null]
+  args: [string | null, string | null, string | null]
 ) => {
-  const [ids, created] = args;
+  const [ids, created, creator] = args;
   const idArray = ids?.split('&');
 
-  const filteredGarages = garages.filter((garage) =>
-    idArray?.includes(garage.id)
-  );
+  const filteredGarages = garages.filter((garage) => {
+    let shouldReturn = false;
+    if (idArray?.includes(garage.id)) shouldReturn = true;
+    if (creator === garage.creator.id) shouldReturn = true;
+    return shouldReturn;
+  });
 
   if (created) {
     filteredGarages.sort((a, b) => {
