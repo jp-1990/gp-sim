@@ -12,7 +12,12 @@ export interface GarageDataType {
   liveries: string[];
 }
 export type GaragesDataType = GarageDataType[];
-export type GaragesResponseType = { garages: GaragesDataType };
+export type GaragesResponseType = {
+  garages: GaragesDataType;
+  total: number;
+  perPage: number;
+  page: number;
+};
 
 export interface CreateGarageDataType
   extends Pick<GarageDataType, 'creator' | 'title' | 'description'> {

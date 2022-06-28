@@ -28,6 +28,8 @@ export interface GaragesFilters {
   created?: Order;
   creator?: string;
   ids?: string;
+  page?: number;
+  perPage?: number;
 }
 
 export enum GaragesFilterKeys {
