@@ -9,7 +9,7 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/garages`,
     (req, res, ctx) => {
-      const params = ['ids', 'created', 'creator'];
+      const params = ['ids', 'created', 'user'];
       const garages = [...data];
 
       const extractedParams = [

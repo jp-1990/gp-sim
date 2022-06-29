@@ -14,10 +14,11 @@ export const applyLiveryFilters = (
     string | null,
     string | null,
     string | null,
+    string | null,
     string | null
   ]
 ) => {
-  const [ids, search, car, priceMin, priceMax, created, rating] = args;
+  const [ids, search, car, priceMin, priceMax, created, rating, user] = args;
   const idArray = ids?.split('&');
 
   const filteredLiveries = liveries.filter((livery) => {
@@ -37,6 +38,7 @@ export const applyLiveryFilters = (
       shouldReturn = (livery.price || 0) <= +priceMax * 100;
     }
     if (rating && !!+rating) shouldReturn = (livery.rating || 0) >= +rating;
+    if (user) shouldReturn = user === livery.creator.id;
     return shouldReturn;
   });
 
@@ -87,13 +89,13 @@ export const applyGarageFilters = (
   garages: GaragesDataType,
   args: [string | null, string | null, string | null]
 ) => {
-  const [ids, created, creator] = args;
+  const [ids, created, user] = args;
   const idArray = ids?.split('&');
 
   const filteredGarages = garages.filter((garage) => {
     let shouldReturn = false;
-    if (idArray?.includes(garage.id)) shouldReturn = true;
-    if (creator === garage.creator.id) shouldReturn = true;
+    if (idArray) shouldReturn = idArray.includes(garage.id);
+    if (user) shouldReturn = user === garage.creator.id;
     return shouldReturn;
   });
 

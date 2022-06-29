@@ -17,7 +17,8 @@ export const liveriesHandlers = [
         'priceMin',
         'priceMax',
         'created',
-        'rating'
+        'rating',
+        'user'
       ];
       const liveries = [...data];
       liveries.sort((a, b) => b.downloads - a.downloads);
@@ -25,6 +26,7 @@ export const liveriesHandlers = [
       const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
       ] as [
+        string | null,
         string | null,
         string | null,
         string | null,
