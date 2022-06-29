@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { KeyValueUnionOf, Order } from '../types';
 
 const initialState = {
@@ -7,7 +7,7 @@ const initialState = {
   car: '',
   created: Order.ASC,
   garages: '',
-  user: '0',
+  user: '',
   page: 0
 };
 
@@ -27,12 +27,15 @@ const filtersReducer = (state: FilterState, action: Action): FilterState => {
 export const useLiveryFilters = () => {
   const [filters, dispatch] = useReducer(filtersReducer, initialState);
 
-  const setFilters = (payload: ActionPayload) => {
-    dispatch({
-      type: payload.key,
-      payload: payload
-    });
-  };
+  const setFilters = useCallback(
+    (payload: ActionPayload) => {
+      dispatch({
+        type: payload.key,
+        payload: payload
+      });
+    },
+    [dispatch]
+  );
 
   return {
     filters,
