@@ -91,6 +91,16 @@ const validatorFunctions = {
       ),
       priority: 1
     };
+  },
+  /**
+   * validate email to be anything@anything.anything
+   */
+  EMAIL: (value: any) => {
+    if (/^\S+@\S+\.\S+$/.test(value)) return true;
+    return {
+      message: <FormattedMessage {...formStrings.invalidEmailFormat} />,
+      priority: 1
+    };
   }
 };
 export const validatorOptions = Object.fromEntries(
