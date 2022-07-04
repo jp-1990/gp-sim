@@ -1,3 +1,4 @@
+import { m } from 'framer-motion';
 import { defineMessages } from 'react-intl';
 
 // react-intl doesn't like template literals
@@ -39,6 +40,22 @@ const fieldLabels = {
   searchTags: {
     id: 'utils.intl.form.searchTags',
     defaultMessage: 'Search Tags'
+  },
+  firstName: {
+    id: 'utils.intl.form.firstName',
+    defaultMessage: 'First Name'
+  },
+  lastName: {
+    id: 'utils.intl.form.lastName',
+    defaultMessage: 'Last Name'
+  },
+  email: {
+    id: 'utils.intl.form.email',
+    defaultMessage: 'Email'
+  },
+  displayName: {
+    id: 'utils.intl.form.displayName',
+    defaultMessage: 'Display Name'
   }
 };
 
@@ -98,13 +115,17 @@ const invalidField = {
     defaultMessage: 'This field is required'
   },
   invalidLiveryFiles: {
-    id: 'utils.intl.form.fieldNull',
+    id: 'utils.intl.form.invalidLiveryFiles',
     defaultMessage: 'The following files are missing: {files}'
   },
   invalidDynamicLiveryFileName: {
-    id: 'utils.intl.form.fieldNull',
+    id: 'utils.intl.form.invalidDynamicLiveryFileName',
     defaultMessage:
       '[your-livery-name].json can only contain letters, numbers, -, _ and space. It must be in json format.'
+  },
+  invalidEmailFormat: {
+    id: 'utils.intl.form.invalidEmailFormat',
+    defaultMessage: 'This email format is invalid'
   }
 };
 
@@ -116,6 +137,10 @@ const helperText = {
   selectGarageImageHelperText: {
     id: 'utils.intl.form.selectGarageImageHelperText',
     defaultMessage: 'Add an image for your garage*'
+  },
+  selectProfileImageHelperText: {
+    id: 'utils.intl.form.selectProfileImageHelperText',
+    defaultMessage: 'Add an image for your profile*'
   },
   selectLiveryFilesHelperText: {
     id: 'utils.intl.form.selectLiveryFilesHelperText',
