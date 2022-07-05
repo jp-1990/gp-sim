@@ -19,7 +19,7 @@ import { mapCreateGarageFormStateToRequestInput } from '../../utils';
 /**
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to submit the state of the form.
  */
-const SubmitLivery = () => {
+const SubmitGarage = () => {
   const intl = useIntl();
   const toast = useToast({
     duration: 8000,
@@ -82,4 +82,4 @@ const SubmitLivery = () => {
   );
 };
 
-export default SubmitLivery;
+export default SubmitGarage;
