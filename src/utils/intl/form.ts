@@ -1,4 +1,3 @@
-import { m } from 'framer-motion';
 import { defineMessages } from 'react-intl';
 
 // react-intl doesn't like template literals
@@ -20,6 +19,10 @@ const fieldLabels = {
   description: {
     id: 'utils.intl.form.description',
     defaultMessage: 'Description'
+  },
+  about: {
+    id: 'utils.intl.form.about',
+    defaultMessage: 'About'
   },
   garage: {
     id: 'utils.intl.form.garage',
@@ -65,8 +68,12 @@ const fieldPlaceholders = {
     defaultMessage: 'Title'
   },
   descriptionPlaceholder: {
-    id: 'utils.intl.liveries.descriptionPlaceholder',
+    id: 'utils.intl.form.descriptionPlaceholder',
     defaultMessage: 'Tell people about this {item}...'
+  },
+  aboutPlaceholder: {
+    id: 'utils.intl.form.aboutPlaceholder',
+    defaultMessage: 'Tell people about yourself...'
   },
   carPlaceholder: {
     id: 'utils.intl.form.carPlaceholder',
@@ -158,10 +165,19 @@ const result = {
     id: 'utils.intl.form.createSuccess',
     defaultMessage: '{item} successfully created'
   },
+  updateSuccess: {
+    id: 'utils.intl.form.updateSuccess',
+    defaultMessage: '{item} successfully updated'
+  },
   createError: {
     id: 'utils.intl.form.createError',
     defaultMessage:
       "We're sorry, something went wrong when creating your {item}"
+  },
+  updateError: {
+    id: 'utils.intl.form.updateError',
+    defaultMessage:
+      "We're sorry, something went wrong when updating your {item}"
   }
 };
 

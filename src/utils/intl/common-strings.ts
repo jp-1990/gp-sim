@@ -40,6 +40,10 @@ const actions = {
     id: 'utils.intl.commonStrings.selectFiles',
     defaultMessage: 'Select Files'
   },
+  saveChanges: {
+    id: 'utils.intl.commonStrings.saveChanges',
+    defaultMessage: 'Save Changes'
+  },
   view: {
     id: 'utils.intl.commonStrings.view',
     defaultMessage: 'View'
