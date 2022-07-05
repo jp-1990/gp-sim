@@ -74,6 +74,10 @@ const main = {
     id: 'utils.intl.form.livery',
     defaultMessage: 'Livery'
   },
+  liveries: {
+    id: 'utils.intl.form.liveres',
+    defaultMessage: 'Liveries'
+  },
   setups: {
     id: 'utils.intl.commonStrings.setups',
     defaultMessage: 'Setups'
