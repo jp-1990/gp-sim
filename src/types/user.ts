@@ -17,3 +17,11 @@ export type UsersDataType = UserDataType[];
 export type CreatorType = Pick<UserDataType, 'id' | 'displayName' | 'image'>;
 
 export interface UserLoginArgs {}
+
+export interface UpdateUserProfileDataType
+  extends Pick<
+    UserDataType,
+    'id' | 'about' | 'forename' | 'surname' | 'email' | 'displayName'
+  > {
+  imageFiles: Array<File>;
+}
