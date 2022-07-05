@@ -1,6 +1,10 @@
 import { apiSlice } from '../store';
-import { LOGIN, LOGOUT } from './constants';
-import { UserDataType, UserLoginArgs } from '../../types';
+import { LOGIN, LOGOUT, UPDATE_PROFILE } from './constants';
+import {
+  UpdateUserProfileDataType,
+  UserDataType,
+  UserLoginArgs
+} from '../../types';
 
 // USER API SLICE
 
@@ -25,7 +29,22 @@ export const userApiSlice = apiSlice.injectEndpoints({
           method: 'POST'
         };
       }
-    })
+    }),
+    [UPDATE_PROFILE]: builder.mutation<UserDataType, UpdateUserProfileDataType>(
+      {
+        query: (updateData) => {
+          const { id, ...data } = updateData;
+          return {
+            data,
+            url: `/user/${id}`,
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          };
+        }
+      }
+    )
   })
 });
 type UserApiSliceRootState = {
@@ -34,7 +53,11 @@ type UserApiSliceRootState = {
 
 // HOOKS
 
-export const { useLoginMutation, useLogoutMutation } = userApiSlice;
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useUpdateUserProfileMutation
+} = userApiSlice;
 
 // ENDPOINTS
 

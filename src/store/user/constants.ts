@@ -3,3 +3,4 @@ export const CURRENT_USER_SLICE_NAME = 'currentUserSlice';
 
 export const LOGIN = 'login';
 export const LOGOUT = 'logout';
+export const UPDATE_PROFILE = 'updateUserProfile';
