@@ -1,8 +1,9 @@
 import { validatorOptions } from '../../../shared/Form/utils';
 
 export const stateKeys = {
-  FIRST_NAME: 'firstName',
-  LAST_NAME: 'lastName',
+  ABOUT: 'about',
+  FORENAME: 'forename',
+  SURNAME: 'surname',
   EMAIL: 'email',
   DISPLAY_NAME: 'displayName',
   IMAGE_FILES: 'imageFiles'
@@ -16,9 +17,10 @@ export const initialState = {
 };
 
 export const validators = {
-  firstName: undefined,
-  lastName: undefined,
-  email: [validatorOptions.NON_NULL_STRING, validatorOptions.EMAIL],
-  displayName: [validatorOptions.NON_NULL_STRING],
-  imageFiles: undefined
+  [stateKeys.ABOUT]: undefined,
+  [stateKeys.FORENAME]: undefined,
+  [stateKeys.SURNAME]: undefined,
+  [stateKeys.EMAIL]: [validatorOptions.NON_NULL_STRING, validatorOptions.EMAIL],
+  [stateKeys.DISPLAY_NAME]: [validatorOptions.NON_NULL_STRING],
+  [stateKeys.IMAGE_FILES]: undefined
 };
