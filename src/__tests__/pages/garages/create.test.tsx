@@ -3,7 +3,7 @@ import { render, screen } from '../../../utils/testing/test-utils';
 import Create from '../../../pages/garages/create';
 import { commonStrings, garageStrings } from '../../../utils/intl';
 
-describe('Create livery', () => {
+describe('Create garage', () => {
   it('renders a heading, submit and cancel buttons', async () => {
     render(<Create />);
     expect(

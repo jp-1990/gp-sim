@@ -16,7 +16,7 @@ const userGaragesData = [...garagesData].filter(({ id }) =>
   userGarages.includes(id)
 );
 
-describe('Liveries', () => {
+describe('Garages', () => {
   it('renders the garages and liveries from the user collection', async () => {
     render(<Garages />);
 
