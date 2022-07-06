@@ -12,6 +12,11 @@ export interface UserDataType {
   garages: string[];
   liveries: string[];
 }
+export type PublicUserDataType = Pick<
+  UserDataType,
+  'id' | 'about' | 'displayName' | 'image' | 'liveries'
+>;
+
 export type UsersDataType = UserDataType[];
 
 export type CreatorType = Pick<UserDataType, 'id' | 'displayName' | 'image'>;

@@ -1,6 +1,7 @@
 import { apiSlice } from '../store';
-import { LOGIN, LOGOUT, UPDATE_PROFILE } from './constants';
+import { GET_USER_BY_ID, LOGIN, LOGOUT, UPDATE_PROFILE } from './constants';
 import {
+  PublicUserDataType,
   UpdateUserProfileDataType,
   UserDataType,
   UserLoginArgs
@@ -27,6 +28,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
         return {
           url: `/logout`,
           method: 'POST'
+        };
+      }
+    }),
+    [GET_USER_BY_ID]: builder.query<PublicUserDataType, string>({
+      query: (id) => {
+        return {
+          url: `/user/${id}`,
+          method: 'GET'
         };
       }
     }),
