@@ -14,14 +14,16 @@ export type FormStateType<
   T extends FormDefaultStateType = FormDefaultStateType
 > = FormInitialStateType & T;
 
+export type SetStateImmutablyCallbackType<T> = (
+  formState: FormStateType<T>
+) => FormStateType<T> | void;
+
 export interface FormValueType<
   T extends FormDefaultStateType = FormDefaultStateType
 > {
   state: FormStateType<T>;
   setState: React.Dispatch<React.SetStateAction<FormStateType<T>>>;
-  setStateImmutably: (
-    callback: (formState: FormStateType<T>) => FormStateType<T>
-  ) => void;
+  setStateImmutably: (callback: SetStateImmutablyCallbackType<T>) => void;
   resetState: (initialState: FormStateType<FormDefaultStateType>) => void;
 }
 
