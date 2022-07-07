@@ -20,6 +20,10 @@ const actions = {
     id: 'utils.intl.commonStrings.download',
     defaultMessage: `Download`
   },
+  editProfile: {
+    id: 'utils.intl.commonStrings.editProfile',
+    defaultMessage: `Edit Profile`
+  },
   upload: {
     id: 'utils.intl.commonStrings.upload',
     defaultMessage: 'Upload'
