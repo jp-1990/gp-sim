@@ -31,7 +31,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
         };
       }
     }),
-    [GET_USER_BY_ID]: builder.query<PublicUserDataType, string>({
+    [GET_USER_BY_ID]: builder.query<PublicUserDataType, string | number>({
       query: (id) => {
         return {
           url: `/user/${id}`,
@@ -65,9 +65,10 @@ type UserApiSliceRootState = {
 export const {
   useLoginMutation,
   useLogoutMutation,
-  useUpdateUserProfileMutation
+  useUpdateUserProfileMutation,
+  useGetUserByIdQuery
 } = userApiSlice;
 
 // ENDPOINTS
 
-export const { login, logout } = userApiSlice.endpoints;
+export const { login, logout, getUserById } = userApiSlice.endpoints;

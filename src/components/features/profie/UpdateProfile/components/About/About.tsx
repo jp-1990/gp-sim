@@ -21,7 +21,7 @@ const Description = () => {
         ...formStrings.aboutPlaceholder
       })}
       size="md"
-      resize="none"
+      resize="vertical"
     />
   );
 };

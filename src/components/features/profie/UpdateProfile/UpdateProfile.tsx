@@ -1,7 +1,7 @@
 import { Grid, GridItem } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { Form } from '../../../shared';
+import { useForm } from '../../../shared';
 import DisplayName from './components/DisplayName/DisplayName';
 import Email from './components/Email/Email';
 import Forename from './components/Forename/Forename';
@@ -9,40 +9,71 @@ import Surname from './components/Surname/Surname';
 import SelectProfileImage from './components/SelectProfileImage/SelectProfileImage';
 import SubmitProfile from './components/SubmitProfile/SubmitProfile';
 import About from './components/About/About';
+import { UserDataType } from '../../../../types';
+import { UpdateProfileFormStateType } from './types';
 
-const UpdateProfile = () => {
+type Props = Pick<
+  UserDataType,
+  'about' | 'displayName' | 'email' | 'forename' | 'surname'
+>;
+/**
+ * @description Values for props should be existing values for the current user. value: string | null | undefined
+ * @param {Props['about']} props.about
+ * @param {Props['displayName']} props.displayName
+ * @param {Props['email']} props.email
+ * @param {Props['forename']} props.forename
+ * @param {Props['surname']} props.surname
+ */
+const UpdateProfile: React.FC<Props> = ({
+  about,
+  displayName,
+  email,
+  forename,
+  surname
+}) => {
+  const { setStateImmutably } = useForm<UpdateProfileFormStateType>();
+
+  useEffect(() => {
+    setStateImmutably((state) => {
+      state.about = about;
+      state.displayName = displayName;
+      state.email = email;
+      state.forename = forename;
+      state.surname = surname;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Form>
-      <Grid
-        templateColumns={`repeat(6, 1fr)`}
-        gap={4}
-        maxW="5xl"
-        minW="5xl"
-        mt={4}
-      >
-        <GridItem colSpan={3}>
-          <Forename />
-        </GridItem>
-        <GridItem colSpan={3} rowSpan={3} mt={6}>
-          <SelectProfileImage />
-        </GridItem>
-        <GridItem colSpan={3}>
-          <Surname />
-        </GridItem>
-        <GridItem colSpan={3}>
-          <Email />
-        </GridItem>
-        <GridItem colSpan={4}>
-          <DisplayName />
-        </GridItem>
-        <GridItem colSpan={4}>
-          <About />
-        </GridItem>
-        <GridItem colSpan={4} mt={20}>
-          <SubmitProfile />
-        </GridItem>
-      </Grid>
-    </Form>
+    <Grid
+      templateColumns={`repeat(6, 1fr)`}
+      gap={4}
+      maxW="5xl"
+      minW="5xl"
+      mt={4}
+    >
+      <GridItem colSpan={3}>
+        <Forename />
+      </GridItem>
+      <GridItem colSpan={3} rowSpan={3} mt={6}>
+        <SelectProfileImage />
+      </GridItem>
+      <GridItem colSpan={3}>
+        <Surname />
+      </GridItem>
+      <GridItem colSpan={3}>
+        <Email />
+      </GridItem>
+      <GridItem colSpan={4}>
+        <DisplayName />
+      </GridItem>
+      <GridItem colSpan={4}>
+        <About />
+      </GridItem>
+      <GridItem colSpan={4} mt={8}>
+        <SubmitProfile />
+      </GridItem>
+    </Grid>
   );
 };
 
