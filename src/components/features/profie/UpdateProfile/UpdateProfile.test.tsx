@@ -6,6 +6,7 @@ import {
   screen,
   setTestUser
 } from '../../../../utils/testing/test-utils';
+import { Form } from '../../../shared';
 import UpdateProfile from './UpdateProfile';
 
 const formLabels: Record<string, string> = {
@@ -42,6 +43,20 @@ const inputValues = {
   images: undefined
 };
 
+const defaultValues = {
+  about: 'existing about',
+  displayName: 'existing display name',
+  email: 'existing email',
+  forename: 'existing forename',
+  surname: 'existing surname'
+};
+
+const TestComponent = () => (
+  <Form>
+    <UpdateProfile {...defaultValues} />
+  </Form>
+);
+
 describe('UpdateProfile', () => {
   beforeEach(() => {
     setTestUser(undefined);
@@ -52,14 +67,14 @@ describe('UpdateProfile', () => {
 
   describe('renders labels and buttons', () => {
     it('renders the labels for all form fields', () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       for (const label in formLabels) {
         expect(screen.getByLabelText(formLabels[label])).toBeInTheDocument();
       }
     });
 
     it('renders the submit button', () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       for (const text in buttonText) {
         expect(screen.getByText(buttonText[text])).toBeInTheDocument();
       }
@@ -68,12 +83,13 @@ describe('UpdateProfile', () => {
 
   describe('first name field', () => {
     it('correctly renders the first name field', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const firstNameInput = screen.getByLabelText(formLabels.firstName);
       expect(firstNameInput).toBeInTheDocument();
       expect(firstNameInput).not.toBeRequired();
+      await user.clear(firstNameInput);
 
       await user.type(firstNameInput, inputValues.firstName);
       expect(
@@ -84,12 +100,13 @@ describe('UpdateProfile', () => {
 
   describe('last name field', () => {
     it('correctly renders the last name field', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const lastNameInput = screen.getByLabelText(formLabels.lastName);
       expect(lastNameInput).toBeInTheDocument();
       expect(lastNameInput).not.toBeRequired();
+      await user.clear(lastNameInput);
 
       await user.type(lastNameInput, inputValues.lastName);
       expect(
@@ -100,18 +117,20 @@ describe('UpdateProfile', () => {
 
   describe('email field', () => {
     it('correctly renders the email field with and without errors', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const emailInput = screen.getByLabelText(formLabels.email);
       expect(emailInput).toBeInTheDocument();
       expect(emailInput).toBeRequired();
+      await user.clear(emailInput);
 
-      expect(screen.getAllByText(errorMessages.required)).toHaveLength(2);
+      expect(screen.getAllByText(errorMessages.required)).toHaveLength(1);
       expect(
         screen.getByRole('status', { name: `${formLabels.email}-error` })
       ).toBeInTheDocument();
 
+      screen.debug(undefined, 30000);
       await user.type(emailInput, inputValues.invalidEmail);
 
       expect(screen.getByText(errorMessages.invalidEmail)).toBeInTheDocument();
@@ -133,21 +152,22 @@ describe('UpdateProfile', () => {
 
   describe('display name field', () => {
     it('correctly renders the display name field with and without errors', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const displayNameInput = screen.getByLabelText(formLabels.displayName);
       expect(displayNameInput).toBeInTheDocument();
       expect(displayNameInput).toBeRequired();
+      await user.clear(displayNameInput);
 
-      expect(screen.getAllByText(errorMessages.required)).toHaveLength(2);
+      expect(screen.getAllByText(errorMessages.required)).toHaveLength(1);
       expect(
         screen.getByRole('status', { name: `${formLabels.displayName}-error` })
       ).toBeInTheDocument();
 
       await user.type(displayNameInput, inputValues.displayName);
 
-      expect(screen.getAllByText(errorMessages.required)).toHaveLength(1);
+      expect(screen.queryAllByText(errorMessages.required)).toHaveLength(0);
       expect(
         screen.queryByRole('status', {
           name: `${formLabels.displayName}-error`
@@ -158,12 +178,13 @@ describe('UpdateProfile', () => {
 
   describe('about field', () => {
     it('correctly renders the about field', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const aboutInput = screen.getByLabelText(formLabels.about);
       expect(aboutInput).toBeInTheDocument();
       expect(aboutInput).not.toBeRequired();
+      await user.clear(aboutInput);
 
       await user.type(aboutInput, inputValues.about);
       expect(screen.getByDisplayValue(inputValues.about)).toBeInTheDocument();
@@ -172,7 +193,7 @@ describe('UpdateProfile', () => {
 
   describe('select images section', () => {
     it('correctly renders the selectImages section with a button and helperText', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
 
       expect(screen.getByLabelText(formLabels.images)).toBeInTheDocument();
       expect(
@@ -183,7 +204,7 @@ describe('UpdateProfile', () => {
     });
 
     it('correctly renders the selectImages section with items based on single File input', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
       const selectImagesButton = screen.getByLabelText(formLabels.images);
       await user.upload(selectImagesButton, imageFiles[0]);
@@ -230,8 +251,15 @@ describe('UpdateProfile', () => {
   });
 
   describe('submit button', () => {
-    it('correctly renders the SubmitButton as disabled when any fields are invalid', () => {
-      render(<UpdateProfile />);
+    it('correctly renders the SubmitButton as disabled when any fields are invalid', async () => {
+      render(<TestComponent />);
+      const user = userEvent.setup();
+
+      const displayName = screen.getByLabelText(formLabels.displayName);
+      const email = screen.getByLabelText(formLabels.email);
+
+      await user.clear(displayName);
+      await user.clear(email);
 
       expect(screen.getByLabelText(formLabels.displayName)).toBeInvalid();
       expect(
@@ -242,11 +270,14 @@ describe('UpdateProfile', () => {
     });
 
     it('correctly renders the SubmitButton as enabled when fields are valid', async () => {
-      render(<UpdateProfile />);
+      render(<TestComponent />);
       const user = userEvent.setup();
 
       const displayName = screen.getByLabelText(formLabels.displayName);
       const email = screen.getByLabelText(formLabels.email);
+
+      await user.clear(displayName);
+      await user.clear(email);
 
       await user.type(displayName, inputValues.displayName);
       await user.type(email, inputValues.email);
