@@ -7,7 +7,7 @@ export const userHandlers = [
   rest.put(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/user/:id`,
+    }/users/:id`,
     (req, res, ctx) => {
       const response = formatPutUserResponse(
         req.body as UpdateUserProfileDataType
@@ -19,7 +19,7 @@ export const userHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/user/:id`,
+    }/users/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
 
@@ -39,6 +39,28 @@ export const userHandlers = [
         ctx.status(200),
         ctx.json({ id, about, displayName, image, liveries })
       );
+    }
+  ),
+  rest.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL}/users`,
+    (_, res, ctx) => {
+      const users = userData.map(({ id, about, displayName, image }) => {
+        const userCreatedliveries = liveriesData.reduce((prev, cur) => {
+          const output = [...prev];
+          if (cur.creator.id === id) output.push(cur.id);
+          return output;
+        }, [] as string[]);
+
+        return {
+          id,
+          about,
+          displayName,
+          image,
+          liveries: userCreatedliveries
+        };
+      });
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(users));
     }
   )
 ];
