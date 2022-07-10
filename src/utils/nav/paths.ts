@@ -10,3 +10,4 @@ export const GARAGE_URL = (id: string | number) => `/garages/${id}`;
 export const GARAGE_CREATE_URL = '/garages/create';
 
 export const PROFILE_URL = '/profile';
+export const PROFILE_URL_BY_ID = (id: string | number) => `/profile/${id}`;
