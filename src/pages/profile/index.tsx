@@ -14,7 +14,7 @@ import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import UpdateProfile from '../../components/features/profie/UpdateProfile/UpdateProfile';
 import { MainLayout } from '../../components/layout';
-import { PageHeading } from '../../components/shared';
+import { Form, PageHeading } from '../../components/shared';
 import { Table } from '../../components/shared/Table/Table';
 import { TableDataTypes } from '../../components/shared/Table/types';
 import { useGarageFilters } from '../../hooks/use-garage-filters';
@@ -44,6 +44,9 @@ const Profile: NextPage = () => {
 
   const currentUser = useAppSelector((state) => state.currentUserSlice);
 
+  const { data: liveries } = useGetLiveriesQuery(liveryFilters);
+  const { data: garages } = useGetGaragesQuery(garageFilters);
+
   useEffect(() => {
     setLiveryFilters({
       key: LiveriesFilterKeys.USER,
@@ -57,9 +60,6 @@ const Profile: NextPage = () => {
     });
   }, [currentUser, setGarageFilters]);
 
-  const { data: liveries } = useGetLiveriesQuery(liveryFilters);
-  const { data: garages } = useGetGaragesQuery(garageFilters);
-
   const liveryPages = Array.from(
     Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
   );
@@ -69,6 +69,10 @@ const Profile: NextPage = () => {
 
   const onLiveryPageChange = (page: number) => () => {
     setLiveryFilters({ key: LiveriesFilterKeys.PAGE, value: page });
+  };
+
+  const onGaragePageChange = (page: number) => () => {
+    setGarageFilters({ key: GaragesFilterKeys.PAGE, value: page });
   };
 
   return (
@@ -84,8 +88,8 @@ const Profile: NextPage = () => {
       <Flex w="full" maxW="5xl" my={5}>
         <Tabs variant="enclosed" isLazy defaultIndex={0} colorScheme="red">
           <TabList>
-            <Tab aria-label={commonStrings.profile.defaultMessage}>
-              <FormattedMessage {...commonStrings.profile} />
+            <Tab aria-label={commonStrings.editProfile.defaultMessage}>
+              <FormattedMessage {...commonStrings.editProfile} />
             </Tab>
             <Tab aria-label={commonStrings.liveries.defaultMessage}>
               <FormattedMessage {...commonStrings.liveries} />
@@ -95,14 +99,23 @@ const Profile: NextPage = () => {
             </Tab>
           </TabList>
           <TabPanels>
+            {/* edit profile */}
             <TabPanel mt={4}>
               <Heading size="sm" pb={4}>
                 <FormattedMessage {...garageStrings.yourCollection} />
               </Heading>
-              <UpdateProfile />
+              <Form>
+                <UpdateProfile
+                  about={currentUser.about}
+                  displayName={currentUser.displayName}
+                  email={currentUser.email}
+                  forename={currentUser.forename}
+                  surname={currentUser.surname}
+                />
+              </Form>
             </TabPanel>
+            {/* liveries list */}
             <TabPanel>
-              {/* liveries list */}
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
@@ -167,8 +180,8 @@ const Profile: NextPage = () => {
                 </Flex>
               )}
             </TabPanel>
+            {/* garages list */}
             <TabPanel>
-              {/* garages list */}
               <Table<GaragesDataType>
                 actions={[
                   ({ id }) => (
@@ -194,11 +207,6 @@ const Profile: NextPage = () => {
                     label: <FormattedMessage {...formStrings.creator} />,
                     dataKey: 'creator.displayName',
                     type: TableDataTypes.STRING
-                  },
-                  {
-                    label: <FormattedMessage {...formStrings.car} />,
-                    dataKey: 'car',
-                    type: TableDataTypes.STRING
                   }
                 ]}
                 data={
@@ -223,7 +231,7 @@ const Profile: NextPage = () => {
                             (liveries?.page || 0) === page ? 'red' : undefined
                           }
                           lineHeight={1}
-                          onClick={onLiveryPageChange(page)}
+                          onClick={onGaragePageChange(page)}
                         >
                           {page + 1}
                         </Button>

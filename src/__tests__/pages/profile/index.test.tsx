@@ -5,24 +5,24 @@ import { commonStrings, profileStrings } from '../../../utils/intl';
 import userEvent from '@testing-library/user-event';
 
 const tabNames = {
-  profile: commonStrings.profile.defaultMessage,
+  editProfile: commonStrings.editProfile.defaultMessage,
   liveries: commonStrings.liveries.defaultMessage,
   garages: commonStrings.garages.defaultMessage
 };
 
 describe('Profile', () => {
-  it('renders the profile header, summary and tabs', async () => {
+  it('renders the profile header and summary', async () => {
     render(<Profile />);
 
     expect(
       screen.getAllByText(profileStrings.profileHeading.defaultMessage)
-    ).toHaveLength(4);
+    ).toHaveLength(3);
     expect(
       screen.getByText(profileStrings.profileSummary.defaultMessage)
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('tab', { name: tabNames.profile })
+      screen.getByRole('tab', { name: tabNames.editProfile })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('tab', { name: tabNames.liveries })
@@ -32,11 +32,22 @@ describe('Profile', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders with the profile tab selected, and correctly selects liveries or garages tabs on click', async () => {
+  it('renders with the profile tab selected, and correctly selects liveries and garages', async () => {
     render(<Profile />);
     const user = userEvent.setup();
 
-    const profileTab = screen.getByRole('tab', { name: tabNames.profile });
+    await waitFor(() =>
+      expect(
+        screen.getByRole('tab', { name: tabNames.editProfile })
+      ).toBeInTheDocument()
+    );
+    expect(
+      screen.getByRole('tab', { name: tabNames.liveries })
+    ).toBeInTheDocument();
+
+    const profileTab = screen.getByRole('tab', {
+      name: tabNames.editProfile
+    });
     const liveriesTab = screen.getByRole('tab', { name: tabNames.liveries });
     const garagesTab = screen.getByRole('tab', { name: tabNames.garages });
 
