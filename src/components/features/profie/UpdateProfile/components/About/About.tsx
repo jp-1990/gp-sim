@@ -8,7 +8,7 @@ import { stateKeys, validators } from '../../config';
 /**
  * About input for profile page. Uses Textarea inside a form provider
  */
-const Description = () => {
+const About = () => {
   const intl = useIntl();
 
   return (
@@ -21,9 +21,10 @@ const Description = () => {
         ...formStrings.aboutPlaceholder
       })}
       size="md"
-      resize="vertical"
+      h={36}
+      resize="none"
     />
   );
 };
 
-export default Description;
+export default About;
