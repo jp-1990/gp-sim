@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GetStaticPaths, NextPage } from 'next';
 
-import store, { apiSlice, wrapper } from '../../store/store';
+import store, { apiSlice, useAppSelector, wrapper } from '../../store/store';
 import {
   getLiveries,
   getLiveryById,
@@ -33,6 +33,9 @@ const Livery: NextPage<Props> = ({ id }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
   const { data: livery } = useGetLiveryByIdQuery(id);
+  const currentUser = useAppSelector((state) => state.currentUserSlice);
+
+  const isInUserCollection = currentUser.liveries.includes(id);
 
   const breadcrumbOptions = [
     {
@@ -131,14 +134,24 @@ const Livery: NextPage<Props> = ({ id }) => {
               </GridItem>
             </Grid>
             <Tags pb={12} tags={livery?.tags?.split(',') || []} />
-            <Heading size="md" pb={4}>
-              {typeof livery?.price !== 'string'
-                ? numberToPrice(livery?.price || 0)
-                : livery?.price}
-            </Heading>
-            <Button bg="gray.900" color="white" size="md" w={40} lineHeight={1}>
-              <FormattedMessage {...commonStrings.addToBasket} />
-            </Button>
+            {!isInUserCollection && (
+              <>
+                <Heading size="md" pb={4}>
+                  {typeof livery?.price !== 'string'
+                    ? numberToPrice(livery?.price || 0)
+                    : livery?.price}
+                </Heading>
+                <Button
+                  bg="gray.900"
+                  color="white"
+                  size="md"
+                  w={40}
+                  lineHeight={1}
+                >
+                  <FormattedMessage {...commonStrings.addToBasket} />
+                </Button>
+              </>
+            )}
           </Flex>
         </chakra.section>
       </Box>
