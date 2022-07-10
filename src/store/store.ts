@@ -6,7 +6,7 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { GET_LIVERIES } from './livery/constants';
 import { GET_GARAGES } from './garage/constants';
-import { CURRENT_USER_SLICE_NAME } from './user/constants';
+import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
 
 const axiosBaseQuery =
@@ -55,7 +55,7 @@ export const apiSlice = createApi({
       return action.payload[reducerPath];
     }
   },
-  tagTypes: [GET_LIVERIES, GET_GARAGES],
+  tagTypes: [GET_LIVERIES, GET_GARAGES, GET_USERS],
   endpoints: () => ({})
 });
 

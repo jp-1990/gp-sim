@@ -1,11 +1,25 @@
 import { apiSlice } from '../store';
-import { GET_USER_BY_ID, LOGIN, LOGOUT, UPDATE_PROFILE } from './constants';
+import {
+  GET_USERS,
+  GET_USER_BY_ID,
+  LOGIN,
+  LOGOUT,
+  UPDATE_PROFILE
+} from './constants';
 import {
   PublicUserDataType,
   UpdateUserProfileDataType,
   UserDataType,
   UserLoginArgs
 } from '../../types';
+import { createEntityAdapter } from '@reduxjs/toolkit';
+
+// ADAPTER
+
+const usersAdapter = createEntityAdapter<PublicUserDataType>();
+const initialState = usersAdapter.getInitialState();
+
+export type UserSliceStateType = typeof initialState;
 
 // USER API SLICE
 
@@ -31,10 +45,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
         };
       }
     }),
-    [GET_USER_BY_ID]: builder.query<PublicUserDataType, string | number>({
+    [GET_USERS]: builder.query<UserSliceStateType, undefined>({
+      query: () => ({
+        url: '/users',
+        method: 'GET'
+      }),
+      transformResponse: (data: PublicUserDataType[]) =>
+        usersAdapter.setAll(initialState, data),
+      keepUnusedDataFor: 300,
+      providesTags: [GET_USERS]
+    }),
+    [GET_USER_BY_ID]: builder.query<
+      PublicUserDataType,
+      string | number | undefined
+    >({
       query: (id) => {
         return {
-          url: `/user/${id}`,
+          url: `/users/${id ?? -1}`,
           method: 'GET'
         };
       }
@@ -45,7 +72,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           const { id, ...data } = updateData;
           return {
             data,
-            url: `/user/${id}`,
+            url: `/users/${id}`,
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json'
@@ -71,4 +98,4 @@ export const {
 
 // ENDPOINTS
 
-export const { login, logout, getUserById } = userApiSlice.endpoints;
+export const { login, logout, getUserById, getUsers } = userApiSlice.endpoints;
