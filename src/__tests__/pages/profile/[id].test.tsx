@@ -1,60 +1,18 @@
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '../../../utils/testing/test-utils';
 import Profile from '../../../pages/profile/[id]';
-import { commonStrings, profileStrings } from '../../../utils/intl';
-import userEvent from '@testing-library/user-event';
+import usersData from '../../../utils/dev-data/users.json';
 
-const tabNames = {
-  profile: commonStrings.profile.defaultMessage,
-  liveries: commonStrings.liveries.defaultMessage
-};
+const userData = usersData.find((user) => user.id === '0');
 
 describe('Profile', () => {
-  it('renders the profile header and summary', async () => {
+  it('renders with the user display name based on data', async () => {
+    if (!userData) return false;
     render(<Profile id="0" />);
-
-    expect(
-      screen.getAllByText(profileStrings.profileHeading.defaultMessage)
-    ).toHaveLength(4);
-    expect(
-      screen.getByText(profileStrings.profileSummary.defaultMessage)
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole('tab', { name: tabNames.profile })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('tab', { name: tabNames.liveries })
-    ).toBeInTheDocument();
-  });
-
-  it('renders with the profile tab selected, and correctly selects liveries', async () => {
-    render(<Profile id="0" />);
-    const user = userEvent.setup();
-
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
-        screen.getByRole('tab', { name: tabNames.profile })
-      ).toBeInTheDocument()
-    );
-    expect(
-      screen.getByRole('tab', { name: tabNames.liveries })
-    ).toBeInTheDocument();
-
-    const profileTab = screen.getByRole('tab', {
-      name: tabNames.profile
+        screen.queryAllByText(userData.displayName).length
+      ).toBeGreaterThan(0);
     });
-    const liveriesTab = screen.getByRole('tab', { name: tabNames.liveries });
-
-    expect(profileTab).toBeInTheDocument();
-    expect(liveriesTab).toBeInTheDocument();
-
-    expect(profileTab).toHaveAttribute('aria-selected', 'true');
-    expect(liveriesTab).toHaveAttribute('aria-selected', 'false');
-
-    await user.click(liveriesTab);
-
-    expect(profileTab).toHaveAttribute('aria-selected', 'false');
-    expect(liveriesTab).toHaveAttribute('aria-selected', 'true');
   });
 });
