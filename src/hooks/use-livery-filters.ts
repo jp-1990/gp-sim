@@ -5,8 +5,10 @@ const initialState = {
   ids: '',
   search: '',
   car: '',
+  priceMin: '00.00',
+  priceMax: '00.00',
   created: Order.ASC,
-  garages: '',
+  rating: '0',
   user: '',
   page: 0
 };
@@ -42,3 +44,6 @@ export const useLiveryFilters = () => {
     setFilters
   };
 };
+
+export type SetFiltersType = (payload: ActionPayload) => void;
+export type FiltersType = FilterState;
