@@ -123,17 +123,45 @@ const filters = {
     id: 'utils.intl.commonStrings.searchPlaceholder',
     defaultMessage: 'Search...'
   },
+  search: {
+    id: 'utils.intl.commonStrings.search',
+    defaultMessage: 'Search'
+  },
   selectCarPlaceholder: {
     id: 'utils.intl.commonStrings.selectCarPlaceholder',
+    defaultMessage: 'Select car'
+  },
+  selectCar: {
+    id: 'utils.intl.commonStrings.selectCar',
     defaultMessage: 'Select car'
   },
   createdAtPlaceholder: {
     id: 'utils.intl.commonStrings.createdAtPlaceholder',
     defaultMessage: 'Created'
   },
+  createdAt: {
+    id: 'utils.intl.commonStrings.createdAt',
+    defaultMessage: 'Created'
+  },
   ratingPlaceholder: {
     id: 'utils.intl.commonStrings.ratingPlaceholder',
     defaultMessage: 'Rating'
+  },
+  rating: {
+    id: 'utils.intl.commonStrings.rating',
+    defaultMessage: 'Rating'
+  },
+  minPrice: {
+    id: 'utils.intl.commonStrings.minPrice',
+    defaultMessage: 'Minimum Price'
+  },
+  maxPrice: {
+    id: 'utils.intl.commonStrings.maxPrice',
+    defaultMessage: 'Maximum Price'
+  },
+  priceSlider: {
+    id: 'utils.intl.commonStrings.priceSlider',
+    defaultMessage: 'Price Slider'
   }
 };
 
