@@ -1,11 +1,7 @@
-import { ChangeEvent, useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   chakra,
   Box,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  Select,
   Grid,
   GridItem,
   Button,
@@ -15,12 +11,11 @@ import {
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { SearchIcon } from '@chakra-ui/icons';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { apiSlice, wrapper, useAppSelector } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
-import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
+import { getCars } from '../../store/car/api-slice';
 
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
@@ -38,52 +33,27 @@ import {
   commonStrings,
   formStrings
 } from '../../utils/intl';
-import {
-  LiveriesFilterKeys,
-  Order,
-  KeyValueUnionOf,
-  LiveriesDataType
-} from '../../types';
+import { LiveriesFilterKeys as Keys, LiveriesDataType } from '../../types';
 import { useGetGaragesQuery } from '../../store/garage/api-slice';
 import { Table } from '../../components/shared/Table/Table';
 import { TableDataTypes } from '../../components/shared/Table/types';
-
-const initialState = {
-  ids: '',
-  search: '',
-  car: '',
-  created: Order.ASC,
-  garages: '',
-  user: '0',
-  page: 0
-};
-type FilterState = typeof initialState;
-
-type Action = {
-  type: keyof FilterState;
-  payload: NonNullable<KeyValueUnionOf<FilterState>>;
-};
-const filtersReducer = (state: FilterState, action: Action): FilterState => {
-  return {
-    ...state,
-    [action.payload.key]: action.payload.value
-  };
-};
+import LiveryFilter, {
+  Mode
+} from '../../components/features/liveries/LiveryFilter/LiveryFilter';
+import { useLiveryFilters } from '../../hooks/use-livery-filters';
 
 const Garages: NextPage = () => {
   // STATE
-  const [filters, dispatch] = useReducer(filtersReducer, initialState);
   const [selectedGarage, setSelectedGarage] = useState<string>('');
   const [selectedLiveries, setSelectedLiveries] = useState<(string | number)[]>(
     []
   );
 
   // HOOKS
-  const intl = useIntl();
   const currentUser = useAppSelector((state) => state.currentUserSlice);
+  const { filters, setFilters } = useLiveryFilters();
 
   // QUERIES
-  const { data: cars } = useGetCarsQuery();
   const { data: liveries } = useGetLiveriesQuery(filters);
   const { data: garages } = useGetGaragesQuery({
     ids: currentUser.garages.join('&')
@@ -91,53 +61,23 @@ const Garages: NextPage = () => {
 
   /// EFFECTS
   useEffect(() => {
-    dispatch({
-      type: 'ids',
-      payload: {
-        key: 'ids',
-        value:
-          garages?.entities[selectedGarage]?.liveries.join('&') ||
-          currentUser.liveries.join('&')
-      }
+    setFilters({
+      key: Keys.IDS,
+      value:
+        garages?.entities[selectedGarage]?.liveries.join('&') ||
+        currentUser.liveries.join('&')
     });
-  }, [currentUser.liveries, garages?.entities, selectedGarage]);
+  }, [currentUser.liveries, garages?.entities, selectedGarage, setFilters]);
 
   // HANDLERS
-  const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      type: LiveriesFilterKeys.SEARCH,
-      payload: { key: LiveriesFilterKeys.SEARCH, value: event.target.value }
-    });
-  };
-  const onCarChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatch({
-      type: LiveriesFilterKeys.CAR,
-      payload: { key: LiveriesFilterKeys.CAR, value: event.target.value }
-    });
-  };
-  const onCreatedChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    if (value !== Order.ASC && value !== Order.DESC) return;
-    dispatch({
-      type: LiveriesFilterKeys.CREATED,
-      payload: { key: LiveriesFilterKeys.CREATED, value: value }
-    });
-  };
-
   const onPageChange = (page: number) => () => {
     setSelectedLiveries([]);
-    dispatch({
-      type: LiveriesFilterKeys.PAGE,
-      payload: { key: LiveriesFilterKeys.PAGE, value: page }
-    });
+    setFilters({ key: Keys.PAGE, value: page });
   };
   const onSelectGarage = (id: string | undefined) => () => {
     setSelectedLiveries([]);
     setSelectedGarage(id || '');
-    dispatch({
-      type: LiveriesFilterKeys.PAGE,
-      payload: { key: LiveriesFilterKeys.PAGE, value: 0 }
-    });
+    setFilters({ key: Keys.PAGE, value: 0 });
   };
 
   const onDownload = (targetLiveryId: string | number) => () => {
@@ -400,65 +340,11 @@ const Garages: NextPage = () => {
       </chakra.section>
 
       {/* search and filter */}
-      <chakra.section pt={4} w="5xl" display="flex" justifyContent="flex-start">
-        <Grid
-          templateColumns="repeat(9, 1fr)"
-          templateRows="repeat(1, 1fr)"
-          gap={4}
-          w="5xl"
-        >
-          <GridItem colSpan={2} rowSpan={1}>
-            <InputGroup>
-              <InputLeftElement
-                pointerEvents="none"
-                color="gray.300"
-                fontSize="1.2em"
-              >
-                <SearchIcon />
-              </InputLeftElement>
-              <Input
-                placeholder={intl.formatMessage(
-                  commonStrings.searchPlaceholder
-                )}
-                onChange={onSearchChange}
-                value={filters.search}
-              />
-            </InputGroup>
-          </GridItem>
-          <GridItem colSpan={3} rowSpan={1}>
-            <Select
-              placeholder={intl.formatMessage(
-                commonStrings.selectCarPlaceholder
-              )}
-              onChange={onCarChange}
-              value={filters.car}
-            >
-              {cars?.ids.map((id) => {
-                const target = cars.entities[id];
-                if (!target) return null;
-                return (
-                  <option key={id + target.name} value={target.name}>
-                    {target.name}
-                  </option>
-                );
-              })}
-            </Select>
-          </GridItem>
-          <GridItem colSpan={2} rowSpan={1}>
-            <Select
-              placeholder={intl.formatMessage(
-                commonStrings.createdAtPlaceholder
-              )}
-              value={filters.created}
-              onChange={onCreatedChange}
-            >
-              <option value={Order.ASC}>Most recent first</option>
-              <option value={Order.DESC}>Oldest first</option>
-            </Select>
-          </GridItem>
-          <GridItem colSpan={2} rowSpan={1} />
-        </Grid>
-      </chakra.section>
+      <LiveryFilter
+        mode={Mode.BASIC}
+        filters={filters}
+        setFilters={setFilters}
+      />
 
       {/* liveries list */}
       <Table<LiveriesDataType>
