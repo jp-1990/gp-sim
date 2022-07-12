@@ -20,9 +20,17 @@ const actions = {
     id: 'utils.intl.commonStrings.download',
     defaultMessage: `Download`
   },
+  delete: {
+    id: 'utils.intl.commonStrings.delete',
+    defaultMessage: `Delete`
+  },
   editProfile: {
     id: 'utils.intl.commonStrings.editProfile',
     defaultMessage: `Edit Profile`
+  },
+  edit: {
+    id: 'utils.intl.commonStrings.edit',
+    defaultMessage: `Edit`
   },
   upload: {
     id: 'utils.intl.commonStrings.upload',
@@ -58,6 +66,10 @@ const download = {
   downloads: {
     id: 'utils.intl.commonStrings.downloads',
     defaultMessage: `{downloads} Downloads`
+  },
+  downloadsLabel: {
+    id: 'utils.intl.commonStrings.downloadsLabel',
+    defaultMessage: `Downloads`
   }
 };
 

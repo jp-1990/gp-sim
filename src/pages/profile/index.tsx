@@ -129,7 +129,14 @@ const Profile: NextPage = () => {
                 actions={[
                   ({ id }) => (
                     <Link href={LIVERY_URL(`${id}`)} passHref>
-                      <Button variant={'outline'} size="sm" colorScheme="red">
+                      <Button variant={'outline'} size="sm">
+                        <FormattedMessage {...commonStrings.delete} />
+                      </Button>
+                    </Link>
+                  ),
+                  ({ id }) => (
+                    <Link href={LIVERY_URL(`${id}`)} passHref>
+                      <Button variant={'solid'} size="sm" colorScheme="red">
                         <FormattedMessage {...commonStrings.view} />
                       </Button>
                     </Link>
@@ -147,8 +154,10 @@ const Profile: NextPage = () => {
                     type: TableDataTypes.STRING
                   },
                   {
-                    label: <FormattedMessage {...formStrings.creator} />,
-                    dataKey: 'creator.displayName',
+                    label: (
+                      <FormattedMessage {...commonStrings.downloadsLabel} />
+                    ),
+                    dataKey: 'downloads',
                     type: TableDataTypes.STRING
                   },
                   {

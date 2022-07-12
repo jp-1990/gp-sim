@@ -82,7 +82,7 @@ export const Table = <DataT extends TableData>({
         return (
           <TableHeaderCell
             key={column.dataKey}
-            divider={!!column.label && index > 0}
+            divider={!!column.label}
             px={column.dataKey === TableDataTypes.CHECKBOX ? 3 : 2}
             colSpan={getColSpan(column.dataKey)}
           >

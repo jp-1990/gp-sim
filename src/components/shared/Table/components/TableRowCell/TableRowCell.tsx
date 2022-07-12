@@ -6,7 +6,7 @@ const TableRowCell: ComponentWithAs<'div', GridItemProps> = ({
   ...chakraProps
 }) => {
   return (
-    <GridItem display="flex" alignItems="center" py={2} px={2} {...chakraProps}>
+    <GridItem display="flex" alignItems="center" py={2} px={5} {...chakraProps}>
       {children}
     </GridItem>
   );
