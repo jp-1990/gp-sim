@@ -12,6 +12,9 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
+import LiveryFilter, {
+  Mode
+} from '../../components/features/liveries/LiveryFilter/LiveryFilter';
 import UpdateProfile from '../../components/features/profie/UpdateProfile/UpdateProfile';
 import { MainLayout } from '../../components/layout';
 import { Form, PageHeading } from '../../components/shared';
@@ -116,6 +119,12 @@ const Profile: NextPage = () => {
             </TabPanel>
             {/* liveries list */}
             <TabPanel>
+              <LiveryFilter
+                pt={2}
+                mode={Mode.BASIC}
+                filters={liveryFilters}
+                setFilters={setLiveryFilters}
+              />
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
