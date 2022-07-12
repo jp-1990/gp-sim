@@ -139,6 +139,14 @@ const filters = {
     id: 'utils.intl.commonStrings.createdAtPlaceholder',
     defaultMessage: 'Created'
   },
+  createdAtMostRecent: {
+    id: 'utils.intl.commonStrings.createdAtMostRecent',
+    defaultMessage: 'Most recent first'
+  },
+  createdAtOldest: {
+    id: 'utils.intl.commonStrings.createdAtOldest',
+    defaultMessage: 'Oldest first'
+  },
   createdAt: {
     id: 'utils.intl.commonStrings.createdAt',
     defaultMessage: 'Created'
@@ -146,6 +154,10 @@ const filters = {
   ratingPlaceholder: {
     id: 'utils.intl.commonStrings.ratingPlaceholder',
     defaultMessage: 'Rating'
+  },
+  ratingValue: {
+    id: 'utils.intl.commonStrings.ratingValue',
+    defaultMessage: '{stars} Star'
   },
   rating: {
     id: 'utils.intl.commonStrings.rating',
