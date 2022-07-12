@@ -21,7 +21,7 @@ export const applyLiveryFilters = (
   const [ids, search, car, priceMin, priceMax, created, rating, user] = args;
   const idArray = ids?.split('&');
 
-  const filteredLiveries = liveries.filter((livery) => {
+  let filteredLiveries = liveries.filter((livery) => {
     let shouldReturn = true;
     if (ids && !idArray?.includes(`${livery.id}`)) return false;
     if (search) {
@@ -38,9 +38,14 @@ export const applyLiveryFilters = (
       shouldReturn = (livery.price || 0) <= +priceMax * 100;
     }
     if (rating && !!+rating) shouldReturn = (livery.rating || 0) >= +rating;
-    if (user) shouldReturn = user === livery.creator.id;
     return shouldReturn;
   });
+
+  if (user) {
+    filteredLiveries = filteredLiveries.filter((livery) => {
+      return user === livery.creator.id;
+    });
+  }
 
   if (created) {
     filteredLiveries.sort((a, b) => {

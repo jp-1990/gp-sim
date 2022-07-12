@@ -130,7 +130,6 @@ describe('UpdateProfile', () => {
         screen.getByRole('status', { name: `${formLabels.email}-error` })
       ).toBeInTheDocument();
 
-      screen.debug(undefined, 30000);
       await user.type(emailInput, inputValues.invalidEmail);
 
       expect(screen.getByText(errorMessages.invalidEmail)).toBeInTheDocument();
