@@ -7,7 +7,12 @@ import {
   LiveriesFilters
 } from '../../types';
 import { apiSlice } from '../store';
-import { GET_LIVERIES, GET_LIVERY_BY_ID, CREATE_LIVERY } from './constants';
+import {
+  GET_LIVERIES,
+  GET_LIVERY_BY_ID,
+  CREATE_LIVERY,
+  DELETE_LIVERY
+} from './constants';
 
 // ADAPTER
 
@@ -66,6 +71,15 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [GET_LIVERIES]
+    }),
+    [DELETE_LIVERY]: builder.mutation<string, string>({
+      query: (id) => {
+        return {
+          url: `/liveries/${id}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: [GET_LIVERIES]
     })
   })
 });
@@ -78,7 +92,8 @@ type LiveryApiSliceRootState = {
 export const {
   useGetLiveriesQuery,
   useGetLiveryByIdQuery,
-  useCreateLiveryMutation
+  useCreateLiveryMutation,
+  useDeleteLiveryMutation
 } = liveryApiSlice;
 
 // ENDPOINTS

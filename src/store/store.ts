@@ -4,8 +4,8 @@ import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
-import { GET_LIVERIES } from './livery/constants';
 import { GET_GARAGES } from './garage/constants';
+import { GET_LIVERIES } from './livery/constants';
 import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
 
