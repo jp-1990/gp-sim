@@ -21,10 +21,10 @@ import {
 } from '@chakra-ui/react';
 import { MainLayout } from '../../components/layout';
 import { ImageWithFallback, Rating } from '../../components/core';
-import { Breadcrumbs, Tags } from '../../components/core';
+import { Tags } from '../../components/core';
 import { FormattedMessage } from 'react-intl';
 import { commonStrings } from '../../utils/intl';
-import { LIVERIES_URL, LIVERY_URL } from '../../utils/nav';
+import { LIVERY_URL } from '../../utils/nav';
 
 interface Props {
   id: string;
@@ -37,17 +37,6 @@ const Livery: NextPage<Props> = ({ id }) => {
 
   const isInUserCollection = currentUser.liveries.includes(id);
 
-  const breadcrumbOptions = [
-    {
-      name: <FormattedMessage {...commonStrings.paintshop} />,
-      href: LIVERIES_URL
-    },
-    {
-      name: `${livery?.car} - ${livery?.title}`,
-      href: undefined
-    }
-  ];
-
   return (
     <MainLayout
       pageTitle={`${livery?.car} - ${livery?.title}`}
@@ -55,7 +44,6 @@ const Livery: NextPage<Props> = ({ id }) => {
       urlPath={LIVERY_URL(id)}
     >
       <Box maxW="5xl" display="flex" flexDir={'column'}>
-        <Breadcrumbs options={breadcrumbOptions} />
         <chakra.section pt={8}>
           <Flex direction="column" maxW="5xl">
             <Heading size="xl" pb={4}>
