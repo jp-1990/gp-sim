@@ -22,8 +22,14 @@ import { Table } from '../../components/shared/Table/Table';
 import { TableDataTypes } from '../../components/shared/Table/types';
 import { useGarageFilters } from '../../hooks/use-garage-filters';
 import { useLiveryFilters } from '../../hooks/use-livery-filters';
-import { useGetGaragesQuery } from '../../store/garage/api-slice';
-import { useGetLiveriesQuery } from '../../store/livery/api-slice';
+import {
+  useDeleteGarageMutation,
+  useGetGaragesQuery
+} from '../../store/garage/api-slice';
+import {
+  useDeleteLiveryMutation,
+  useGetLiveriesQuery
+} from '../../store/livery/api-slice';
 import { useAppSelector } from '../../store/store';
 import {
   GaragesDataType,
@@ -49,6 +55,8 @@ const Profile: NextPage = () => {
 
   const { data: liveries } = useGetLiveriesQuery(liveryFilters);
   const { data: garages } = useGetGaragesQuery(garageFilters);
+  const [deleteLivery] = useDeleteLiveryMutation();
+  const [deleteGarage] = useDeleteGarageMutation();
 
   useEffect(() => {
     setLiveryFilters({
@@ -128,11 +136,13 @@ const Profile: NextPage = () => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <Link href={LIVERY_URL(`${id}`)} passHref>
-                      <Button variant={'outline'} size="sm">
-                        <FormattedMessage {...commonStrings.delete} />
-                      </Button>
-                    </Link>
+                    <Button
+                      variant={'outline'}
+                      size="sm"
+                      onClick={() => deleteLivery(id)}
+                    >
+                      <FormattedMessage {...commonStrings.delete} />
+                    </Button>
                   ),
                   ({ id }) => (
                     <Link href={LIVERY_URL(`${id}`)} passHref>
@@ -203,8 +213,17 @@ const Profile: NextPage = () => {
               <Table<GaragesDataType>
                 actions={[
                   ({ id }) => (
+                    <Button
+                      variant={'outline'}
+                      size="sm"
+                      onClick={() => deleteGarage(id)}
+                    >
+                      <FormattedMessage {...commonStrings.delete} />
+                    </Button>
+                  ),
+                  ({ id }) => (
                     <Link href={GARAGE_URL(`${id}`)} passHref>
-                      <Button variant={'outline'} size="sm" colorScheme="red">
+                      <Button variant={'solid'} size="sm" colorScheme="red">
                         <FormattedMessage {...commonStrings.view} />
                       </Button>
                     </Link>
