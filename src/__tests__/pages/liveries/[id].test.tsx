@@ -64,7 +64,7 @@ describe('Livery', () => {
       2
     )}`;
     await waitFor(() => {
-      expect(screen.queryAllByText(carAndTitle)).toHaveLength(2);
+      expect(screen.queryAllByText(carAndTitle)).toHaveLength(1);
       expectAllToBeInDocument([
         downloadNum,
         creator.displayName,
@@ -81,7 +81,7 @@ describe('Livery', () => {
     const downloadNum = `${downloads} Downloads`;
     const carAndTitle = `${car} - ${title}`;
     await waitFor(() => {
-      expect(screen.queryAllByText(carAndTitle)).toHaveLength(2);
+      expect(screen.queryAllByText(carAndTitle)).toHaveLength(1);
       expectAllToBeInDocument([
         downloadNum,
         creator.displayName,

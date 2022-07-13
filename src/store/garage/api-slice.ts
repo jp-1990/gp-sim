@@ -6,7 +6,12 @@ import {
   GaragesResponseType
 } from '../../types';
 import { apiSlice } from '../store';
-import { GET_GARAGES, GET_GARAGE_BY_ID, CREATE_GARAGE } from './constants';
+import {
+  GET_GARAGES,
+  GET_GARAGE_BY_ID,
+  CREATE_GARAGE,
+  DELETE_GARAGE
+} from './constants';
 
 // ADAPTER
 
@@ -58,6 +63,15 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [GET_GARAGES]
+    }),
+    [DELETE_GARAGE]: builder.mutation<string, string>({
+      query: (id) => {
+        return {
+          url: `/garages/${id}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: [GET_GARAGES]
     })
   })
 });
@@ -70,7 +84,8 @@ type GarageApiSliceRootState = {
 export const {
   useGetGaragesQuery,
   useGetGarageByIdQuery,
-  useCreateGarageMutation
+  useCreateGarageMutation,
+  useDeleteGarageMutation
 } = garageApiSlice;
 
 // ENDPOINTS
