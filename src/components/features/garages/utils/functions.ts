@@ -1,8 +1,8 @@
 import { UserProfile } from '@auth0/nextjs-auth0';
 
-import { FormStateType } from '../../../../shared/Form/types';
+import { FormStateType } from '../../../shared/Form/types';
 import { CreateGarageFormStateType } from '../types';
-import { CreateGarageDataType } from '../../../../../types';
+import { CreateGarageDataType } from '../../../../types';
 
 interface MapCreateGarageFormStateToRequestInputArgs {
   formState: FormStateType<CreateGarageFormStateType>;
