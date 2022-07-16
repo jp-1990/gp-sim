@@ -43,12 +43,10 @@ export const garageApiSlice = apiSlice.injectEndpoints({
       providesTags: [GET_GARAGES]
     }),
     [GET_GARAGE_BY_ID]: builder.query<GarageDataType, string>({
-      query: (id) => {
-        return {
-          url: `/garages/${id}`,
-          method: 'GET'
-        };
-      },
+      query: (id) => ({
+        url: `/garages/${id}`,
+        method: 'GET'
+      }),
       keepUnusedDataFor: 180
     }),
     [CREATE_GARAGE]: builder.mutation<GarageDataType, CreateGarageDataType>({

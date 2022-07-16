@@ -10,6 +10,7 @@ import {
   PublicUserDataType,
   UpdateUserProfileDataType,
   UserDataType,
+  UserFilters,
   UserLoginArgs
 } from '../../types';
 import { createEntityAdapter } from '@reduxjs/toolkit';
@@ -45,10 +46,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
         };
       }
     }),
-    [GET_USERS]: builder.query<UserSliceStateType, undefined>({
-      query: () => ({
+    [GET_USERS]: builder.query<UserSliceStateType, UserFilters>({
+      query: (filters) => ({
         url: '/users',
-        method: 'GET'
+        method: 'GET',
+        params: filters
       }),
       transformResponse: (data: PublicUserDataType[]) =>
         usersAdapter.setAll(initialState, data),
@@ -93,6 +95,7 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useUpdateUserProfileMutation,
+  useGetUsersQuery,
   useGetUserByIdQuery
 } = userApiSlice;
 

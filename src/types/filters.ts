@@ -42,3 +42,13 @@ export enum GaragesFilterKeys {
   PAGE = 'page',
   PER_PAGE = 'perPage'
 }
+
+export interface UserFilters {
+  created?: Order;
+  ids?: string;
+}
+
+export enum UserFilterKeys {
+  CREATED = 'created',
+  IDS = 'ids'
+}
