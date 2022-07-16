@@ -6,8 +6,8 @@ export enum TableDataTypes {
   ACTIONS = 'actions',
   CHECKBOX = 'checkbox'
 }
-export type TableData = (Record<string | number, any> & {
-  id: string | number;
+export type TableData = (Record<string, any> & {
+  id: string;
 })[];
 
 export type TableAction<T> = (props: T) => JSX.Element;

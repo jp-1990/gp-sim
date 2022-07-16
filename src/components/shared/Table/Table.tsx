@@ -78,11 +78,11 @@ export const Table = <DataT extends TableData>({
       mt={4}
       {...chakraGridProps}
     >
-      {columnsWithExtras.map((column, index) => {
+      {columnsWithExtras.map((column) => {
         return (
           <TableHeaderCell
             key={column.dataKey}
-            divider={!!column.label}
+            divider={!!column.label && column.dataKey !== 'checkbox'}
             px={column.dataKey === TableDataTypes.CHECKBOX ? 3 : 2}
             colSpan={getColSpan(column.dataKey)}
           >
@@ -139,7 +139,10 @@ export const Table = <DataT extends TableData>({
               );
             })}
             {hasActions && (
-              <TableRowCell colSpan={getColSpan(TableDataTypes.ACTIONS)}>
+              <TableRowCell
+                colSpan={getColSpan(TableDataTypes.ACTIONS)}
+                justifyContent="flex-end"
+              >
                 <HStack spacing={2}>
                   {actions?.map((action, index) => (
                     <Fragment key={`${row.id}-action-${index}`}>
