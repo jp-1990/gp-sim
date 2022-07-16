@@ -45,9 +45,7 @@ import { useLiveryFilters } from '../../hooks/use-livery-filters';
 const Garages: NextPage = () => {
   // STATE
   const [selectedGarage, setSelectedGarage] = useState<string>('');
-  const [selectedLiveries, setSelectedLiveries] = useState<(string | number)[]>(
-    []
-  );
+  const [selectedLiveries, setSelectedLiveries] = useState<string[]>([]);
 
   // HOOKS
   const currentUser = useAppSelector((state) => state.currentUserSlice);
@@ -80,7 +78,7 @@ const Garages: NextPage = () => {
     setFilters({ key: Keys.PAGE, value: 0 });
   };
 
-  const onDownload = (targetLiveryId: string | number) => () => {
+  const onDownload = (targetLiveryId: string) => () => {
     const liveriesToDownload = [
       ...new Set([...selectedLiveries, targetLiveryId])
     ];
@@ -101,12 +99,10 @@ const Garages: NextPage = () => {
     }
   };
 
-  const toggleSelectedLiveries = (
-    id: (string | number) | (string | number)[]
-  ) => {
+  const toggleSelectedLiveries = (id: string | string[]) => {
     if (typeof id === 'object') return setSelectedLiveries(id);
     setSelectedLiveries((prev) => {
-      if (prev.includes(id)) return prev.filter((id) => id !== id);
+      if (prev.includes(id)) return prev.filter((prevId) => id !== prevId);
       return [...prev, id];
     });
   };
