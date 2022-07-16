@@ -43,7 +43,7 @@ import {
   garageStrings,
   profileStrings
 } from '../../utils/intl';
-import { GARAGE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
+import { GARAGE_UPDATE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
 
 const Profile: NextPage = () => {
   const { filters: liveryFilters, setFilters: setLiveryFilters } =
@@ -222,9 +222,9 @@ const Profile: NextPage = () => {
                     </Button>
                   ),
                   ({ id }) => (
-                    <Link href={GARAGE_URL(`${id}`)} passHref>
+                    <Link href={GARAGE_UPDATE_URL(`${id}`)} passHref>
                       <Button variant={'solid'} size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.view} />
+                        <FormattedMessage {...commonStrings.edit} />
                       </Button>
                     </Link>
                   )

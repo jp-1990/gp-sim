@@ -7,6 +7,8 @@ export const LIVERY_CREATE_URL = '/liveries/create';
 
 export const GARAGES_URL = '/garages';
 export const GARAGE_URL = (id: string | number) => `/garages/${id}`;
+export const GARAGE_UPDATE_URL = (id: string | number) =>
+  `/garages/update/${id}`;
 export const GARAGE_CREATE_URL = '/garages/create';
 
 export const PROFILE_URL = '/profile';
