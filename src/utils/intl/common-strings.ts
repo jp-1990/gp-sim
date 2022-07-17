@@ -16,6 +16,10 @@ const actions = {
     id: 'utils.intl.commonStrings.cancel',
     defaultMessage: 'Cancel'
   },
+  change: {
+    id: 'utils.intl.commonStrings.change',
+    defaultMessage: `Change`
+  },
   download: {
     id: 'utils.intl.commonStrings.download',
     defaultMessage: `Download`
@@ -77,6 +81,10 @@ const main = {
   paintshop: {
     id: 'utils.intl.commonStrings.paintshop',
     defaultMessage: 'Paintshop'
+  },
+  drivers: {
+    id: 'utils.intl.commonStrings.drivers',
+    defaultMessage: 'Drivers'
   },
   garages: {
     id: 'utils.intl.commonStrings.garages',

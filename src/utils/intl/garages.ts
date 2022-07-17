@@ -45,7 +45,27 @@ const create = {
   }
 };
 
+const edit = {
+  updateHeading: {
+    id: 'utils.intl.garages.updateHeading',
+    defaultMessage: `Edit a Garage`
+  },
+  updateSummary: {
+    id: 'utils.intl.garages.updateSummary',
+    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+  },
+  updateAGarage: {
+    id: 'utils.intl.garages.updateAGarage',
+    defaultMessage: 'Edit a Garage'
+  },
+  updateGarage: {
+    id: 'utils.intl.garages.updateGarage',
+    defaultMessage: 'Save Changes'
+  }
+};
+
 export const garageStrings = defineMessages({
   ...garages,
-  ...create
+  ...create,
+  ...edit
 });
