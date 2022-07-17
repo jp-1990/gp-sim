@@ -1,7 +1,11 @@
 import { rest } from 'msw';
 import { applyGarageFilters } from '../../utils/dev-data/utils';
 import data from '../../utils/dev-data/garages.json';
-import { CreateGarageDataType, GarageDataType } from '../../types';
+import {
+  CreateGarageDataType,
+  GarageDataType,
+  UpdateGarageDataType
+} from '../../types';
 
 export const garagesHandlers = [
   rest.get(
@@ -49,6 +53,19 @@ export const garagesHandlers = [
     (req, res, ctx) => {
       const { id } = req.params;
       const garage = data.find((el) => el.id === id);
+      return res(ctx.delay(), ctx.status(200), ctx.json(garage));
+    }
+  ),
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/garages/:id`,
+    (req, res, ctx) => {
+      const originalValues =
+        data.find(({ id }) => id === (req?.body as UpdateGarageDataType).id) ||
+        {};
+      const newValues = req.body as UpdateGarageDataType;
+      const garage = { ...originalValues, ...newValues, image: '/car6.png' };
       return res(ctx.delay(), ctx.status(200), ctx.json(garage));
     }
   ),

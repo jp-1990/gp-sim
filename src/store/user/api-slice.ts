@@ -75,7 +75,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           return {
             data,
             url: `/users/${id}`,
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json'
             }

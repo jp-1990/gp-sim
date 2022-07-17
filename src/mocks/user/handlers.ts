@@ -4,7 +4,7 @@ import userData from '../../utils/dev-data/users.json';
 import liveriesData from '../../utils/dev-data/liveries.json';
 
 export const userHandlers = [
-  rest.put(
+  rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/users/:id`,

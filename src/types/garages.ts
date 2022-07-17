@@ -23,3 +23,9 @@ export interface CreateGarageDataType
   extends Pick<GarageDataType, 'creator' | 'title' | 'description'> {
   imageFiles: Array<File>;
 }
+
+export type UpdateGarageDataType = Partial<
+  Pick<GarageDataType, 'id' | 'title' | 'description' | 'drivers'> & {
+    imageFiles: Array<File>;
+  }
+>;

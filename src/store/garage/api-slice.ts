@@ -3,14 +3,16 @@ import {
   CreateGarageDataType,
   GarageDataType,
   GaragesFilters,
-  GaragesResponseType
+  GaragesResponseType,
+  UpdateGarageDataType
 } from '../../types';
 import { apiSlice } from '../store';
 import {
   GET_GARAGES,
   GET_GARAGE_BY_ID,
   CREATE_GARAGE,
-  DELETE_GARAGE
+  DELETE_GARAGE,
+  UPDATE_GARAGE
 } from './constants';
 
 // ADAPTER
@@ -47,7 +49,8 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         url: `/garages/${id}`,
         method: 'GET'
       }),
-      keepUnusedDataFor: 180
+      keepUnusedDataFor: 180,
+      providesTags: [GET_GARAGE_BY_ID]
     }),
     [CREATE_GARAGE]: builder.mutation<GarageDataType, CreateGarageDataType>({
       query: (newGarage) => {
@@ -61,6 +64,20 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [GET_GARAGES]
+    }),
+    [UPDATE_GARAGE]: builder.mutation<GarageDataType, UpdateGarageDataType>({
+      query: (updateGarage) => {
+        const { id, ...data } = updateGarage;
+        return {
+          data,
+          url: `/garages/${id}`,
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+      },
+      invalidatesTags: [GET_GARAGE_BY_ID]
     }),
     [DELETE_GARAGE]: builder.mutation<string, string>({
       query: (id) => {
@@ -83,6 +100,7 @@ export const {
   useGetGaragesQuery,
   useGetGarageByIdQuery,
   useCreateGarageMutation,
+  useUpdateGarageMutation,
   useDeleteGarageMutation
 } = garageApiSlice;
 
