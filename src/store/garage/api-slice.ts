@@ -12,7 +12,9 @@ import {
   GET_GARAGE_BY_ID,
   CREATE_GARAGE,
   DELETE_GARAGE,
-  UPDATE_GARAGE
+  UPDATE_GARAGE,
+  DELETE_LIVERY_FROM_GARAGE,
+  DELETE_USER_FROM_GARAGE
 } from './constants';
 
 // ADAPTER
@@ -87,6 +89,24 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         };
       },
       invalidatesTags: [GET_GARAGES]
+    }),
+    [DELETE_LIVERY_FROM_GARAGE]: builder.mutation<string, string>({
+      query: (id) => {
+        return {
+          url: `/garages/livery/${id}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: [GET_GARAGES]
+    }),
+    [DELETE_USER_FROM_GARAGE]: builder.mutation<string, string>({
+      query: (id) => {
+        return {
+          url: `/garages/user/${id}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: [GET_GARAGES]
     })
   })
 });
@@ -101,7 +121,9 @@ export const {
   useGetGarageByIdQuery,
   useCreateGarageMutation,
   useUpdateGarageMutation,
-  useDeleteGarageMutation
+  useDeleteGarageMutation,
+  useDeleteLiveryFromGarageMutation,
+  useDeleteUserFromGarageMutation
 } = garageApiSlice;
 
 // ENDPOINTS

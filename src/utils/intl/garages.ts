@@ -48,7 +48,16 @@ const create = {
 const edit = {
   updateHeading: {
     id: 'utils.intl.garages.updateHeading',
-    defaultMessage: `Edit a Garage`
+    defaultMessage: `Edit Garage`
+  },
+  garageKeyInfo: {
+    id: 'utils.intl.garages.garageKeyInfo',
+    defaultMessage:
+      'You will need to give your garage key to drivers to allow them to join.'
+  },
+  garageKey: {
+    id: 'utils.intl.garages.garageKey',
+    defaultMessage: 'Garage Key: {key}'
   },
   updateSummary: {
     id: 'utils.intl.garages.updateSummary',

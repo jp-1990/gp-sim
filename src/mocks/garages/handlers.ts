@@ -88,6 +88,24 @@ export const garagesHandlers = [
       const { id } = req.params;
       return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
     }
+  ),
+  rest.delete(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/garages/livery/:id`,
+    (req, res, ctx) => {
+      const { id } = req.params;
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+    }
+  ),
+  rest.delete(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/garages/user/:id`,
+    (req, res, ctx) => {
+      const { id } = req.params;
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+    }
   )
 ];
 
