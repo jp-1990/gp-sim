@@ -105,10 +105,10 @@ const UpdateGarage: React.FC<Props> = ({
   return (
     <Grid
       templateColumns="repeat(12, 1fr)"
-      templateRows="repeat(11)"
+      templateRows="repeat(5)"
       gap={4}
       w="5xl"
-      mb={8}
+      my={8}
     >
       <GridItem rowSpan={1} colSpan={6}>
         <Input
@@ -176,7 +176,7 @@ const UpdateGarage: React.FC<Props> = ({
           resize="none"
         />
       </GridItem>
-      <GridItem rowSpan={3} colSpan={12} />
+      <GridItem rowSpan={1} colSpan={12} />
       <GridItem rowSpan={1} colSpan={3}>
         <SubmitButton
           onClick={onClick}

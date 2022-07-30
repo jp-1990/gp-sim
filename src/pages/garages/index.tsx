@@ -40,16 +40,25 @@ import { TableDataTypes } from '../../components/shared/Table/types';
 import LiveryFilter, {
   Mode
 } from '../../components/features/liveries/LiveryFilter/LiveryFilter';
-import { useLiveryFilters } from '../../hooks/use-livery-filters';
+import {
+  useLiveryFilters,
+  useSelectedLiveries,
+  useDownloadLivery
+} from '../../hooks';
 
 const Garages: NextPage = () => {
   // STATE
   const [selectedGarage, setSelectedGarage] = useState<string>('');
-  const [selectedLiveries, setSelectedLiveries] = useState<string[]>([]);
 
   // HOOKS
   const currentUser = useAppSelector((state) => state.currentUserSlice);
   const { filters, setFilters } = useLiveryFilters();
+  const {
+    toggle: toggleSelectedLiveries,
+    selected: selectedLiveries,
+    setSelected: setSelectedLiveries
+  } = useSelectedLiveries();
+  const { onDownload } = useDownloadLivery();
 
   // QUERIES
   const { data: liveries } = useGetLiveriesQuery(filters);
@@ -76,35 +85,6 @@ const Garages: NextPage = () => {
     setSelectedLiveries([]);
     setSelectedGarage(id || '');
     setFilters({ key: Keys.PAGE, value: 0 });
-  };
-
-  const onDownload = (targetLiveryId: string) => () => {
-    const liveriesToDownload = [
-      ...new Set([...selectedLiveries, targetLiveryId])
-    ];
-    const liveryFileURLs = liveriesToDownload.reduce((prev, id) => {
-      if (!currentUser.liveries.includes(`${id}`)) return prev;
-      const output = [...prev];
-      const URL = liveries?.entities[id]?.liveryFiles;
-      if (URL) output.push(URL);
-      return output;
-    }, [] as string[]);
-
-    for (let i = 0, j = liveryFileURLs.length; i < j; i++) {
-      setTimeout(() => {
-        if (typeof window !== 'undefined') {
-          window.location.href = liveryFileURLs[i];
-        }
-      }, 200 + i * 200);
-    }
-  };
-
-  const toggleSelectedLiveries = (id: string | string[]) => {
-    if (typeof id === 'object') return setSelectedLiveries(id);
-    setSelectedLiveries((prev) => {
-      if (prev.includes(id)) return prev.filter((prevId) => id !== prevId);
-      return [...prev, id];
-    });
   };
 
   const pages = Array.from(
@@ -355,7 +335,12 @@ const Garages: NextPage = () => {
           ({ id }) => (
             <Button
               disabled={disableDownload(id)}
-              onClick={onDownload(id)}
+              onClick={onDownload({
+                selectedLiveries,
+                currentUser,
+                liveries,
+                targetLiveryId: id
+              })}
               variant={'solid'}
               size="sm"
               colorScheme="red"
