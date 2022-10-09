@@ -7,7 +7,7 @@ export const userHandlers = [
   rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/users/:id`,
+    }/api/v1/users/:id`,
     (req, res, ctx) => {
       const response = formatPutUserResponse(
         req.body as UpdateUserProfileDataType
@@ -19,7 +19,7 @@ export const userHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/users/:id`,
+    }/api/v1/users/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
 
@@ -42,7 +42,9 @@ export const userHandlers = [
     }
   ),
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL}/users`,
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/users`,
     (_, res, ctx) => {
       const users = userData.map(({ id, about, displayName, image }) => {
         const userCreatedliveries = liveriesData.reduce((prev, cur) => {

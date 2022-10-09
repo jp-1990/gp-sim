@@ -48,7 +48,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     [GET_USERS]: builder.query<UserSliceStateType, UserFilters>({
       query: (filters) => ({
-        url: '/users',
+        url: '/api/v1/users',
         method: 'GET',
         params: filters
       }),
@@ -63,7 +63,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     >({
       query: (id) => {
         return {
-          url: `/users/${id ?? -1}`,
+          url: `/api/v1/users/${id ?? -1}`,
           method: 'GET'
         };
       }
@@ -74,7 +74,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           const { id, ...data } = updateData;
           return {
             data,
-            url: `/users/${id}`,
+            url: `/api/v1/users/${id}`,
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json'
