@@ -48,7 +48,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
     }),
     [GET_GARAGE_BY_ID]: builder.query<GarageDataType, string>({
       query: (id) => ({
-        url: `/garages/${id}`,
+        url: `/api/v1/garages/${id}`,
         method: 'GET'
       }),
       keepUnusedDataFor: 180,
@@ -72,7 +72,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         const { id, ...data } = updateGarage;
         return {
           data,
-          url: `/garages/${id}`,
+          url: `/api/v1/garages/${id}`,
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
     [DELETE_GARAGE]: builder.mutation<string, string>({
       query: (id) => {
         return {
-          url: `/garages/${id}`,
+          url: `/api/v1/garages/${id}`,
           method: 'DELETE'
         };
       },

@@ -49,7 +49,7 @@ export const garagesHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/garages/:id`,
+    }/api/v1/garages/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
       const garage = data.find((el) => el.id === id);
@@ -59,7 +59,7 @@ export const garagesHandlers = [
   rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/garages/:id`,
+    }/api/v1/garages/:id`,
     (req, res, ctx) => {
       const originalValues =
         data.find(({ id }) => id === (req?.body as UpdateGarageDataType).id) ||
@@ -83,7 +83,7 @@ export const garagesHandlers = [
   rest.delete(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/garages/:id`,
+    }/api/v1/garages/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
       return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
