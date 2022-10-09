@@ -22,7 +22,7 @@ export const carApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     [GET_CARS]: builder.query<EntityState<CarDataType>, void>({
       query: () => ({
-        url: '/cars',
+        url: '/api/v1/cars',
         method: 'GET'
       }),
       transformResponse: (data: CarsDataType) =>
