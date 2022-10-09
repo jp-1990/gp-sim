@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { CarsDataType, Method } from '../../../types';
+import { CarsDataType, Method } from '../../../../types';
 
 export default function handler(
   req: NextApiRequest,

@@ -93,7 +93,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
     [DELETE_LIVERY_FROM_GARAGE]: builder.mutation<string, string>({
       query: (id) => {
         return {
-          url: `/garages/livery/${id}`,
+          url: `/api/v1/garages/livery/${id}`,
           method: 'DELETE'
         };
       },
@@ -102,7 +102,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
     [DELETE_USER_FROM_GARAGE]: builder.mutation<string, string>({
       query: (id) => {
         return {
-          url: `/garages/user/${id}`,
+          url: `/api/v1/garages/user/${id}`,
           method: 'DELETE'
         };
       },
