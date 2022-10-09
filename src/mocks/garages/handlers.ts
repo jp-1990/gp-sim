@@ -11,7 +11,7 @@ export const garagesHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/garages`,
+    }/api/v1/garages`,
     (req, res, ctx) => {
       const params = ['ids', 'created', 'user'];
       const garages = [...data];
@@ -72,7 +72,7 @@ export const garagesHandlers = [
   rest.post(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/garages`,
+    }/api/v1/garages`,
     (req, res, ctx) => {
       const garage = formatPostGarageResponse(req.body as CreateGarageDataType);
 
