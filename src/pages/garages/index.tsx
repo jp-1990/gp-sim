@@ -174,7 +174,6 @@ const Garages: NextPage = () => {
                         : 'blackAlpha.800'
                     }
                     fontSize="sm"
-                    isTruncated
                     noOfLines={1}
                     w="full"
                     textAlign="center"
@@ -242,7 +241,6 @@ const Garages: NextPage = () => {
                           : 'blackAlpha.800'
                       }
                       fontSize="sm"
-                      isTruncated
                       noOfLines={1}
                       w="full"
                       textAlign="center"
@@ -270,7 +268,6 @@ const Garages: NextPage = () => {
                           : 'blackAlpha.800'
                       }
                       fontSize="sm"
-                      isTruncated
                       noOfLines={1}
                     >
                       {garages.entities[id]?.creator.displayName}

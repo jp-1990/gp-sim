@@ -90,7 +90,6 @@ const LiveryCard: React.FC<Props> = ({
                     px={1}
                     bg={mainColor}
                     fontSize="sm"
-                    isTruncated
                     noOfLines={1}
                   >
                     {creator.displayName}
@@ -101,7 +100,6 @@ const LiveryCard: React.FC<Props> = ({
                     px={1}
                     bg={'blackAlpha.800'}
                     fontSize="sm"
-                    isTruncated
                     noOfLines={1}
                   >
                     {title}
@@ -112,7 +110,6 @@ const LiveryCard: React.FC<Props> = ({
                     px={1}
                     bg={'blackAlpha.800'}
                     fontSize="sm"
-                    isTruncated
                     noOfLines={1}
                   >
                     {car}
@@ -132,7 +129,6 @@ const LiveryCard: React.FC<Props> = ({
                     px={1}
                     bg={'blackAlpha.800'}
                     fontSize="sm"
-                    isTruncated
                     noOfLines={1}
                   >
                     {typeof price !== 'string' ? numberToPrice(price) : price}

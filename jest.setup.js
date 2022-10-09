@@ -21,3 +21,9 @@ afterEach(() => {
     )
 // Clean up after the tests are finished.
 afterAll(() => server.close())
+
+window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
