@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { ChakraProvider } from '@chakra-ui/react';
-import { UserProvider } from '@auth0/nextjs-auth0';
 import { configureStore, Store } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
@@ -22,29 +21,9 @@ interface Auth0User {
   sub?: string;
   updated_at?: string;
 }
-const testUser: Record<'user', Auth0User | undefined> = {
-  user: {
-    name: 'test-name',
-    nickname: 'test-nickname',
-    picture: 'test-image-url',
-    sub: 'test-sub',
-    updated_at: 'test-updated-at'
-  }
-};
-jest.mock('@auth0/nextjs-auth0', () => ({
-  UserProvider: ({ children }: any) => <>{children}</>,
-  withAuthenticationRequired: (component: any, _: any) => component,
-  useUser: () => {
-    return {
-      isLoading: false,
-      user: testUser.user,
-      isAuthenticated: true,
-      loginWithRedirect: jest.fn()
-    };
-  }
-}));
-export const setTestUser = (user: Auth0User | undefined) =>
-  (testUser.user = user);
+const testUser: Record<'user', undefined> = { user: undefined };
+
+export const setTestUser = (user: undefined) => (testUser.user = user);
 
 const carData = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
 const cars = JSON.parse(carData) as CarsDataType;
@@ -94,6 +73,7 @@ interface Props {
   locale?: string;
   preloadedState?: Record<string, any>;
   testStore: Store;
+  children: React.ReactNode;
 }
 const TestProviders: React.FC<Props> = ({
   locale = 'en',
@@ -119,17 +99,11 @@ const TestProviders: React.FC<Props> = ({
 
   return (
     <Provider store={testStore}>
-      <UserProvider>
-        <ChakraProvider theme={theme}>
-          <IntlProvider
-            messages={messages}
-            locale={locale}
-            defaultLocale={'en'}
-          >
-            {children}
-          </IntlProvider>
-        </ChakraProvider>
-      </UserProvider>
+      <ChakraProvider theme={theme}>
+        <IntlProvider messages={messages} locale={locale} defaultLocale={'en'}>
+          {children}
+        </IntlProvider>
+      </ChakraProvider>
     </Provider>
   );
 };

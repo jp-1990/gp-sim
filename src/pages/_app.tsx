@@ -2,7 +2,6 @@ import '@fontsource/lato';
 
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
-import { UserProvider } from '@auth0/nextjs-auth0';
 import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
@@ -32,17 +31,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, [locale]);
   return (
-    <UserProvider>
-      <IntlProvider
-        messages={messages}
-        locale={locale || 'en'}
-        defaultLocale={defaultLocale}
-      >
-        <ChakraProvider theme={theme}>
-          <Component {...pageProps} />
-        </ChakraProvider>
-      </IntlProvider>
-    </UserProvider>
+    <IntlProvider
+      messages={messages}
+      locale={locale || 'en'}
+      defaultLocale={defaultLocale}
+    >
+      <ChakraProvider theme={theme}>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </IntlProvider>
   );
 }
 

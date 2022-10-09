@@ -17,7 +17,6 @@ import {
   MenuItem,
   MenuDivider
 } from '@chakra-ui/react';
-import { useUser } from '@auth0/nextjs-auth0';
 import { useIntl, FormattedMessage } from 'react-intl';
 
 import Meta from '../../shared/utils/Meta/Meta';
@@ -41,6 +40,7 @@ interface Props {
   urlPath?: string;
   ogImageUrl?: string;
   locale?: string;
+  children?: React.ReactNode;
 }
 
 /**
@@ -61,7 +61,6 @@ const MainLayout: React.FC<Props> = ({
   children
 }) => {
   const [contentMinHeight, setContentMinHeight] = useState<number>(0);
-  const { user } = useUser();
   const intl = useIntl();
 
   const headerChakraHeight = 14;
@@ -71,6 +70,8 @@ const MainLayout: React.FC<Props> = ({
       window.innerHeight - headerChakraHeight * 4 - footerChakraHeight * 4;
     setContentMinHeight(calculatedMinHeight);
   }, []);
+
+  const user = true;
 
   return (
     <Flex direction={'column'}>
@@ -146,9 +147,6 @@ const MainLayout: React.FC<Props> = ({
                   <MenuItem>
                     <FormattedMessage {...profileStrings.myLiveries} />
                   </MenuItem>
-                  {/* <MenuItem>
-                    <FormattedMessage {...profileStrings.mySetups} />
-                  </MenuItem> */}
                   <MenuDivider />
                   <MenuItem>
                     <Link href={LOGOUT_URL}>

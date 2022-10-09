@@ -1,4 +1,3 @@
-import { UserProfile } from '@auth0/nextjs-auth0';
 import JSZip from 'jszip';
 
 import { FormStateType } from '../../../../shared/Form/types';
@@ -8,7 +7,7 @@ import { CreateLiveryDataType } from '../../../../../types';
 
 interface MapCreateLiveryFormStateToRequestInputArgs {
   formState: FormStateType<CreateLiveryFormStateType>;
-  user: UserProfile | undefined;
+  user: any | undefined;
 }
 export const mapCreateLiveryFormStateToRequestInput = ({
   formState,

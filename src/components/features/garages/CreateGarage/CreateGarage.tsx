@@ -1,4 +1,3 @@
-import { useUser } from '@auth0/nextjs-auth0';
 import { Grid, GridItem, Divider, Button, useToast } from '@chakra-ui/react';
 import React from 'react';
 
@@ -34,7 +33,7 @@ const CreateGarage = () => {
     }
   });
 
-  const { user } = useUser();
+  const user = {};
   const { state, resetState } = useForm<CreateGarageFormStateType>();
   const [createGarage, { isLoading }] = useCreateGarageMutation();
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useUser } from '@auth0/nextjs-auth0';
 import { useToast } from '@chakra-ui/react';
 
 import { SubmitButton, useForm } from '../../../../../shared';
@@ -30,7 +29,7 @@ const SubmitLivery = () => {
       marginTop: '1.25rem'
     }
   });
-  const { user } = useUser();
+  const user = {};
   const { state, resetState } = useForm<CreateLiveryFormStateType>();
   const [createLivery, { isLoading }] = useCreateLiveryMutation();
 

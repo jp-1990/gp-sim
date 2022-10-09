@@ -1,12 +1,10 @@
-import { UserProfile } from '@auth0/nextjs-auth0';
-
 import { FormStateType } from '../../../../shared/Form/types';
 import { UpdateProfileFormStateType } from '../types';
 import { UpdateUserProfileDataType } from '../../../../../types';
 
 interface MapUpdateProfileFormStateToRequestInputArgs {
   formState: FormStateType<UpdateProfileFormStateType>;
-  user: UserProfile | undefined;
+  user: any | undefined;
 }
 export const mapUpdateProfileFormStateToRequestInput = ({
   formState,
