@@ -34,7 +34,7 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
       Partial<Record<keyof LiveriesFilters, string | number>>
     >({
       query: (filters) => ({
-        url: '/liveries',
+        url: '/api/v1/liveries',
         method: 'GET',
         params: filters
       }),
@@ -62,7 +62,7 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
     [CREATE_LIVERY]: builder.mutation<LiveryDataType, CreateLiveryDataType>({
       query: (newLivery) => {
         return {
-          url: `/liveries`,
+          url: `/api/v1/liveries`,
           method: 'POST',
           data: newLivery,
           headers: {

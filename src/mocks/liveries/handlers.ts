@@ -7,7 +7,7 @@ export const liveriesHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/liveries`,
+    }/api/v1/liveries`,
     (req, res, ctx) => {
       const perPage = 30;
       const params = [
@@ -77,7 +77,7 @@ export const liveriesHandlers = [
   rest.post(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/liveries`,
+    }/api/v1/liveries`,
     (req, res, ctx) => {
       const livery = formatPostLiveryResponse(req.body as CreateLiveryDataType);
       return res(ctx.delay(), ctx.status(200), ctx.json(livery));
