@@ -53,7 +53,7 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
     [GET_LIVERY_BY_ID]: builder.query<LiveryDataType, string>({
       query: (id) => {
         return {
-          url: `/liveries/${id}`,
+          url: `/api/v1/liveries/${id}`,
           method: 'GET'
         };
       },
@@ -75,7 +75,7 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
     [DELETE_LIVERY]: builder.mutation<string, string>({
       query: (id) => {
         return {
-          url: `/liveries/${id}`,
+          url: `/api/v1/liveries/${id}`,
           method: 'DELETE'
         };
       },

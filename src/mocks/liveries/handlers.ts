@@ -67,7 +67,7 @@ export const liveriesHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/liveries/:id`,
+    }/api/v1/liveries/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
       const livery = data.find((el) => el.id === id);
@@ -86,7 +86,7 @@ export const liveriesHandlers = [
   rest.delete(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/liveries/:id`,
+    }/api/v1/liveries/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
       return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
