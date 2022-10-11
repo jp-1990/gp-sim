@@ -8,7 +8,7 @@ import {
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../utils/testing/test-utils';
 import UpdateGarage from './UpdateGarage';
 
@@ -55,7 +55,7 @@ const garageData = {
 
 describe('UpdateGarage', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

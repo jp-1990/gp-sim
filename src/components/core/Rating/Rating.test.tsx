@@ -1,10 +1,14 @@
 import '@testing-library/jest-dom';
-import { render, screen, setTestUser } from '../../../utils/testing/test-utils';
+import {
+  render,
+  screen,
+  setMockCurrentUser
+} from '../../../utils/testing/test-utils';
 import Rating, { FILLED_STAR, DEFAULT_STAR } from './Rating';
 
 describe('LiverCard', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   it('renders 5 stars', () => {

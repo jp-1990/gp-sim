@@ -1,12 +1,16 @@
 import '@testing-library/jest-dom';
-import { render, screen, setTestUser } from '../../../utils/testing/test-utils';
+import {
+  render,
+  screen,
+  setMockCurrentUser
+} from '../../../utils/testing/test-utils';
 import { Table } from './Table';
 import { TableDataTypes } from './types';
 import { SELECT_ALL_CHECKBOX, getCheckboxAriaLabel } from './utils';
 
 describe('Table', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   const data = [

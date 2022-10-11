@@ -2,14 +2,14 @@ import '@testing-library/jest-dom';
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../../utils/testing/helpers';
 import LiveryCard from './LiveryCard';
 
 describe('LiverCard', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   const testLivery = {

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {
   render,
   screen,
-  setTestUser,
+  setMockCurrentUser,
   waitFor
 } from '../../../../../utils/testing/test-utils';
 import SelectFiles from './SelectFiles';
@@ -12,7 +12,7 @@ import { expectAllToBeInDocument } from '../../../../../utils/testing/helpers';
 
 describe('SelectFiles', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

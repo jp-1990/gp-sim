@@ -8,7 +8,7 @@ import {
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../utils/testing/test-utils';
 import {
   DYNAMIC_LIVERY_FILE_NAME,
@@ -78,7 +78,7 @@ const inputValues = {
 
 describe('CreateLivery', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

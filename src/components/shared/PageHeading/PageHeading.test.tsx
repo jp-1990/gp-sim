@@ -1,11 +1,15 @@
 import '@testing-library/jest-dom';
-import { render, screen, setTestUser } from '../../../utils/testing/test-utils';
+import {
+  render,
+  screen,
+  setMockCurrentUser
+} from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import PageHeading from './PageHeading';
 
 describe('PageHeading', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   it('renders a heading and paragraph', () => {

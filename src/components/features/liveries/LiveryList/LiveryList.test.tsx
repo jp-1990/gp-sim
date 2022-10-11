@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../utils/testing/test-utils';
 import data from '../../../../utils/dev-data/liveries.json';
 
@@ -11,7 +11,7 @@ import { LiveryDataType } from '../../../../types';
 
 describe('LiverCard', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   const dataCopy = [...data];

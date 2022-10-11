@@ -3,7 +3,7 @@ import {
   fireEvent,
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../../utils/testing/test-utils';
 import NumberInput, {
   NumberDecrementStepper,
@@ -15,7 +15,7 @@ import { Form, FORM_CONTEXT_ERROR } from '../../Form';
 
 describe('NumberInput', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

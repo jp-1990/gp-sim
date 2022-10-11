@@ -2,14 +2,14 @@ import '@testing-library/jest-dom';
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../../utils/testing/test-utils';
 import ControlWrapper from './ControlWrapper';
 import { formStrings } from '../../../../../utils/intl';
 
 describe('ControlWrapper', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
   afterAll(() => jest.clearAllMocks());
 

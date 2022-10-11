@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import {
   render,
   screen,
-  setTestUser,
+  setMockCurrentUser,
   fireEvent
 } from '../../../utils/testing/test-utils';
 import {
@@ -19,7 +19,7 @@ const { login, logout } = messages;
 
 describe('MainLayout', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   it.skip('renders correct header items with no logged in user', () => {
@@ -31,7 +31,7 @@ describe('MainLayout', () => {
   });
 
   it.skip('renders correct header items with logged in user', () => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
 
     render(<MainLayout pageDescription="" />);
     const { getByText, getByRole } = screen;
@@ -42,7 +42,7 @@ describe('MainLayout', () => {
   });
 
   it.skip('renders menu when profile is clicked with a logged in user', () => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     render(<MainLayout pageDescription="" />);
     const { getByText, getByRole } = screen;
 

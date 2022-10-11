@@ -1,10 +1,14 @@
 import '@testing-library/jest-dom';
-import { render, screen, setTestUser } from '../../../utils/testing/test-utils';
+import {
+  render,
+  screen,
+  setMockCurrentUser
+} from '../../../utils/testing/test-utils';
 import ImageWithFallback from './ImageWithFallback';
 
 describe('ImageWithFallback', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   it('renders an image when an image is present', () => {

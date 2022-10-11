@@ -4,7 +4,7 @@ import { commonStrings, formStrings } from '../../../../utils/intl';
 import {
   render,
   screen,
-  setTestUser
+  setMockCurrentUser
 } from '../../../../utils/testing/test-utils';
 import { Form } from '../../../shared';
 import UpdateProfile from './UpdateProfile';
@@ -59,7 +59,7 @@ const TestComponent = () => (
 
 describe('UpdateProfile', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

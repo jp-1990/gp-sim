@@ -1,11 +1,14 @@
 import '@testing-library/jest-dom';
-import { render, setTestUser } from '../../../../../utils/testing/test-utils';
+import {
+  render,
+  setMockCurrentUser
+} from '../../../../../utils/testing/test-utils';
 import Checkbox from './Checkbox';
 import { FORM_CONTEXT_ERROR } from '../../Form';
 
 describe('Checkbox', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

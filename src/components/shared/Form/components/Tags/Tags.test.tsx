@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {
   render,
   screen,
-  setTestUser,
+  setMockCurrentUser,
   waitFor
 } from '../../../../../utils/testing/test-utils';
 import Tags from './Tags';
@@ -11,7 +11,7 @@ import { Form, FORM_CONTEXT_ERROR } from '../../Form';
 
 describe('Tags', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });

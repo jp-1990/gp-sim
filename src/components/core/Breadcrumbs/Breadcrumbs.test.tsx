@@ -1,11 +1,15 @@
 import '@testing-library/jest-dom';
-import { render, screen, setTestUser } from '../../../utils/testing/test-utils';
+import {
+  render,
+  screen,
+  setMockCurrentUser
+} from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import Breadcrumbs from './Breadcrumbs';
 
 describe('Breadcrumbs', () => {
   beforeEach(() => {
-    setTestUser(undefined);
+    setMockCurrentUser({ token: null, data: null, status: 'idle' });
   });
 
   const breadcrumbOptions = [
