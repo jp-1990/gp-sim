@@ -4,7 +4,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import { wrapper } from '../store/store';
@@ -12,6 +12,9 @@ import theme from '../styles/chakra-theme';
 
 import English from '../../lang/en.json';
 import French from '../../lang/fr.json';
+
+import { auth } from '../utils/firebase/client';
+import { updateToken } from '../store/user/slice';
 
 if (process.env.NODE_ENV === 'development') {
   require('../mocks');
@@ -30,6 +33,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         return English;
     }
   }, [locale]);
+
+  // listen for auth token changes, update current user slice
+  useEffect(() => {
+    const unsub = auth.onIdTokenChanged(async (user) => {
+      const token = user ? await user.getIdToken() : null;
+      updateToken(token);
+    });
+    return () => unsub();
+  }, []);
+
   return (
     <IntlProvider
       messages={messages}

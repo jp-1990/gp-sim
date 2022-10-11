@@ -35,7 +35,7 @@ const Livery: NextPage<Props> = ({ id }) => {
   const { data: livery } = useGetLiveryByIdQuery(id);
   const currentUser = useAppSelector((state) => state.currentUserSlice);
 
-  const isInUserCollection = currentUser.liveries.includes(id);
+  const isInUserCollection = currentUser.data?.liveries.includes(id);
 
   return (
     <MainLayout

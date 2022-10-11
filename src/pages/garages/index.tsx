@@ -63,7 +63,7 @@ const Garages: NextPage = () => {
   // QUERIES
   const { data: liveries } = useGetLiveriesQuery(filters);
   const { data: garages } = useGetGaragesQuery({
-    ids: currentUser.garages.join('&')
+    ids: currentUser.data?.garages.join('&')
   });
 
   /// EFFECTS
@@ -72,9 +72,15 @@ const Garages: NextPage = () => {
       key: Keys.IDS,
       value:
         garages?.entities[selectedGarage]?.liveries.join('&') ||
-        currentUser.liveries.join('&')
+        currentUser.data?.liveries.join('&') ||
+        ''
     });
-  }, [currentUser.liveries, garages?.entities, selectedGarage, setFilters]);
+  }, [
+    currentUser.data?.liveries,
+    garages?.entities,
+    selectedGarage,
+    setFilters
+  ]);
 
   // HANDLERS
   const onPageChange = (page: number) => () => {
@@ -93,7 +99,7 @@ const Garages: NextPage = () => {
 
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
-    !currentUser.liveries.find((id) => `${liveryId}` === id);
+    !currentUser.data?.liveries.find((id) => `${liveryId}` === id);
 
   return (
     <MainLayout
