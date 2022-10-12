@@ -23,6 +23,7 @@ import Meta from '../../shared/utils/Meta/Meta';
 import { navOptions, LOGIN_URL, LOGOUT_URL } from '../../../utils/nav/';
 import { messages } from './MainLayout.messages';
 import { profileStrings } from '../../../utils/intl';
+import { useAppSelector } from '../../../store/store';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={10}>
@@ -62,6 +63,7 @@ const MainLayout: React.FC<Props> = ({
 }) => {
   const [contentMinHeight, setContentMinHeight] = useState<number>(0);
   const intl = useIntl();
+  const currentUser = !!useAppSelector((state) => state.currentUserSlice.token);
 
   const headerChakraHeight = 14;
   const footerChakraHeight = 28;
@@ -70,8 +72,6 @@ const MainLayout: React.FC<Props> = ({
       window.innerHeight - headerChakraHeight * 4 - footerChakraHeight * 4;
     setContentMinHeight(calculatedMinHeight);
   }, []);
-
-  const user = true;
 
   return (
     <Flex direction={'column'}>
@@ -102,7 +102,7 @@ const MainLayout: React.FC<Props> = ({
                 {navOptions(intl).reduce((array, item) => {
                   const output = [...array];
                   const { requiresUser, label, path } = item;
-                  if (requiresUser && !user) return output;
+                  if (requiresUser && !currentUser) return output;
                   output.push(
                     <NavItem key={label} label={label} path={path} />
                   );
@@ -120,7 +120,7 @@ const MainLayout: React.FC<Props> = ({
             justifyContent="flex-end"
             px={4}
           >
-            {!user && (
+            {!currentUser && (
               <Button size="sm">
                 <Link href={LOGIN_URL}>
                   <a>
@@ -129,7 +129,7 @@ const MainLayout: React.FC<Props> = ({
                 </Link>
               </Button>
             )}
-            {user && (
+            {currentUser && (
               <Menu isLazy>
                 <MenuButton>
                   <Heading size="sm">
