@@ -13,12 +13,12 @@ import type { NextPage } from 'next';
 import Link from 'next/link';
 import { FormattedMessage } from 'react-intl';
 
-import { apiSlice, wrapper, useAppSelector } from '../../store/store';
+import { apiSlice, wrapper } from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import { getCars } from '../../store/car/api-slice';
 
 import { MainLayout } from '../../components/layout';
-import { PageHeading } from '../../components/shared';
+import { PageHeading, Unauthorized } from '../../components/shared';
 import { ImageWithFallback } from '../../components/core';
 
 import {
@@ -45,13 +45,16 @@ import {
   useSelectedLiveries,
   useDownloadLivery
 } from '../../hooks';
+import { useAuthCheck } from '../../hooks/use-auth-check';
 
 const Garages: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
   // STATE
   const [selectedGarage, setSelectedGarage] = useState<string>('');
 
   // HOOKS
-  const currentUser = useAppSelector((state) => state.currentUserSlice);
   const { filters, setFilters } = useLiveryFilters();
   const {
     toggle: toggleSelectedLiveries,
@@ -101,6 +104,7 @@ const Garages: NextPage = () => {
   const disableDownload = (liveryId: string | number) =>
     !currentUser.data?.liveries.find((id) => `${liveryId}` === id);
 
+  if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
       pageTitle="Garages"
