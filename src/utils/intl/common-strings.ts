@@ -124,6 +124,14 @@ const status = {
   approved: {
     id: 'utils.intl.commonStrings.approved',
     defaultMessage: 'Approved'
+  },
+  unauthorized: {
+    id: 'utils.intl.commonStrings.unauthorized',
+    defaultMessage: 'Unauthorized'
+  },
+  pleaseLogIn: {
+    id: 'utils.intl.commonStrings.pleaseLogIn',
+    defaultMessage: 'Please log in to view this content!'
   }
 };
 
