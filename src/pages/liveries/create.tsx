@@ -12,10 +12,16 @@ import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
+import { useAuthCheck } from '../../hooks/use-auth-check';
+import { Unauthorized } from '../../components/shared';
 
 const Create: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
   useGetCarsQuery();
 
+  if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
       pageTitle="Create Livery"
