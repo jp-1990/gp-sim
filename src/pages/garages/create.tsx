@@ -12,8 +12,14 @@ import { GARAGE_CREATE_URL } from '../../utils/nav';
 import { breadcrumbOptions } from '../../components/features/garages/CreateGarage/config';
 
 import CreateGarage from '../../components/features/garages/CreateGarage/CreateGarage';
+import { useAuthCheck } from '../../hooks/use-auth-check';
+import { Unauthorized } from '../../components/shared';
 
 const Create: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
+  if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
       pageTitle="Create Garage"

@@ -52,19 +52,24 @@ import {
   useSelectedLiveries,
   useUserFilters
 } from '../../../hooks';
+import { useAuthCheck } from '../../../hooks/use-auth-check';
+import { Unauthorized } from '../../../components/shared';
 
 interface Props {
   id: string;
 }
 const Update: NextPage<Props> = ({ id }) => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
+  // STATE
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
 
+  // HOOKS
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
   const { filters: liveryFilters, setFilters: setLiveryFilters } =
     useLiveryFilters();
 
-  // HOOKS
-  const currentUser = useAppSelector((state) => state.currentUserSlice);
   const { data: garageData } = useGetGarageByIdQuery(id);
   const { data: userData } = useGetUsersQuery(userFilters);
   const { data: liveriesData } = useGetLiveriesQuery(liveryFilters);
@@ -101,8 +106,9 @@ const Update: NextPage<Props> = ({ id }) => {
   };
 
   const disableDownload = (liveryId: string | number) =>
-    !currentUser.liveries.find((id) => `${liveryId}` === id);
+    !currentUser?.data?.liveries.find((id) => `${liveryId}` === id);
 
+  if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
       pageTitle="Edit Garage"
