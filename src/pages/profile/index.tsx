@@ -17,9 +17,10 @@ import LiveryFilter, {
 } from '../../components/features/liveries/LiveryFilter/LiveryFilter';
 import UpdateProfile from '../../components/features/profie/UpdateProfile/UpdateProfile';
 import { MainLayout } from '../../components/layout';
-import { Form, PageHeading } from '../../components/shared';
+import { Form, PageHeading, Unauthorized } from '../../components/shared';
 import { Table } from '../../components/shared/Table/Table';
 import { TableDataTypes } from '../../components/shared/Table/types';
+import { useAuthCheck } from '../../hooks/use-auth-check';
 import { useGarageFilters } from '../../hooks/use-garage-filters';
 import { useLiveryFilters } from '../../hooks/use-livery-filters';
 import {
@@ -46,12 +47,14 @@ import {
 import { GARAGE_UPDATE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
 
 const Profile: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
+  // HOOKS
   const { filters: liveryFilters, setFilters: setLiveryFilters } =
     useLiveryFilters();
   const { filters: garageFilters, setFilters: setGarageFilters } =
     useGarageFilters();
-
-  const currentUser = useAppSelector((state) => state.currentUserSlice);
 
   const { data: liveries } = useGetLiveriesQuery(liveryFilters);
   const { data: garages } = useGetGaragesQuery(garageFilters);
@@ -61,13 +64,13 @@ const Profile: NextPage = () => {
   useEffect(() => {
     setLiveryFilters({
       key: LiveriesFilterKeys.USER,
-      value: currentUser.id
+      value: currentUser?.data?.id || ''
     });
   }, [currentUser, setLiveryFilters]);
   useEffect(() => {
     setGarageFilters({
       key: GaragesFilterKeys.USER,
-      value: currentUser.id
+      value: currentUser?.data?.id || ''
     });
   }, [currentUser, setGarageFilters]);
 
@@ -86,6 +89,7 @@ const Profile: NextPage = () => {
     setGarageFilters({ key: GaragesFilterKeys.PAGE, value: page });
   };
 
+  if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
       pageTitle="Profile"
@@ -117,11 +121,11 @@ const Profile: NextPage = () => {
               </Heading>
               <Form>
                 <UpdateProfile
-                  about={currentUser.about}
-                  displayName={currentUser.displayName}
-                  email={currentUser.email}
-                  forename={currentUser.forename}
-                  surname={currentUser.surname}
+                  about={currentUser?.data?.about}
+                  displayName={currentUser?.data?.displayName || ''}
+                  email={currentUser?.data?.email || ''}
+                  forename={currentUser?.data?.forename || ''}
+                  surname={currentUser?.data?.surname || ''}
                 />
               </Form>
             </TabPanel>

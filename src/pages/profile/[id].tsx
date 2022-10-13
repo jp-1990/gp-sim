@@ -140,7 +140,7 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await store.dispatch(getUsers.initiate(undefined));
+  const { data } = await store.dispatch(getUsers.initiate({}));
   const ids = data?.ids ?? [];
   return {
     paths: ids.map((id) => ({
