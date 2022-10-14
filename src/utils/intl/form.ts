@@ -59,6 +59,10 @@ const fieldLabels = {
   displayName: {
     id: 'utils.intl.form.displayName',
     defaultMessage: 'Display Name'
+  },
+  password: {
+    id: 'utils.intl.form.password',
+    defaultMessage: 'Password'
   }
 };
 
@@ -94,6 +98,10 @@ const fieldPlaceholders = {
   pricePlaceholder: {
     id: 'utils.intl.form.pricePlaceholder',
     defaultMessage: 'Free'
+  },
+  emailPlaceholder: {
+    id: 'utils.intl.form.emailPlaceholder',
+    defaultMessage: 'example@email.com'
   }
 };
 
@@ -133,6 +141,15 @@ const invalidField = {
   invalidEmailFormat: {
     id: 'utils.intl.form.invalidEmailFormat',
     defaultMessage: 'This email format is invalid'
+  },
+  invalidPasswordFormat: {
+    id: 'utils.intl.form.invalidPasswordFormat',
+    defaultMessage:
+      'Password must contain an uppercase and lowercase letter, and a number'
+  },
+  invalidPasswordLength: {
+    id: 'utils.intl.form.invalidPasswordLength',
+    defaultMessage: 'Password must be at least 8 characters long'
   }
 };
 
@@ -157,6 +174,10 @@ const helperText = {
   searchTagsHelperText: {
     id: 'utils.intl.form.searchTagsHelperText',
     defaultMessage: 'Enter a comma after each search tag*'
+  },
+  welcomeBack: {
+    id: 'utils.intl.form.welcomeBack',
+    defaultMessage: 'Welcome back!'
   }
 };
 

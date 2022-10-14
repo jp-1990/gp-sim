@@ -36,6 +36,10 @@ const actions = {
     id: 'utils.intl.commonStrings.edit',
     defaultMessage: `Edit`
   },
+  login: {
+    id: 'utils.intl.commonStrings.login',
+    defaultMessage: 'Login'
+  },
   upload: {
     id: 'utils.intl.commonStrings.upload',
     defaultMessage: 'Upload'

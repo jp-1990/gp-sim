@@ -101,6 +101,27 @@ const validatorFunctions = {
       message: <FormattedMessage {...formStrings.invalidEmailFormat} />,
       priority: 1
     };
+  },
+  /**
+   * validate password to inc uppercase, lowercase, number
+   */
+  PASSWORD_FORMAT: (value: any) => {
+    if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(value))
+      return true;
+    return {
+      message: <FormattedMessage {...formStrings.invalidPasswordFormat} />,
+      priority: 1
+    };
+  },
+  /**
+   * validate password to be 8 chars min
+   */
+  PASSWORD_LENGTH: (value: any) => {
+    if (/[\s\S]{8,}$/.test(value)) return true;
+    return {
+      message: <FormattedMessage {...formStrings.invalidPasswordLength} />,
+      priority: 1
+    };
   }
 };
 export const validatorOptions = Object.fromEntries(
