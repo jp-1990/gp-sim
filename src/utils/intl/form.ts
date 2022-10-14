@@ -154,6 +154,10 @@ const invalidField = {
 };
 
 const helperText = {
+  emailOrPasswordError: {
+    id: 'utils.intl.form.emailOrPasswordError',
+    defaultMessage: 'Incorrect email or password!'
+  },
   selectLiveryImagesHelperText: {
     id: 'utils.intl.form.selectLiveryImagesHelperText',
     defaultMessage: 'Add up to 4 images of your livery*'
