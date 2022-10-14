@@ -67,9 +67,13 @@ const MainLayout: React.FC<Props> = ({
 
   const headerChakraHeight = 14;
   const footerChakraHeight = 28;
+  const footerChakraPaddingTop = 9;
   useEffect(() => {
     const calculatedMinHeight =
-      window.innerHeight - headerChakraHeight * 4 - footerChakraHeight * 4;
+      window.innerHeight -
+      headerChakraHeight * 4 -
+      footerChakraHeight * 4 -
+      footerChakraPaddingTop * 4;
     setContentMinHeight(calculatedMinHeight);
   }, []);
 
