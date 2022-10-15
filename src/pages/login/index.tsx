@@ -16,18 +16,8 @@ import { MainLayout } from '../../components/layout';
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { LOGIN_URL } from '../../utils/nav';
 import { Form, Input, SubmitButton } from '../../components/shared';
-import { validatorOptions } from '../../components/shared/Form/utils';
 import { commonStrings, formStrings } from '../../utils/intl';
 import { signIn, ThunkStatus } from '../../store/user/slice';
-
-const validators = {
-  email: [validatorOptions.NON_NULL_STRING, validatorOptions.EMAIL],
-  password: [
-    validatorOptions.NON_NULL_STRING,
-    validatorOptions.PASSWORD_FORMAT,
-    validatorOptions.PASSWORD_LENGTH
-  ]
-};
 
 const Login: NextPage = () => {
   const intl = useIntl();
@@ -66,15 +56,13 @@ const Login: NextPage = () => {
         <Form>
           <Grid
             templateColumns="repeat(12, 1fr)"
-            templateRows="repeat(10, 14px)"
+            templateRows="repeat(10, 8px)"
             gap={4}
-            w="sm"
-            my={12}
+            w="xs"
+            my={8}
           >
             <GridItem rowSpan={3} colSpan={12}>
               <Input
-                isRequired
-                validators={validators.email}
                 stateKey={'email'}
                 label={<FormattedMessage {...formStrings.email} />}
                 aria-label={intl.formatMessage(formStrings.email)}
@@ -83,8 +71,6 @@ const Login: NextPage = () => {
             </GridItem>
             <GridItem rowSpan={3} colSpan={12}>
               <Input
-                isRequired
-                validators={validators.password}
                 stateKey={'password'}
                 label={<FormattedMessage {...formStrings.password} />}
                 aria-label={intl.formatMessage(formStrings.password)}
@@ -101,7 +87,7 @@ const Login: NextPage = () => {
                 <SubmitButton
                   onClick={onSubmit}
                   colorScheme="red"
-                  w="2xs"
+                  w="3xs"
                   mt={8}
                   lineHeight={1}
                   isLoading={status === ThunkStatus.PENDING}
