@@ -1,17 +1,10 @@
 import { apiSlice } from '../store';
-import {
-  GET_USERS,
-  GET_USER_BY_ID,
-  LOGIN,
-  LOGOUT,
-  UPDATE_PROFILE
-} from './constants';
+import { GET_USERS, GET_USER_BY_ID, UPDATE_PROFILE } from './constants';
 import {
   PublicUserDataType,
   UpdateUserProfileDataType,
   UserDataType,
-  UserFilters,
-  UserLoginArgs
+  UserFilters
 } from '../../types';
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
@@ -26,26 +19,6 @@ export type UserSliceStateType = typeof initialState;
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    [LOGIN]: builder.mutation<UserDataType, UserLoginArgs>({
-      query: (credentials) => {
-        return {
-          url: `/login`,
-          method: 'POST',
-          data: credentials,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-      }
-    }),
-    [LOGOUT]: builder.mutation<boolean, void>({
-      query: () => {
-        return {
-          url: `/logout`,
-          method: 'POST'
-        };
-      }
-    }),
     [GET_USERS]: builder.query<UserSliceStateType, UserFilters>({
       query: (filters) => ({
         url: '/api/v1/users',
@@ -92,8 +65,6 @@ type UserApiSliceRootState = {
 // HOOKS
 
 export const {
-  useLoginMutation,
-  useLogoutMutation,
   useUpdateUserProfileMutation,
   useGetUsersQuery,
   useGetUserByIdQuery
@@ -101,4 +72,4 @@ export const {
 
 // ENDPOINTS
 
-export const { login, logout, getUserById, getUsers } = userApiSlice.endpoints;
+export const { getUserById, getUsers } = userApiSlice.endpoints;
