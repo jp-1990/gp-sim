@@ -12,10 +12,5 @@ export const navOptions = (intl: IntlShape) => [
     label: intl.formatMessage(commonStrings.garages),
     requiresUser: true,
     path: GARAGES_URL
-  },
-  {
-    label: intl.formatMessage(commonStrings.profile),
-    requiresUser: true,
-    path: PROFILE_URL
   }
 ];

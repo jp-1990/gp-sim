@@ -4,6 +4,17 @@ import Profile from '../../../pages/profile/index';
 import { commonStrings, profileStrings } from '../../../utils/intl';
 import userEvent from '@testing-library/user-event';
 
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '',
+      query: { tab: 0 },
+      asPath: ''
+    };
+  }
+}));
+
 const tabNames = {
   editProfile: commonStrings.editProfile.defaultMessage,
   liveries: commonStrings.liveries.defaultMessage,
@@ -16,7 +27,7 @@ describe('Profile', () => {
 
     expect(
       screen.getAllByText(profileStrings.profileHeading.defaultMessage)
-    ).toHaveLength(3);
+    ).toHaveLength(2);
     expect(
       screen.getByText(profileStrings.profileSummary.defaultMessage)
     ).toBeInTheDocument();

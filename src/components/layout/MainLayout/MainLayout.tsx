@@ -4,7 +4,6 @@ import Link from 'next/link';
 import {
   chakra,
   Box,
-  Button,
   Flex,
   Grid,
   Heading,
@@ -20,10 +19,11 @@ import {
 import { useIntl, FormattedMessage } from 'react-intl';
 
 import Meta from '../../shared/utils/Meta/Meta';
-import { navOptions, LOGIN_URL, LOGOUT_URL } from '../../../utils/nav/';
+import { navOptions, LOGIN_URL, PROFILE_URL } from '../../../utils/nav/';
 import { messages } from './MainLayout.messages';
 import { profileStrings } from '../../../utils/intl';
-import { useAppSelector } from '../../../store/store';
+import { useAppDispatch, useAppSelector } from '../../../store/store';
+import { signOut } from '../../../store/user/slice';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={10}>
@@ -63,7 +63,10 @@ const MainLayout: React.FC<Props> = ({
 }) => {
   const [contentMinHeight, setContentMinHeight] = useState<number>(0);
   const intl = useIntl();
+  const dispatch = useAppDispatch();
+
   const currentUser = !!useAppSelector((state) => state.currentUserSlice.token);
+  const logout = () => dispatch(signOut());
 
   const headerChakraHeight = 14;
   const footerChakraHeight = 28;
@@ -125,13 +128,13 @@ const MainLayout: React.FC<Props> = ({
             px={4}
           >
             {!currentUser && (
-              <Button size="sm">
+              <Heading size="sm">
                 <Link href={LOGIN_URL}>
                   <a>
                     <FormattedMessage {...messages.login} />
                   </a>
                 </Link>
-              </Button>
+              </Heading>
             )}
             {currentUser && (
               <Menu isLazy>
@@ -142,22 +145,30 @@ const MainLayout: React.FC<Props> = ({
                 </MenuButton>
                 <MenuList>
                   <MenuItem>
-                    <FormattedMessage {...profileStrings.viewProfile} />
-                  </MenuItem>
-                  <MenuDivider />
-                  <MenuItem>
-                    <FormattedMessage {...profileStrings.myGarages} />
-                  </MenuItem>
-                  <MenuItem>
-                    <FormattedMessage {...profileStrings.myLiveries} />
-                  </MenuItem>
-                  <MenuDivider />
-                  <MenuItem>
-                    <Link href={LOGOUT_URL}>
+                    <Link href={{ pathname: PROFILE_URL, query: { tab: 0 } }}>
                       <a>
-                        <FormattedMessage {...messages.logout} />
+                        <FormattedMessage {...profileStrings.viewProfile} />
                       </a>
                     </Link>
+                  </MenuItem>
+                  <MenuDivider />
+                  <MenuItem>
+                    <Link href={{ pathname: PROFILE_URL, query: { tab: 1 } }}>
+                      <a>
+                        <FormattedMessage {...profileStrings.myLiveries} />
+                      </a>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <Link href={{ pathname: PROFILE_URL, query: { tab: 2 } }}>
+                      <a>
+                        <FormattedMessage {...profileStrings.myGarages} />
+                      </a>
+                    </Link>
+                  </MenuItem>
+                  <MenuDivider />
+                  <MenuItem onClick={logout}>
+                    <FormattedMessage {...messages.logout} />
                   </MenuItem>
                 </MenuList>
               </Menu>

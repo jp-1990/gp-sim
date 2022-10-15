@@ -10,7 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import LiveryFilter, {
   Mode
@@ -31,7 +32,6 @@ import {
   useDeleteLiveryMutation,
   useGetLiveriesQuery
 } from '../../store/livery/api-slice';
-import { useAppSelector } from '../../store/store';
 import {
   GaragesDataType,
   GaragesFilterKeys,
@@ -50,7 +50,11 @@ const Profile: NextPage = () => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
+  // STATE
+  const [tabIndex, setTabIndex] = useState(0);
+
   // HOOKS
+  const { query } = useRouter();
   const { filters: liveryFilters, setFilters: setLiveryFilters } =
     useLiveryFilters();
   const { filters: garageFilters, setFilters: setGarageFilters } =
@@ -62,11 +66,18 @@ const Profile: NextPage = () => {
   const [deleteGarage] = useDeleteGarageMutation();
 
   useEffect(() => {
+    const tab = query.tab as string;
+    if (+tab !== tabIndex) setTabIndex(+tab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query.tab]);
+
+  useEffect(() => {
     setLiveryFilters({
       key: LiveriesFilterKeys.USER,
       value: currentUser?.data?.id || ''
     });
   }, [currentUser, setLiveryFilters]);
+
   useEffect(() => {
     setGarageFilters({
       key: GaragesFilterKeys.USER,
@@ -89,6 +100,10 @@ const Profile: NextPage = () => {
     setGarageFilters({ key: GaragesFilterKeys.PAGE, value: page });
   };
 
+  const onTabsChange = (index: number) => {
+    setTabIndex(index);
+  };
+
   if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
@@ -101,7 +116,14 @@ const Profile: NextPage = () => {
         paragraph={<FormattedMessage {...profileStrings.profileSummary} />}
       />
       <Flex w="full" maxW="5xl" my={5}>
-        <Tabs variant="enclosed" isLazy defaultIndex={0} colorScheme="red">
+        <Tabs
+          variant="enclosed"
+          isLazy
+          defaultIndex={0}
+          colorScheme="red"
+          index={tabIndex}
+          onChange={onTabsChange}
+        >
           <TabList>
             <Tab aria-label={commonStrings.editProfile.defaultMessage}>
               <FormattedMessage {...commonStrings.editProfile} />

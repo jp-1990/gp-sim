@@ -83,11 +83,11 @@ const userSlice = createSlice({
         Router.push('/');
       })
       .addCase(signOut.fulfilled, (state) => {
+        Router.push('/');
         state.data = null;
         state.token = null;
         state.error = null;
         state.status = ThunkStatus.FULFILLED;
-        Router.push('/');
       });
   }
 });
