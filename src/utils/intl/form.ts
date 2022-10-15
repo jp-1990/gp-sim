@@ -63,6 +63,10 @@ const fieldLabels = {
   password: {
     id: 'utils.intl.form.password',
     defaultMessage: 'Password'
+  },
+  confirmPassword: {
+    id: 'utils.intl.form.confirmPassword',
+    defaultMessage: 'Confirm Password'
   }
 };
 
@@ -150,13 +154,25 @@ const invalidField = {
   invalidPasswordLength: {
     id: 'utils.intl.form.invalidPasswordLength',
     defaultMessage: 'Password must be at least 8 characters long'
+  },
+  invalidPasswordMatch: {
+    id: 'utils.intl.form.invalidPasswordMatch',
+    defaultMessage: 'Passwords must be the same'
   }
 };
 
 const helperText = {
+  createAnAccount: {
+    id: 'utils.intl.form.createAnAccount',
+    defaultMessage: 'Create an account'
+  },
   emailOrPasswordError: {
     id: 'utils.intl.form.emailOrPasswordError',
     defaultMessage: 'Incorrect email or password!'
+  },
+  noAccount: {
+    id: 'utils.intl.form.noAccount',
+    defaultMessage: "Don't have an account yet?"
   },
   selectLiveryImagesHelperText: {
     id: 'utils.intl.form.selectLiveryImagesHelperText',

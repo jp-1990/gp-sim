@@ -1,5 +1,6 @@
 export const LOGIN_URL = '/login';
 export const LOGOUT_URL = '/logout';
+export const SIGNUP_URL = '/signup';
 
 export const LIVERIES_URL = '/liveries';
 export const LIVERY_URL = (id: string | number) => `/liveries/${id}`;

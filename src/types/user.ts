@@ -3,8 +3,8 @@ export interface UserDataType {
   createdAt: number;
   updatedAt: number;
   lastLogin: number;
-  forename: string;
-  surname: string;
+  forename: string | null | undefined;
+  surname: string | null | undefined;
   displayName: string;
   email: string;
   about: string | null | undefined;
@@ -22,6 +22,10 @@ export type UsersDataType = UserDataType[];
 export type CreatorType = Pick<UserDataType, 'id' | 'displayName' | 'image'>;
 
 export interface UserLoginArgs {}
+
+export interface CreateUserProfileDataType
+  extends Partial<Pick<UserDataType, 'forename' | 'surname'>>,
+    Pick<UserDataType, 'email' | 'displayName'> {}
 
 export interface UpdateUserProfileDataType
   extends Pick<

@@ -48,6 +48,10 @@ const actions = {
     id: 'utils.intl.commonStrings.remove',
     defaultMessage: 'Remove'
   },
+  saveChanges: {
+    id: 'utils.intl.commonStrings.saveChanges',
+    defaultMessage: 'Save Changes'
+  },
   selectImages: {
     id: 'utils.intl.commonStrings.selectImages',
     defaultMessage: 'Select Images'
@@ -60,9 +64,9 @@ const actions = {
     id: 'utils.intl.commonStrings.selectFiles',
     defaultMessage: 'Select Files'
   },
-  saveChanges: {
-    id: 'utils.intl.commonStrings.saveChanges',
-    defaultMessage: 'Save Changes'
+  signUp: {
+    id: 'uti.intl.commonStrings.signUp',
+    defaultMessage: 'Sign up'
   },
   view: {
     id: 'utils.intl.commonStrings.view',
@@ -120,6 +124,10 @@ const status = {
   uploading: {
     id: 'utils.intl.commonStrings.uploading',
     defaultMessage: 'Uploading'
+  },
+  loading: {
+    id: 'utils.intl.commonStrings.loading',
+    defaultMessage: 'Loading'
   },
   error: {
     id: 'utils.intl.commonStrings.error',
