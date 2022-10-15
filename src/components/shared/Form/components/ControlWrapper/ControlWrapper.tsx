@@ -16,6 +16,7 @@ interface ControlWrapperProps {
   label?: ReactNode;
   ariaLabel?: string;
   htmlFor: string;
+  children: React.ReactNode;
 }
 
 const ControlWrapper: React.FC<ControlWrapperProps> = ({

@@ -14,10 +14,11 @@ import {
 import { MainLayout } from '../../components/layout';
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
-import { LOGIN_URL } from '../../utils/nav';
+import { LOGIN_URL, SIGNUP_URL } from '../../utils/nav';
 import { Form, Input, SubmitButton } from '../../components/shared';
 import { commonStrings, formStrings } from '../../utils/intl';
 import { signIn, ThunkStatus } from '../../store/user/slice';
+import Link from 'next/link';
 
 const Login: NextPage = () => {
   const intl = useIntl();
@@ -91,6 +92,7 @@ const Login: NextPage = () => {
                   mt={8}
                   lineHeight={1}
                   isLoading={status === ThunkStatus.PENDING}
+                  loadingText={intl.formatMessage(commonStrings.loading)}
                 >
                   <FormattedMessage {...commonStrings.login} />
                 </SubmitButton>
@@ -101,6 +103,16 @@ const Login: NextPage = () => {
             </GridItem>
           </Grid>
         </Form>
+        <Text pt={8} pb={1} fontSize="md">
+          <FormattedMessage {...formStrings.noAccount} />
+        </Text>
+        <Link href={{ pathname: SIGNUP_URL }}>
+          <a>
+            <Text as="b" fontSize="lg" color={'red.600'}>
+              <FormattedMessage {...commonStrings.signUp} />
+            </Text>
+          </a>
+        </Link>
       </Box>
     </MainLayout>
   );
