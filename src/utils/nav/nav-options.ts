@@ -1,6 +1,6 @@
 import { IntlShape } from 'react-intl';
 import { commonStrings } from '../intl';
-import { LIVERIES_URL, GARAGES_URL, PROFILE_URL } from './paths';
+import { LIVERIES_URL, GARAGES_URL } from './paths';
 
 export const navOptions = (intl: IntlShape) => [
   {

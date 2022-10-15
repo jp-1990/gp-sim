@@ -4,6 +4,30 @@ import userData from '../../utils/dev-data/users.json';
 import liveriesData from '../../utils/dev-data/liveries.json';
 
 export const userHandlers = [
+  rest.get(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/users`,
+    (_, res, ctx) => {
+      const users = userData.map(({ id, about, displayName, image }) => {
+        const userCreatedliveries = liveriesData.reduce((prev, cur) => {
+          const output = [...prev];
+          if (cur.creator.id === id) output.push(cur.id);
+          return output;
+        }, [] as string[]);
+
+        return {
+          id,
+          about,
+          displayName,
+          image,
+          liveries: userCreatedliveries
+        };
+      });
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(users));
+    }
+  ),
   rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -44,25 +68,17 @@ export const userHandlers = [
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/users`,
-    (_, res, ctx) => {
-      const users = userData.map(({ id, about, displayName, image }) => {
-        const userCreatedliveries = liveriesData.reduce((prev, cur) => {
-          const output = [...prev];
-          if (cur.creator.id === id) output.push(cur.id);
-          return output;
-        }, [] as string[]);
+    }/api/v1/users/current`,
+    (req, res, ctx) => {
+      const id = req.url.searchParams.get('id');
+      const token = req.headers.get('authorization');
 
-        return {
-          id,
-          about,
-          displayName,
-          image,
-          liveries: userCreatedliveries
-        };
-      });
+      if (!id || !token) return res(ctx.delay(), ctx.status(401));
 
-      return res(ctx.delay(), ctx.status(200), ctx.json(users));
+      const user = userData.find((el) => el.id === '0');
+      if (!user) return res(ctx.delay(), ctx.status(404));
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(user));
     }
   )
 ];

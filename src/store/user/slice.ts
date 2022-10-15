@@ -33,11 +33,14 @@ const signIn = createAsyncThunk(
 
     // use token from sign in to get current user data
     const token = await user.getIdToken();
-    const { data } = await axios.post<UserDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/current`,
+    const { data } = await axios.get<UserDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users/current`,
       {
         headers: {
-          Authorization: token
+          authorization: token
+        },
+        params: {
+          id: user.uid
         }
       }
     );
