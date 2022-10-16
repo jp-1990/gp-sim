@@ -1,45 +1,39 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { Method, UserDataType } from '../../../../types';
+import { Method, PublicUserDataType, UserDataType } from '../../../../types';
+import {
+  withAuth,
+  NextApiRequestWithAuth,
+  NextApiResponse,
+  firestore,
+  Collection
+} from '../../../../utils/firebase/admin';
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<UserDataType>
+async function handler(
+  req: NextApiRequestWithAuth,
+  res: NextApiResponse<PublicUserDataType[] | { error: string }>
 ) {
   const method = req.method;
   const query = req.query;
+  const usersRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.GET: {
-      res.status(200).json({
-        id: query.id as string,
-        createdAt: 0,
-        updatedAt: 0,
-        lastLogin: 0,
-        forename: 'test',
-        surname: 'user',
-        displayName: 'get user',
-        email: '',
-        about: undefined,
-        image: undefined,
-        garages: [],
-        liveries: []
+      // get user by id
+      const snapshot = await usersRef.where('id', '==', query.id).get();
+      const users: PublicUserDataType[] = [];
+      snapshot.forEach((doc) => {
+        const { id, about, displayName, liveries, image } =
+          doc.data() as unknown as UserDataType;
+        users.push({ id, about, displayName, liveries, image });
       });
+
+      return res.status(200).json(users);
     }
-    case Method.PATCH: {
-      res.status(200).json({
-        id: query.id as string,
-        createdAt: 0,
-        updatedAt: 0,
-        lastLogin: 0,
-        forename: 'test',
-        surname: 'user',
-        displayName: 'update user',
-        email: '',
-        about: undefined,
-        image: undefined,
-        garages: [],
-        liveries: []
-      });
+    default: {
+      return res
+        .status(501)
+        .json({ error: 'requested endpoint does not exist' });
     }
   }
 }
+
+export default withAuth(handler);

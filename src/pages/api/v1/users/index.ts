@@ -69,6 +69,11 @@ async function handler(
 
       return res.status(201).json([user]);
     }
+    default: {
+      return res
+        .status(501)
+        .json({ error: 'requested endpoint does not exist' });
+    }
   }
 }
 
