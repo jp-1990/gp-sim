@@ -13,10 +13,9 @@ export const userHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/users/current`,
     (req, res, ctx) => {
-      const id = req.url.searchParams.get('id');
       const token = req.headers.get('authorization');
 
-      if (!id || !token) return res(ctx.delay(), ctx.status(401));
+      if (!token) return res(ctx.delay(), ctx.status(401));
 
       const user = userData.find((el) => el.id === '0');
       if (!user) return res(ctx.delay(), ctx.status(404));
@@ -53,21 +52,16 @@ export const userHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/users`,
     (req, res, ctx) => {
+      const token = req.headers.get('authorization');
       const body = req.body as {
-        headers: { authorization: string };
         data: CreateUserProfileDataType;
-        params: { id: string };
       };
-      const {
-        data,
-        headers: { authorization: token },
-        params: { id }
-      } = body;
+      const { data } = body;
 
-      if (!id || !token) return res(ctx.delay(), ctx.status(401));
+      if (!token) return res(ctx.delay(), ctx.status(401));
 
       const user = {
-        id,
+        id: 0,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         lastLogin: Date.now(),
@@ -75,7 +69,7 @@ export const userHandlers = [
         surname: data.surname ?? null,
         displayName: data.displayName,
         email: data.email,
-        about: `Hi, I am ${data.displayName}!`,
+        about: null,
         image: null,
         garages: [],
         liveries: []

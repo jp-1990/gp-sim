@@ -42,9 +42,6 @@ const signIn = createAsyncThunk(
       {
         headers: {
           authorization: token
-        },
-        params: {
-          id: user.uid
         }
       }
     );
@@ -70,13 +67,12 @@ const signUp = createAsyncThunk(
     const { data } = await axios.post<UserDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users`,
       {
+        data: userDetails
+      },
+      {
         headers: {
           authorization: token
-        },
-        params: {
-          id: user.uid
-        },
-        data: userDetails
+        }
       }
     );
 
