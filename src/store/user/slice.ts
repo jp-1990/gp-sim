@@ -5,7 +5,10 @@ import Router from 'next/router';
 import { CURRENT_USER_SLICE_NAME } from './constants';
 import { CreateUserProfileDataType, UserDataType } from '../../types';
 import { auth, signInWithEmailAndPassword } from '../../utils/firebase/client';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from 'firebase/auth';
 
 // CURRENT USER SLICE
 export enum ThunkStatus {
@@ -77,7 +80,9 @@ const signUp = createAsyncThunk(
       }
     );
 
+    await sendEmailVerification(user);
     Router.push('/');
+
     return { data, token };
   }
 );
