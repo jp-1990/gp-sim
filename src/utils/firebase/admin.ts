@@ -27,14 +27,14 @@ export const withAuth = (
   handler: (req: NextApiRequest & AuthProperties, res: NextApiResponse) => void
 ) => {
   return async (req: NextApiRequest & AuthProperties, res: NextApiResponse) => {
-    if (!req.headers.token) {
+    if (!req.headers.authorization) {
       req.uid = undefined;
       req.isAuthenticated = false;
       return handler(req, res);
     }
     try {
       const { uid }: { uid: string | undefined } = await auth.verifyIdToken(
-        req.headers.token as string
+        req.headers.authorization as string
       );
 
       req.uid = uid;
@@ -47,7 +47,14 @@ export const withAuth = (
   };
 };
 
+enum Collection {
+  CARS = 'cars',
+  GARAGES = 'garages',
+  LIVERIES = 'liveries',
+  USERS = 'users'
+}
+
 const firestore = admin.firestore();
 const auth = admin.auth();
 
-export { firestore, auth };
+export { firestore, auth, Collection };

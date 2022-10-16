@@ -1,48 +1,75 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { UsersDataType, Method } from '../../../../types';
+import { UsersDataType, Method, UserDataType } from '../../../../types';
+import {
+  Collection,
+  firestore,
+  NextApiRequestWithAuth,
+  NextApiResponse,
+  withAuth
+} from '../../../../utils/firebase/admin';
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<UsersDataType>
+async function handler(
+  req: NextApiRequestWithAuth,
+  res: NextApiResponse<UsersDataType | { error: string }>
 ) {
   const method = req.method;
+  const usersRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.GET: {
-      res.status(200).json([
-        {
-          id: '0',
-          createdAt: 0,
-          updatedAt: 0,
-          lastLogin: 0,
-          forename: 'test',
-          surname: 'user',
-          displayName: '',
-          email: '',
-          about: undefined,
-          image: undefined,
-          garages: [],
-          liveries: []
-        }
-      ]);
+      // check isAuthenticated
+      if (!req.isAuthenticated || !req.uid) {
+        return res.status(401).json({ error: 'unauthorized' });
+      }
+
+      // get users
+      const snapshot = await usersRef.get();
+      const users: UsersDataType = [];
+      snapshot.forEach((doc) => {
+        const user = doc.data() as unknown as UserDataType;
+        users.push(user);
+      });
+
+      return res.status(200).json(users);
     }
     case Method.POST: {
-      res.status(200).json([
-        {
-          id: '0',
-          createdAt: 0,
-          updatedAt: 0,
-          lastLogin: 0,
-          forename: 'created',
-          surname: 'user',
-          displayName: '',
-          email: '',
-          about: undefined,
-          image: undefined,
-          garages: [],
-          liveries: []
-        }
-      ]);
+      // check isAuthenticated
+      if (!req.isAuthenticated || !req.uid) {
+        return res.status(401).json({ error: 'unauthorized' });
+      }
+
+      // check req body
+      const { forename, surname, displayName, email } = req.body;
+      if (!displayName || !email) {
+        return res.status(400).json({ error: 'malformed request body' });
+      }
+
+      // create user
+      const user = {
+        id: req.uid,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        lastLogin: Date.now(),
+        email: email,
+        displayName: displayName,
+        forename: forename ?? null,
+        surname: surname ?? null,
+        about: null,
+        image: null,
+        garages: [],
+        liveries: []
+      };
+
+      // if the user already exists, return error
+      const snapshot = await usersRef.where('id', '==', req.uid).get();
+      if (!snapshot.empty) {
+        return res.status(409).json({ error: 'user already exists' });
+      }
+
+      await usersRef.doc().set(user);
+
+      return res.status(201).json([user]);
     }
   }
 }
+
+export default withAuth(handler);
