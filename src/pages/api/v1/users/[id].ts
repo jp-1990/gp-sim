@@ -17,16 +17,20 @@ async function handler(
 
   switch (method) {
     case Method.GET: {
-      // get user by id
-      const snapshot = await usersRef.where('id', '==', query.id).get();
-      const users: PublicUserDataType[] = [];
-      snapshot.forEach((doc) => {
-        const { id, about, displayName, liveries, image } =
-          doc.data() as unknown as UserDataType;
-        users.push({ id, about, displayName, liveries, image });
-      });
+      try {
+        // get user by id
+        const snapshot = await usersRef.where('id', '==', query.id).get();
+        const users: PublicUserDataType[] = [];
+        snapshot.forEach((doc) => {
+          const { id, about, displayName, liveries, image } =
+            doc.data() as unknown as UserDataType;
+          users.push({ id, about, displayName, liveries, image });
+        });
 
-      return res.status(200).json(users);
+        return res.status(200).json(users);
+      } catch (err) {
+        return res.status(500).json({ error: 'internal error' });
+      }
     }
     default: {
       return res

@@ -23,6 +23,18 @@ export const userHandlers = [
       return res(ctx.delay(), ctx.status(200), ctx.json(user));
     }
   ),
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/users/current`,
+    (req, res, ctx) => {
+      const response = formatPutUserResponse(
+        req.body as UpdateUserProfileDataType
+      );
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(response));
+    }
+  ),
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -76,18 +88,6 @@ export const userHandlers = [
       };
 
       return res(ctx.delay(), ctx.status(200), ctx.json(user));
-    }
-  ),
-  rest.patch(
-    `${
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/users/:id`,
-    (req, res, ctx) => {
-      const response = formatPutUserResponse(
-        req.body as UpdateUserProfileDataType
-      );
-
-      return res(ctx.delay(), ctx.status(200), ctx.json(response));
     }
   ),
   rest.get(
