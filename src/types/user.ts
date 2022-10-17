@@ -30,7 +30,7 @@ export interface CreateUserProfileDataType
 export interface UpdateUserProfileDataType
   extends Pick<
     UserDataType,
-    'id' | 'about' | 'forename' | 'surname' | 'email' | 'displayName'
+    'about' | 'forename' | 'surname' | 'email' | 'displayName'
   > {
-  imageFiles: Array<File>;
+  image: File | null;
 }

@@ -5,3 +5,7 @@ export enum Method {
   PUT = 'PUT',
   PATCH = 'PATCH'
 }
+
+export type Token = {
+  token: string;
+};

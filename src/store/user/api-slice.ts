@@ -2,6 +2,7 @@ import { apiSlice } from '../store';
 import { GET_USERS, GET_USER_BY_ID, UPDATE_PROFILE } from './constants';
 import {
   PublicUserDataType,
+  Token,
   UpdateUserProfileDataType,
   UserDataType,
   UserFilters
@@ -41,21 +42,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
         };
       }
     }),
-    [UPDATE_PROFILE]: builder.mutation<UserDataType, UpdateUserProfileDataType>(
-      {
-        query: (updateData) => {
-          const { id, ...data } = updateData;
-          return {
-            data,
-            url: `/api/v1/users/${id}`,
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          };
-        }
+    [UPDATE_PROFILE]: builder.mutation<
+      UserDataType,
+      UpdateUserProfileDataType & Token
+    >({
+      query: (updateData) => {
+        const { token, ...data } = updateData;
+        return {
+          data,
+          url: `/api/v1/users/current`,
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token
+          }
+        };
       }
-    )
+    })
   })
 });
 type UserApiSliceRootState = {
