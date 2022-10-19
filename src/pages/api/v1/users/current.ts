@@ -86,6 +86,8 @@ async function handler(
           surname: data.surname
         };
 
+        // TODO: update anywhere else the user is stored (e.g. livery created by user)
+
         // TODO: upload image to storage
         const newImage = data.image;
         if (newImage) {

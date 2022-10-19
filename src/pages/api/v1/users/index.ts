@@ -65,12 +65,12 @@ async function handler(
         };
 
         // if the user already exists, return error
-        const snapshot = await usersRef.where('id', '==', req.uid).get();
-        if (!snapshot.empty) {
+        const doc = await usersRef.doc(user.id).get();
+        if (doc.exists) {
           return res.status(409).json({ error: 'user already exists' });
         }
 
-        await usersRef.doc().set(user);
+        await usersRef.doc(user.id).set(user);
 
         return res.status(201).json([user]);
       } catch (err) {
