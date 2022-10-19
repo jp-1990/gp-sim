@@ -58,8 +58,8 @@ async function handler(
           displayName: displayName,
           forename: forename ?? null,
           surname: surname ?? null,
-          about: null,
-          image: null,
+          about: '',
+          image: '',
           garages: [],
           liveries: []
         };

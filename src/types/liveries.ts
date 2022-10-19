@@ -6,15 +6,15 @@ export interface LiveryDataType {
   updatedAt: number;
   creator: CreatorType;
   title: string;
-  description: string | undefined;
+  description: string;
   car: string;
-  price: number | undefined;
-  tags: string | undefined;
+  price: number;
+  tags: string;
   searchHelpers: string[];
   isPublic: boolean;
   images: string[];
   liveryFiles: string;
-  rating: number | undefined;
+  rating: number;
   downloads: number;
 }
 export type LiveriesDataType = LiveryDataType[];

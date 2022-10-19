@@ -51,10 +51,22 @@ enum Collection {
   CARS = 'cars',
   GARAGES = 'garages',
   LIVERIES = 'liveries',
-  USERS = 'users'
+  USERS = 'users',
+  COUNT = 'count',
+  SHARDS = 'shards'
 }
+
+enum Document {
+  LIVERY = 'livery'
+}
+
+enum CountShards {
+  LIVERY = 4
+}
+
+const FieldValue = admin.firestore.FieldValue;
 
 const firestore = admin.firestore();
 const auth = admin.auth();
 
-export { firestore, auth, Collection };
+export { firestore, auth, Document, Collection, CountShards, FieldValue };
