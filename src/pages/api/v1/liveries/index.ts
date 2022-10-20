@@ -48,10 +48,10 @@ async function handler(
         };
         const page = params.page ? +params.page : 0;
         const limit = 20;
-        const offset = page * limit;
+        // const offset = page * limit;
 
         /*
-        ORDERING LOGIC
+        TODO: ORDERING LOGIC
         filters:
           car
           ids
@@ -68,20 +68,20 @@ async function handler(
           rating
         */
 
-        // get liveries
-        // prepare query
-        type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
-        const orders: Order[] = [];
+        // // get liveries
+        // // prepare query
+        // type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
+        // const orders: Order[] = [];
 
-        type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
-        const filters: Filter[] = [];
+        // type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
+        // const filters: Filter[] = [];
 
-        let query = liveriesRef.startAfter(offset).limit(limit);
-        for (const order of orders) query = query.orderBy(...order);
-        for (const filter of filters) query = query.where(...filter);
+        // let query = liveriesRef.limit(limit); //.startAfter(offset).limit(limit);
+        // for (const order of orders) query = query.orderBy(...order);
+        // for (const filter of filters) query = query.where(...filter);
 
         // execute
-        const liveriesSnapshot = await query.get();
+        const liveriesSnapshot = await liveriesRef.get();
 
         // process response
         const liveries: LiveriesDataType = [];
@@ -90,26 +90,26 @@ async function handler(
           liveries.push(livery);
         });
 
-        // // find max price
-        // const maxPrice = liveries.reduce((maxPrice, livery) => {
-        //   if ((livery.price ?? 0) > maxPrice) return livery.price ?? 0;
-        //   return maxPrice;
-        // }, 0);
+        // find max price
+        const maxPrice = liveries.reduce((maxPrice, livery) => {
+          if ((livery.price ?? 0) > maxPrice) return livery.price ?? 0;
+          return maxPrice;
+        }, 0);
 
-        // // get total count from sum of count shards
-        // const countSnapshot = await countRef
-        //   .doc(Document.LIVERY)
-        //   .collection(Collection.SHARDS)
-        //   .get();
-        // let total = 0;
-        // countSnapshot.forEach((doc) => {
-        //   total += doc.data().count;
-        // });
+        // get total count from sum of count shards
+        const countSnapshot = await countRef
+          .doc(Document.LIVERY)
+          .collection(Collection.SHARDS)
+          .get();
+        let total = 0;
+        countSnapshot.forEach((shard) => {
+          total += shard.data().count;
+        });
 
         return res.status(200).json({
           liveries,
-          maxPrice: 0,
-          total: 0,
+          maxPrice,
+          total,
           perPage: limit,
           page: params.page ? +params.page : 0
         });
@@ -193,8 +193,7 @@ async function handler(
 
         // increment count on random shard
         const shardId = Math.floor(Math.random() * CountShards.LIVERY);
-        const shardRef = firestore
-          .collection(Collection.COUNT)
+        const shardRef = countRef
           .doc(Document.LIVERY)
           .collection('shards')
           .doc(shardId.toString());
