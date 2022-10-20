@@ -26,7 +26,9 @@ export const config = {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<LiveriesResponseType | [] | { error: string }>
+  res: NextApiResponse<
+    LiveriesResponseType | LiveriesDataType | { error: string }
+  >
 ) {
   const method = req.method;
   const liveriesRef = firestore.collection(Collection.LIVERIES);
@@ -223,7 +225,7 @@ async function handler(
         // run batch
         await batch.commit();
 
-        return res.status(200).json([]);
+        return res.status(200).json([newLiveryData]);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

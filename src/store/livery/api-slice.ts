@@ -4,7 +4,8 @@ import {
   LiveryDataType,
   CreateLiveryDataType,
   LiveriesResponseType,
-  LiveriesFilters
+  LiveriesFilters,
+  LiveriesDataType
 } from '../../types';
 import { apiSlice } from '../store';
 import {
@@ -59,7 +60,7 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
       },
       keepUnusedDataFor: 180
     }),
-    [CREATE_LIVERY]: builder.mutation<LiveryDataType, CreateLiveryDataType>({
+    [CREATE_LIVERY]: builder.mutation<LiveriesDataType, CreateLiveryDataType>({
       query: (newLivery) => {
         return {
           url: `/api/v1/liveries`,
