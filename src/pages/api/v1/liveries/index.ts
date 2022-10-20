@@ -230,6 +230,11 @@ async function handler(
         return res.status(500).json({ error: 'internal error' });
       }
     }
+    default: {
+      return res
+        .status(501)
+        .json({ error: 'requested endpoint does not exist' });
+    }
   }
 }
 
