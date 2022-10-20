@@ -29,18 +29,14 @@ export enum LiveriesFilterKeys {
 
 export interface GaragesFilters {
   created?: Order;
-  user?: string;
   ids?: string;
-  page?: number;
-  perPage?: number;
+  search?: string;
 }
 
 export enum GaragesFilterKeys {
   CREATED = 'created',
-  USER = 'user',
   IDS = 'ids',
-  PAGE = 'page',
-  PER_PAGE = 'perPage'
+  SEARCH = 'search'
 }
 
 export interface UserFilters {

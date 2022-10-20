@@ -65,9 +65,7 @@ const Garages: NextPage = () => {
 
   // QUERIES
   const { data: liveries } = useGetLiveriesQuery(filters);
-  const { data: garages } = useGetGaragesQuery({
-    ids: currentUser.data?.garages.join('&')
-  });
+  const { data: garages } = useGetGaragesQuery({});
 
   /// EFFECTS
   useEffect(() => {

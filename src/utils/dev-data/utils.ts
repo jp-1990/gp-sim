@@ -92,15 +92,18 @@ export const applyLiveryFilters = (
 
 export const applyGarageFilters = (
   garages: GaragesDataType,
-  args: [string | null, string | null, string | null]
+  args: [string | null, string | null, string | null, string | null]
 ) => {
-  const [ids, created, user] = args;
+  const [ids, created, user, search] = args;
   const idArray = ids?.split('&');
 
   const filteredGarages = garages.filter((garage) => {
     let shouldReturn = false;
     if (idArray) shouldReturn = idArray.includes(garage.id);
-    if (user) shouldReturn = user === garage.creator.id;
+    if (user)
+      shouldReturn =
+        user === garage.creator.id || garage.drivers.includes(user);
+    if (search) shouldReturn = garage.title.includes(search);
     return shouldReturn;
   });
 

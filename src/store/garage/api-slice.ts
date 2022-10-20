@@ -20,11 +20,7 @@ import {
 // ADAPTER
 
 const garagesAdapter = createEntityAdapter<GarageDataType>();
-const initialState = garagesAdapter.getInitialState({
-  perPage: null as null | number,
-  page: null as null | number,
-  total: null as null | number
-});
+const initialState = garagesAdapter.getInitialState();
 export type GarageSliceStateType = typeof initialState;
 
 // API SLICE
@@ -37,12 +33,8 @@ export const garageApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
         params: filters
       }),
-      transformResponse: (data: GaragesResponseType) => ({
-        ...garagesAdapter.setAll(initialState, data.garages),
-        perPage: data.perPage,
-        page: data.page,
-        total: data.total
-      }),
+      transformResponse: (data: GaragesResponseType) =>
+        garagesAdapter.setAll(initialState, data),
       keepUnusedDataFor: 300,
       providesTags: [GET_GARAGES]
     }),

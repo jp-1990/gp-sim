@@ -13,37 +13,16 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/garages`,
     (req, res, ctx) => {
-      const params = ['ids', 'created', 'user'];
+      const params = ['ids', 'created', 'user', 'search'];
       const garages = [...data];
 
       const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
-      ] as [string | null, string | null, string | null];
-
+      ] as [string | null, string | null, string | null, string | null];
+      if (!extractedParams[2]) extractedParams[2] = '0';
       let filteredGarages = applyGarageFilters(garages, extractedParams);
 
-      const total = filteredGarages.length;
-
-      const page = req.url.searchParams.get('page');
-      const perPage = req.url.searchParams.get('perPage');
-
-      if (page && !isNaN(+page) && perPage && !isNaN(+perPage)) {
-        filteredGarages = filteredGarages.slice(
-          +page * +perPage,
-          +page * +perPage + +perPage
-        );
-      }
-
-      return res(
-        ctx.delay(),
-        ctx.status(200),
-        ctx.json({
-          total,
-          page,
-          perPage,
-          garages: filteredGarages
-        })
-      );
+      return res(ctx.delay(), ctx.status(200), ctx.json(filteredGarages));
     }
   ),
   rest.get(
