@@ -22,7 +22,7 @@ async function handler(
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
-  const usersRef = firestore.collection(Collection.USERS);
+  const liveriesRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.PATCH: {
@@ -74,15 +74,8 @@ async function handler(
             throw new Error('unauthorized');
           }
 
-          // add users to garage
-          t.update(garageRef, { drivers: FieldValue.arrayUnion(...ids) });
-
-          // add garage to users
-          for (const user of ids) {
-            t.update(usersRef.doc(user), {
-              garages: FieldValue.arrayUnion(garage.id)
-            });
-          }
+          // add liveries to garage
+          t.update(garageRef, { liveries: FieldValue.arrayUnion(...ids) });
         });
 
         return res.status(200).json(ids);
@@ -129,33 +122,20 @@ async function handler(
         );
 
         const garageRef = garagesRef.doc(garageId);
-        const transactionResult = await firestore.runTransaction(async (t) => {
+        await firestore.runTransaction(async (t) => {
           const garageDoc = await t.get(garageRef);
           const garage = garageDoc.data() as GarageDataType | undefined;
-
-          // never removed the creator from the garage
-          const userIds = ids.filter((id) => id !== garage?.creator.id);
-          if (!userIds.length) throw new Error('invalid input');
 
           // only delete if garage exists and if creator id matches auth user id
           if (!garage || garage.creator.id !== req.uid) {
             throw new Error('unauthorized');
           }
 
-          // remove users from garage
-          t.update(garageRef, { drivers: FieldValue.arrayRemove(...userIds) });
-
-          // remove garage from users
-          for (const user of userIds) {
-            t.update(usersRef.doc(user), {
-              garages: FieldValue.arrayRemove(garage.id)
-            });
-          }
-
-          return userIds;
+          // remove liveries from garage
+          t.update(garageRef, { liveries: FieldValue.arrayRemove(...ids) });
         });
 
-        return res.status(200).json(transactionResult);
+        return res.status(200).json(ids);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }
