@@ -3,7 +3,7 @@ import {
   GarageDataType,
   Method,
   UpdateGarageDataType
-} from '../../../../types';
+} from '../../../../../types';
 import {
   firestore,
   NextApiResponse,
@@ -11,7 +11,7 @@ import {
   Collection,
   withAuth,
   FieldValue
-} from '../../../../utils/firebase/admin';
+} from '../../../../../utils/firebase/admin';
 
 //set bodyparser
 export const config = {
