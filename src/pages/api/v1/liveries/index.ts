@@ -173,6 +173,7 @@ async function handler(
         const newLiveryRef = liveriesRef.doc();
         const newLiveryData: LiveryDataType = {
           createdAt: timestamp,
+          deleted: false,
           downloads: 0,
           id: newLiveryRef.id,
           images: [],

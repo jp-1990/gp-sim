@@ -12,6 +12,7 @@ export interface LiveryDataType {
   tags: string;
   searchHelpers: string[];
   isPublic: boolean;
+  deleted: boolean;
   images: string[];
   liveryFiles: string;
   rating: number;

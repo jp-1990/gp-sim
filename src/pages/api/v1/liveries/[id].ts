@@ -4,7 +4,10 @@ import {
   NextApiResponse,
   NextApiRequestWithAuth,
   Collection,
-  withAuth
+  Document,
+  withAuth,
+  CountShards,
+  FieldValue
 } from '../../../../utils/firebase/admin';
 
 async function handler(
@@ -13,6 +16,7 @@ async function handler(
 ) {
   const method = req.method;
   const liveriesRef = firestore.collection(Collection.LIVERIES);
+  const countRef = firestore.collection(Collection.COUNT);
 
   switch (method) {
     case Method.GET: {
@@ -59,14 +63,28 @@ async function handler(
         }
 
         const liveryRef = liveriesRef.doc(params.id);
-        const livery = await liveryRef.get();
 
-        // delete only if creator id matches auth user id
-        if (livery.data()?.creator.id !== req.uid) {
-          return res.status(401).json({ error: 'unauthorized' });
-        }
+        await firestore.runTransaction(async (t) => {
+          // get livery
+          const liveryDoc = await t.get(liveryRef);
+          const livery = liveryDoc.data() as LiveryDataType | undefined;
 
-        await liveryRef.delete();
+          // delete only if creator id matches auth user id, and livery exists
+          if (!livery || livery.creator.id !== req.uid) {
+            throw new Error('unauthorized');
+          }
+
+          // decrement count on random shard
+          const shardId = Math.floor(Math.random() * CountShards.LIVERY);
+          const shardRef = countRef
+            .doc(Document.LIVERY)
+            .collection('shards')
+            .doc(shardId.toString());
+          t.update(shardRef, { count: FieldValue.increment(-1) });
+
+          // mark livery as deleted
+          t.update(liveryRef, { deleted: true });
+        });
 
         return res.status(200).json({ id: params.id });
       } catch (err) {
