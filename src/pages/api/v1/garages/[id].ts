@@ -50,26 +50,33 @@ async function handler(
       }
     }
     case Method.DELETE: {
-      // try {
-      //   // check isAuthenticated
-      //   if (!req.isAuthenticated || !req.uid) {
-      //     return res.status(401).json({ error: 'unauthorized' });
-      //   }
-      //   // check req params
-      //   const params = {
-      //     id: req.query.id as string | undefined
-      //   };
-      //   if (!params.id) {
-      //     return res.status(400).json({ error: 'malformed request params' });
-      //   }
-      //   const liveryRef = garagesRef.doc(params.id);
-      //   const livery = await liveryRef.get();
-      //   // delete only if creator id matches auth user id
-      //   if (livery.data()?.creator.id === req.uid) liveryRef.delete();
-      //   return res.status(200).json({ id: params.id });
-      // } catch (err) {
-      //   return res.status(500).json({ error: 'internal error' });
-      // }
+      try {
+        // check isAuthenticated
+        if (!req.isAuthenticated || !req.uid) {
+          return res.status(401).json({ error: 'unauthorized' });
+        }
+        // check req params
+        const params = {
+          id: req.query.id as string | undefined
+        };
+        if (!params.id) {
+          return res.status(400).json({ error: 'malformed request params' });
+        }
+
+        const garageRef = garagesRef.doc(params.id);
+        const garage = await garageRef.get();
+
+        // delete only if creator id matches auth user id
+        if (garage.data()?.creator.id !== req.uid) {
+          return res.status(401).json({ error: 'unauthorized' });
+        }
+
+        garageRef.delete();
+
+        return res.status(200).json({ id: params.id });
+      } catch (err) {
+        return res.status(500).json({ error: 'internal error' });
+      }
     }
     default: {
       return res

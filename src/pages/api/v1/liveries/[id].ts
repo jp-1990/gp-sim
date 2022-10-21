@@ -62,7 +62,11 @@ async function handler(
         const livery = await liveryRef.get();
 
         // delete only if creator id matches auth user id
-        if (livery.data()?.creator.id === req.uid) liveryRef.delete();
+        if (livery.data()?.creator.id !== req.uid) {
+          return res.status(401).json({ error: 'unauthorized' });
+        }
+
+        liveryRef.delete();
 
         return res.status(200).json({ id: params.id });
       } catch (err) {
