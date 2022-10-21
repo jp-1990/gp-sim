@@ -66,7 +66,7 @@ async function handler(
           return res.status(401).json({ error: 'unauthorized' });
         }
 
-        liveryRef.delete();
+        await liveryRef.delete();
 
         return res.status(200).json({ id: params.id });
       } catch (err) {
