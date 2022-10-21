@@ -9,7 +9,8 @@ import {
   NextApiResponse,
   NextApiRequestWithAuth,
   Collection,
-  withAuth
+  withAuth,
+  FieldValue
 } from '../../../../utils/firebase/admin';
 
 //set bodyparser
@@ -25,6 +26,7 @@ async function handler(
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
+  const userRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.GET: {
@@ -97,10 +99,18 @@ async function handler(
 
         // TODO: upload files
 
-        // update doc
-        await garageRef.update({
-          ...data,
-          updatedAt: timestamp
+        await firestore.runTransaction(async (t) => {
+          // get garage
+          const garageDoc = await t.get(garageRef);
+          const garage = garageDoc.data();
+
+          // only update garage exists and if creator id matches auth user id
+          if (!garage || garage.creator.id !== req.uid) {
+            throw new Error('unauthorized');
+          }
+
+          // update doc
+          t.update(garageRef, { ...data, updatedAt: timestamp });
         });
 
         return res.status(200).json({ id });
@@ -123,14 +133,26 @@ async function handler(
         }
 
         const garageRef = garagesRef.doc(params.id);
-        const garage = await garageRef.get();
 
-        // delete only if creator id matches auth user id
-        if (garage.data()?.creator.id !== req.uid) {
-          return res.status(401).json({ error: 'unauthorized' });
-        }
+        firestore.runTransaction(async (t) => {
+          const garageDoc = await t.get(garageRef);
+          const garage = garageDoc.data() as GarageDataType | undefined;
 
-        await garageRef.delete();
+          // delete if garage exists and only if creator id matches auth user id
+          if (!garage || garage.creator.id !== req.uid) {
+            throw new Error('unauthorized');
+          }
+
+          // remove garage from users
+          for (const user of garage.drivers) {
+            t.update(userRef.doc(user), {
+              garages: FieldValue.arrayRemove(params.id)
+            });
+          }
+
+          // delete garage
+          t.delete(garageRef);
+        });
 
         return res.status(200).json({ id: params.id });
       } catch (err) {

@@ -136,7 +136,7 @@ async function handler(
 
         // TODO: upload files
 
-        // batch write create doc, increment count, add to user and garage
+        // batch write create doc, add to user
         const batch = firestore.batch();
         batch.set(newGarageRef, newGarageData);
 
