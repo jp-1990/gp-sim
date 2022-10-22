@@ -1,11 +1,18 @@
 import { apiSlice } from '../store';
-import { GET_USERS, GET_USER_BY_ID, UPDATE_PROFILE } from './constants';
 import {
+  GET_USERS,
+  GET_USER_BY_ID,
+  UPDATE_PROFILE,
+  USERS_API_ROUTE
+} from './constants';
+import {
+  Method,
   PublicUserDataType,
   Token,
   UpdateUserProfileDataType,
   UserDataType,
-  UserFilters
+  UserFilters,
+  UsersDataType
 } from '../../types';
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
@@ -22,23 +29,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     [GET_USERS]: builder.query<UserSliceStateType, UserFilters>({
       query: (filters) => ({
-        url: '/api/v1/users',
-        method: 'GET',
+        url: `${USERS_API_ROUTE}`,
+        method: Method.GET,
         params: filters
       }),
-      transformResponse: (data: PublicUserDataType[]) =>
+      transformResponse: (data: UsersDataType) =>
         usersAdapter.setAll(initialState, data),
       keepUnusedDataFor: 300,
       providesTags: [GET_USERS]
     }),
-    [GET_USER_BY_ID]: builder.query<
-      PublicUserDataType,
-      string | number | undefined
-    >({
+    [GET_USER_BY_ID]: builder.query<PublicUserDataType, string>({
       query: (id) => {
         return {
-          url: `/api/v1/users/${id ?? -1}`,
-          method: 'GET'
+          url: `${USERS_API_ROUTE}/${id}`,
+          method: Method.GET
         };
       }
     }),
@@ -50,8 +54,8 @@ export const userApiSlice = apiSlice.injectEndpoints({
         const { token, ...data } = updateData;
         return {
           data,
-          url: `/api/v1/users/current`,
-          method: 'PATCH',
+          url: `${USERS_API_ROUTE}/current`,
+          method: Method.PATCH,
           headers: {
             'Content-Type': 'application/json',
             authorization: token
@@ -61,9 +65,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
     })
   })
 });
-type UserApiSliceRootState = {
-  api: ReturnType<typeof userApiSlice.reducer>;
-};
 
 // HOOKS
 

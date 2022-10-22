@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Router from 'next/router';
 
-import { CURRENT_USER_SLICE_NAME } from './constants';
+import { CURRENT_USER_SLICE_NAME, USERS_API_ROUTE } from './constants';
 import { CreateUserProfileDataType, UserDataType } from '../../types';
 import { auth, signInWithEmailAndPassword } from '../../utils/firebase/client';
 import {
@@ -38,7 +38,7 @@ const signIn = createAsyncThunk(
     // use token from sign in to get current user data
     const token = await user.getIdToken();
     const { data } = await axios.get<UserDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users/current`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}/current`,
       {
         headers: {
           authorization: token
@@ -65,7 +65,7 @@ const signUp = createAsyncThunk(
     // use token from sign in to create user doc
     const token = await user.getIdToken();
     const { data } = await axios.post<UserDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}`,
       {
         data: userDetails
       },

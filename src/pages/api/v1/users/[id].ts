@@ -9,25 +9,35 @@ import {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<PublicUserDataType[] | { error: string }>
+  res: NextApiResponse<PublicUserDataType | { error: string }>
 ) {
   const method = req.method;
-  const query = req.query;
   const usersRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.GET: {
       try {
-        // get user by id
-        const snapshot = await usersRef.where('id', '==', query.id).get();
-        const users: PublicUserDataType[] = [];
-        snapshot.forEach((doc) => {
-          const { id, about, displayName, liveries, image } =
-            doc.data() as unknown as UserDataType;
-          users.push({ id, about, displayName, liveries, image });
-        });
+        // check req params
+        const params = {
+          id: req.query.id as string | undefined
+        };
 
-        return res.status(200).json(users);
+        if (!params.id) {
+          return res.status(400).json({ error: 'malformed request params' });
+        }
+
+        // get user by id
+        const userDoc = await usersRef.doc(params.id).get();
+        const user = userDoc.data() as UserDataType | undefined;
+
+        if (!user) {
+          return res.status(404).json({ error: 'not found' });
+        }
+
+        const { id, about, displayName, liveries, image } = user;
+        const publicUser = { id, about, displayName, liveries, image };
+
+        return res.status(200).json(publicUser);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

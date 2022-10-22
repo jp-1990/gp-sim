@@ -9,7 +9,7 @@ import {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<UsersDataType | { error: string }>
+  res: NextApiResponse<UserDataType | UsersDataType | { error: string }>
 ) {
   const method = req.method;
   const usersRef = firestore.collection(Collection.USERS);
@@ -72,7 +72,7 @@ async function handler(
 
         await usersRef.doc(user.id).set(user);
 
-        return res.status(201).json([user]);
+        return res.status(201).json(user);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

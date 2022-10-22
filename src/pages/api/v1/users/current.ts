@@ -1,8 +1,7 @@
 import {
   Method,
   UpdateUserProfileDataType,
-  UserDataType,
-  UsersDataType
+  UserDataType
 } from '../../../../types';
 import {
   Collection,
@@ -14,7 +13,7 @@ import {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<UsersDataType | { error: string }>
+  res: NextApiResponse<UserDataType | { id: string } | { error: string }>
 ) {
   const method = req.method;
   const usersRef = firestore.collection(Collection.USERS);
@@ -28,16 +27,14 @@ async function handler(
         }
 
         // get user by id
-        const currentUserId = req.uid;
-        const snapshot = await usersRef.where('id', '==', currentUserId).get();
+        const userDoc = await usersRef.doc(req.uid).get();
+        const user = userDoc.data() as UserDataType | undefined;
 
-        const users: UsersDataType = [];
-        snapshot.forEach((doc) => {
-          const user = doc.data() as unknown as UserDataType;
-          users.push(user);
-        });
+        if (!user) {
+          return res.status(404).json({ error: 'not found' });
+        }
 
-        return res.status(200).json(users);
+        return res.status(200).json(user);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }
@@ -57,7 +54,7 @@ async function handler(
           'surname',
           'displayName',
           'email',
-          'image'
+          'imageFiles'
         ] as const;
         for (const property of properties) {
           if (!Object.prototype.hasOwnProperty.call(data, property)) {
@@ -65,17 +62,13 @@ async function handler(
           }
         }
 
-        // get users by id (should only return 1)
-        const snapshot = await usersRef.where('id', '==', req.uid).get();
-        if (snapshot.empty) {
-          return res.status(404).json({ error: 'user does not exist' });
-        }
+        // get user by id
+        const currentUserRef = usersRef.doc(req.uid);
+        const userDoc = await currentUserRef.get();
+        const user = userDoc.data() as UserDataType | undefined;
 
-        const userRefs: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>[] =
-          [];
-        snapshot.forEach((doc) => userRefs.push(doc.ref));
-        if (userRefs.length > 1) {
-          return res.status(500).json({ error: 'internal error' });
+        if (!user) {
+          return res.status(404).json({ error: 'not found' });
         }
 
         const updateData = {
@@ -89,17 +82,16 @@ async function handler(
         // TODO: update anywhere else the user is stored (e.g. livery created by user)
 
         // TODO: upload image to storage
-        const newImage = data.image;
+        const newImage = data.imageFiles;
         if (newImage) {
           // upload image
           // get url
           // set updateData.image
         }
 
-        const currentUserRef = userRefs[0];
         await currentUserRef.update(updateData);
 
-        return res.status(200).json([]);
+        return res.status(200).json({ id: req.uid });
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

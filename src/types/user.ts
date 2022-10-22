@@ -21,8 +21,6 @@ export type UsersDataType = UserDataType[];
 
 export type CreatorType = Pick<UserDataType, 'id' | 'displayName' | 'image'>;
 
-export interface UserLoginArgs {}
-
 export interface CreateUserProfileDataType
   extends Partial<Pick<UserDataType, 'forename' | 'surname'>>,
     Pick<UserDataType, 'email' | 'displayName'> {}
@@ -32,5 +30,5 @@ export interface UpdateUserProfileDataType
     UserDataType,
     'about' | 'forename' | 'surname' | 'email' | 'displayName'
   > {
-  image: File | null;
+  imageFiles: File | null;
 }

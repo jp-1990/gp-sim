@@ -40,7 +40,7 @@ export const userHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/users`,
     (_, res, ctx) => {
-      const users = userData.map(({ id, about, displayName, image }) => {
+      const users = userData.map(({ id, ...user }) => {
         const userCreatedliveries = liveriesData.reduce((prev, cur) => {
           const output = [...prev];
           if (cur.creator.id === id) output.push(cur.id);
@@ -49,9 +49,7 @@ export const userHandlers = [
 
         return {
           id,
-          about,
-          displayName,
-          image,
+          ...user,
           liveries: userCreatedliveries
         };
       });
@@ -128,11 +126,13 @@ const formatPutUserResponse = (
   const now = new Date(Date.now()).valueOf();
   const createdAt = now;
   const updatedAt = now;
+  const id = '0';
 
   // upload images, link urls to garage
-  const image: string = '/car6.png'; // resulting url from uploading the image
+  const image = '/car6.png'; // resulting url from uploading the image
 
   return {
+    id,
     ...userData,
     createdAt,
     updatedAt,
