@@ -1,5 +1,5 @@
 import formidable from 'formidable';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type {} from 'next';
 import {
   CreateGarageDataType,
   GarageDataType,
@@ -12,6 +12,7 @@ import {
   FieldValue,
   firestore,
   NextApiRequestWithAuth,
+  NextApiResponse,
   withAuth
 } from '../../../../utils/firebase/admin';
 

@@ -22,7 +22,6 @@ async function handler(
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
-  const liveriesRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.PATCH: {
