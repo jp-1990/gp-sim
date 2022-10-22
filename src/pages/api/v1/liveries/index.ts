@@ -27,7 +27,7 @@ export const config = {
 async function handler(
   req: NextApiRequestWithAuth,
   res: NextApiResponse<
-    LiveriesResponseType | LiveriesDataType | { error: string }
+    LiveriesResponseType | LiveryDataType | { error: string }
   >
 ) {
   const method = req.method;
@@ -228,7 +228,7 @@ async function handler(
         // run batch
         await batch.commit();
 
-        return res.status(200).json([newLiveryData]);
+        return res.status(200).json(newLiveryData);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

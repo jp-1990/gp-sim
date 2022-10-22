@@ -1,3 +1,4 @@
+export const LIVERIES_API_ROUTE = '/api/v1/liveries';
 export const LIVERY_API_SLICE_NAME = 'liveryApiSlice';
 
 export const GET_LIVERIES = 'getLiveries';

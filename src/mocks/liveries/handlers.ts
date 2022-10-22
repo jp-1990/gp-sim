@@ -20,7 +20,7 @@ export const liveriesHandlers = [
         'rating',
         'user'
       ];
-      const liveries = [...data];
+      const liveries = [...data.map((liv) => ({ ...liv, deleted: false }))];
       liveries.sort((a, b) => b.downloads - a.downloads);
 
       const extractedParams = [
@@ -64,6 +64,15 @@ export const liveriesHandlers = [
       );
     }
   ),
+  rest.post(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/liveries`,
+    (req, res, ctx) => {
+      const livery = formatPostLiveryResponse(req.body as CreateLiveryDataType);
+      return res(ctx.delay(), ctx.status(200), ctx.json(livery));
+    }
+  ),
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -71,15 +80,6 @@ export const liveriesHandlers = [
     (req, res, ctx) => {
       const { id } = req.params;
       const livery = data.find((el) => el.id === id);
-      return res(ctx.delay(), ctx.status(200), ctx.json(livery));
-    }
-  ),
-  rest.post(
-    `${
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/liveries`,
-    (req, res, ctx) => {
-      const livery = formatPostLiveryResponse(req.body as CreateLiveryDataType);
       return res(ctx.delay(), ctx.status(200), ctx.json(livery));
     }
   ),
@@ -113,10 +113,12 @@ const formatPostLiveryResponse = (newLivery: CreateLiveryDataType) => {
 
   // check user garages, if garage in garages => add livery to garage
   if (liveryData.garage) {
+    //
   }
 
   // find garage where key = garageKey => add livery to garage, add garageId to user
   if (liveryData.garageKey) {
+    //
   }
 
   // upload images, link urls to livery

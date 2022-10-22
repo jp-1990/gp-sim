@@ -5,14 +5,15 @@ import {
   CreateLiveryDataType,
   LiveriesResponseType,
   LiveriesFilters,
-  LiveriesDataType
+  Method
 } from '../../types';
 import { apiSlice } from '../store';
 import {
   GET_LIVERIES,
   GET_LIVERY_BY_ID,
   CREATE_LIVERY,
-  DELETE_LIVERY
+  DELETE_LIVERY,
+  LIVERIES_API_ROUTE
 } from './constants';
 
 // ADAPTER
@@ -35,8 +36,8 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
       Partial<Record<keyof LiveriesFilters, string | number>>
     >({
       query: (filters) => ({
-        url: '/api/v1/liveries',
-        method: 'GET',
+        url: `${LIVERIES_API_ROUTE}`,
+        method: Method.GET,
         params: filters
       }),
       transformResponse: (data: LiveriesResponseType) => {
@@ -51,20 +52,11 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 300,
       providesTags: [GET_LIVERIES]
     }),
-    [GET_LIVERY_BY_ID]: builder.query<LiveryDataType, string>({
-      query: (id) => {
-        return {
-          url: `/api/v1/liveries/${id}`,
-          method: 'GET'
-        };
-      },
-      keepUnusedDataFor: 180
-    }),
-    [CREATE_LIVERY]: builder.mutation<LiveriesDataType, CreateLiveryDataType>({
+    [CREATE_LIVERY]: builder.mutation<LiveryDataType, CreateLiveryDataType>({
       query: (newLivery) => {
         return {
-          url: `/api/v1/liveries`,
-          method: 'POST',
+          url: `${LIVERIES_API_ROUTE}`,
+          method: Method.POST,
           data: newLivery,
           headers: {
             'Content-Type': 'application/json'
@@ -73,11 +65,20 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: [GET_LIVERIES]
     }),
-    [DELETE_LIVERY]: builder.mutation<string, string>({
+    [GET_LIVERY_BY_ID]: builder.query<LiveryDataType, string>({
       query: (id) => {
         return {
-          url: `/api/v1/liveries/${id}`,
-          method: 'DELETE'
+          url: `${LIVERIES_API_ROUTE}/${id}`,
+          method: Method.GET
+        };
+      },
+      keepUnusedDataFor: 180
+    }),
+    [DELETE_LIVERY]: builder.mutation<{ id: string }, string>({
+      query: (id) => {
+        return {
+          url: `${LIVERIES_API_ROUTE}/${id}`,
+          method: Method.DELETE
         };
       },
       invalidatesTags: [GET_LIVERIES]
