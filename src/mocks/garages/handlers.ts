@@ -20,9 +20,20 @@ export const garagesHandlers = [
         ...params.map((param) => req.url.searchParams.get(param))
       ] as [string | null, string | null, string | null, string | null];
       if (!extractedParams[2]) extractedParams[2] = '0';
-      let filteredGarages = applyGarageFilters(garages, extractedParams);
+      const filteredGarages = applyGarageFilters(garages, extractedParams);
 
       return res(ctx.delay(), ctx.status(200), ctx.json(filteredGarages));
+    }
+  ),
+  rest.post(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/garages`,
+    (req, res, ctx) => {
+      // dev util. formats and returns input
+      const garage = formatPostGarageResponse(req.body as CreateGarageDataType);
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(garage));
     }
   ),
   rest.get(
@@ -40,23 +51,8 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/garages/:id`,
     (req, res, ctx) => {
-      const originalValues =
-        data.find(({ id }) => id === (req?.body as UpdateGarageDataType).id) ||
-        {};
-      const newValues = req.body as UpdateGarageDataType;
-      const garage = { ...originalValues, ...newValues, image: '/car6.png' };
-      return res(ctx.delay(), ctx.status(200), ctx.json(garage));
-    }
-  ),
-  rest.post(
-    `${
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/garages`,
-    (req, res, ctx) => {
-      const garage = formatPostGarageResponse(req.body as CreateGarageDataType);
-
-      // dev util. formats and returns input
-      return res(ctx.delay(), ctx.status(200), ctx.json(garage));
+      const body = req.body as UpdateGarageDataType;
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id: body.id }));
     }
   ),
   rest.delete(
@@ -71,19 +67,45 @@ export const garagesHandlers = [
   rest.delete(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/garages/livery/:id`,
+    }/api/v1/garages/:id/liveries`,
     (req, res, ctx) => {
-      const { id } = req.params;
-      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+      const { ids } = req.params as { ids: string };
+      return res(
+        ctx.delay(),
+        ctx.status(200),
+        ctx.json({ ids: ids.split(',') })
+      );
+    }
+  ),
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/garages/:id/liveries`,
+    (req, res, ctx) => {
+      const { ids } = req.params as { ids: string };
+      return res(
+        ctx.delay(),
+        ctx.status(200),
+        ctx.json({ ids: ids.split(',') })
+      );
     }
   ),
   rest.delete(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/garages/user/:id`,
+    }/api/v1/garages/:id/users`,
     (req, res, ctx) => {
-      const { id } = req.params;
-      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+      const { ids } = req.params as { ids: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ ids }));
+    }
+  ),
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/garages/:id/users`,
+    (req, res, ctx) => {
+      const { ids } = req.params as { ids: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ ids }));
     }
   )
 ];
@@ -104,7 +126,7 @@ const formatPostGarageResponse = (
   // add garageId to user
 
   // upload images, link urls to garage
-  const image: string = '/car6.png'; // resulting urls from uploading the images
+  const image = '/car6.png'; // resulting urls from uploading the images
 
   return {
     ...garageData,

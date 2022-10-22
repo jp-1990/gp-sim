@@ -76,7 +76,7 @@ async function handler(
         }
 
         // parse req body
-        const parsedData = await new Promise<UpdateGarageDataType>(
+        const parsedData = await new Promise<Omit<UpdateGarageDataType, 'id'>>(
           (resolve, reject) => {
             const form = formidable({ multiples: true });
             form.parse(req, (err, fields, files) => {
@@ -85,7 +85,7 @@ async function handler(
                 resolve({
                   ...fields,
                   ...files
-                } as unknown as UpdateGarageDataType);
+                });
               } catch (err) {
                 reject(err);
               }
