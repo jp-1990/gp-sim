@@ -1,13 +1,32 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { CarsDataType, Method } from '../../../../types';
+import {
+  Collection,
+  firestore,
+  NextApiRequestWithAuth,
+  NextApiResponse,
+  withAuth
+} from '../../../../utils/firebase/admin';
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<CarsDataType>
+async function handler(
+  req: NextApiRequestWithAuth,
+  res: NextApiResponse<CarsDataType | { error: string }>
 ) {
   const method = req.method;
+  const carsRef = firestore.collection(Collection.CARS);
 
-  if (method === Method.GET) {
-    res.status(200).json([{ id: '0', name: 'cars', class: 'GT' }]);
+  switch (method) {
+    case Method.GET: {
+      const carsDoc = await carsRef.doc('cars').get();
+      const cars = carsDoc.data() as { cars: CarsDataType } | undefined;
+      const result = cars ? cars.cars : [];
+
+      return res.status(200).json(result);
+    }
+    default: {
+      return res
+        .status(501)
+        .json({ error: 'requested endpoint does not exist' });
+    }
   }
 }
+export default withAuth(handler);
