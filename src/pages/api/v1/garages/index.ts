@@ -48,7 +48,7 @@ async function handler(
         };
 
         /*
-        TODO: FILTERING LOGIC
+        // TODO: FILTERING LOGIC
         filters:
           ids
           search

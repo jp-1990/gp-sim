@@ -5,7 +5,7 @@ const SITE_TITLE = 'Sim Paddock';
 const BASE_URL = '';
 
 /*
-TODO:
+// TODO:
 set og image url
 ratio: 1.91:1
 min-dim: 1200x630

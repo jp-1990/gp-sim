@@ -82,6 +82,7 @@ async function handler(
             form.parse(req, (err, fields, files) => {
               if (err) throw new Error(err);
               try {
+                // TODO enforce body shape
                 resolve({
                   ...fields,
                   ...files
