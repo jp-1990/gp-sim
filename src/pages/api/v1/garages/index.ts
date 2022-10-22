@@ -106,7 +106,9 @@ async function handler(
                   'title'
                 ] as const;
                 for (const property of properties) {
-                  if (!rawData.hasOwnProperty(property)) {
+                  if (
+                    !Object.prototype.hasOwnProperty.call(rawData, property)
+                  ) {
                     return res
                       .status(400)
                       .json({ error: 'malformed request body' });
@@ -155,6 +157,11 @@ async function handler(
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }
+    }
+    default: {
+      return res
+        .status(501)
+        .json({ error: 'requested endpoint does not exist' });
     }
   }
 }

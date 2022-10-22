@@ -149,7 +149,9 @@ async function handler(
                   'title'
                 ] as const;
                 for (const property of properties) {
-                  if (!rawData.hasOwnProperty(property)) {
+                  if (
+                    !Object.prototype.hasOwnProperty.call(rawData, property)
+                  ) {
                     return res
                       .status(400)
                       .json({ error: 'malformed request body' });

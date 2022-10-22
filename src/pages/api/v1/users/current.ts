@@ -60,7 +60,7 @@ async function handler(
           'image'
         ] as const;
         for (const property of properties) {
-          if (!data.hasOwnProperty(property)) {
+          if (!Object.prototype.hasOwnProperty.call(data, property)) {
             return res.status(400).json({ error: 'malformed request body' });
           }
         }
