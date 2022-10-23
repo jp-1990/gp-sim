@@ -9,7 +9,8 @@ import {
 import { defaultUserImageTransform } from '../../../../utils/api/images';
 import {
   customOnFormidablePart,
-  UploadFiles
+  UploadFiles,
+  validateObject
 } from '../../../../utils/api/uploads';
 import {
   Collection,
@@ -80,24 +81,17 @@ async function handler(
                 ...fields
               } as unknown as Omit<UpdateUserProfileDataType, 'imageFile'>;
 
-              const properties = [
+              const isValid = validateObject(data, [
                 'about',
                 'forename',
                 'surname',
                 'email',
                 'displayName'
-              ] as const;
-              for (const key of Object.keys(data)) {
-                if (
-                  !properties.includes(
-                    key as keyof Omit<UpdateUserProfileDataType, 'imageFile'>
-                  )
-                ) {
-                  return res
-                    .status(400)
-                    .json({ error: 'malformed request body' });
-                }
-              }
+              ]);
+              if (!isValid)
+                return res
+                  .status(400)
+                  .json({ error: 'malformed request body' });
 
               resolve(data);
             } catch (err) {
@@ -115,10 +109,14 @@ async function handler(
         }
 
         // upload image to storage
+        let file;
         for (const filename of filenames) {
           if (files[filename].stream && files[filename].filename) {
             const bucket = storage.bucket();
-            const file = bucket.file(`${StoragePath.USERS}${req.uid}`);
+            await bucket.deleteFiles({
+              prefix: `${StoragePath.USERS}${req.uid}/`
+            });
+            file = bucket.file(`${StoragePath.USERS}${req.uid}/${Date.now()}`);
 
             const fileWriteStream = file.createWriteStream({
               contentType: 'image/webp'
@@ -143,55 +141,60 @@ async function handler(
 
         // run update transaction
         const currentUserRef = usersRef.doc(req.uid);
-        await firestore.runTransaction(async (t) => {
-          // get user
-          const userDoc = await t.get(currentUserRef);
-          const user = userDoc.data() as UserDataType | undefined;
+        try {
+          await firestore.runTransaction(async (t) => {
+            // get user
+            const userDoc = await t.get(currentUserRef);
+            const user = userDoc.data() as UserDataType | undefined;
 
-          if (!user) throw new Error('not found');
+            if (!user) throw new Error('not found');
 
-          const garagesSnapshot = await t.get(
-            garagesRef.where('id', 'in', user.garages)
-          );
-          const liveriesSnapshot = await t.get(
-            liveriesRef.where('id', 'in', user.liveries)
-          );
+            const garagesSnapshot = await t.get(
+              garagesRef.where('id', 'in', user.garages)
+            );
+            const liveriesSnapshot = await t.get(
+              liveriesRef.where('id', 'in', user.liveries)
+            );
 
-          // update garages where user is the creator
-          garagesSnapshot.forEach((garage) => {
-            const data = garage.data();
-            if (data.creator.id === user.id) {
-              const creatorUpdateData: Record<string, any> = {};
-              let shouldUpdate = false;
-              for (const field of creatorUpdateFields) {
-                if (data.creator[field] !== parsedData[field]) {
-                  shouldUpdate = true;
-                  creatorUpdateData[`creator.${field}`] = parsedData[field];
+            // update garages where user is the creator
+            garagesSnapshot.forEach((garage) => {
+              const data = garage.data();
+              if (data.creator.id === user.id) {
+                const creatorUpdateData: Record<string, any> = {};
+                let shouldUpdate = false;
+                for (const field of creatorUpdateFields) {
+                  if (data.creator[field] !== parsedData[field]) {
+                    shouldUpdate = true;
+                    creatorUpdateData[`creator.${field}`] = parsedData[field];
+                  }
                 }
+                if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
               }
-              if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
-            }
-          });
+            });
 
-          // update liveries where user is the creator
-          liveriesSnapshot.forEach((livery) => {
-            const data = livery.data();
-            if (data.creator.id === user.id) {
-              const creatorUpdateData: Record<string, any> = {};
-              let shouldUpdate = false;
-              for (const field of creatorUpdateFields) {
-                if (data.creator[field] !== parsedData[field]) {
-                  shouldUpdate = true;
-                  creatorUpdateData[`creator.${field}`] = parsedData[field];
+            // update liveries where user is the creator
+            liveriesSnapshot.forEach((livery) => {
+              const data = livery.data();
+              if (data.creator.id === user.id) {
+                const creatorUpdateData: Record<string, any> = {};
+                let shouldUpdate = false;
+                for (const field of creatorUpdateFields) {
+                  if (data.creator[field] !== parsedData[field]) {
+                    shouldUpdate = true;
+                    creatorUpdateData[`creator.${field}`] = parsedData[field];
+                  }
                 }
+                if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
               }
-              if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
-            }
-          });
+            });
 
-          // update user
-          t.update(currentUserRef, parsedData);
-        });
+            // update user
+            t.update(currentUserRef, parsedData);
+          });
+        } catch (err: any) {
+          await file?.delete();
+          throw new Error(err);
+        }
 
         return res.status(200).json({ id: req.uid });
       } catch (err) {
