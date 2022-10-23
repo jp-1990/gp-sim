@@ -1,16 +1,26 @@
 import formidable from 'formidable';
+import { PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
 import {
   GarageDataType,
   Method,
   UpdateGarageDataType
 } from '../../../../../types';
+import { defaultGarageImageTransform } from '../../../../../utils/api/images';
+import {
+  customOnFormidablePart,
+  UploadFiles,
+  validateObject
+} from '../../../../../utils/api/uploads';
 import {
   firestore,
   NextApiResponse,
   NextApiRequestWithAuth,
   Collection,
   withAuth,
-  FieldValue
+  FieldValue,
+  storage,
+  StoragePath
 } from '../../../../../utils/firebase/admin';
 
 //set bodyparser
@@ -27,6 +37,8 @@ async function handler(
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
   const userRef = firestore.collection(Collection.USERS);
+
+  const bucket = storage.bucket();
 
   switch (method) {
     case Method.GET: {
@@ -76,43 +88,88 @@ async function handler(
         }
 
         // parse req body
-        const parsedData = await new Promise<Omit<UpdateGarageDataType, 'id'>>(
-          (resolve, reject) => {
-            const form = formidable({ multiples: true });
-            form.parse(req, (err, fields, files) => {
-              if (err) throw new Error(err);
-              try {
-                // TODO enforce body shape
-                resolve({
-                  ...fields,
-                  ...files
-                });
-              } catch (err) {
-                reject(err);
-              }
-            });
-          }
-        );
+        const files: UploadFiles = {};
+        const parsedData = await new Promise<
+          Omit<UpdateGarageDataType, 'id'> & { image?: string }
+        >((resolve, reject) => {
+          const form = formidable({ multiples: true });
+          form.onPart = customOnFormidablePart(files, form, 'imageFile', 1);
+          form.parse(req, (err, fields, _files) => {
+            if (err) throw new Error(err);
+            try {
+              // check req body
+              const data = {
+                ...fields
+              } as unknown as Omit<UpdateGarageDataType, 'imageFile' | 'id'>;
 
-        const { imageFiles, ...data } = parsedData;
+              const isValid = validateObject(data, ['title', 'description']);
+              if (!isValid)
+                return res
+                  .status(400)
+                  .json({ error: 'malformed request body' });
+
+              resolve(data);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
+
+        const filenames = Object.keys(files);
+        const parsedDataKeys = Object.keys(parsedData);
+
+        // if no update data, return
+        if (!filenames.length && !parsedDataKeys.length) {
+          return res.status(200).json({ id: req.uid });
+        }
+
+        // upload image to storage
+        let file;
+        for (const filename of filenames) {
+          if (files[filename].stream && files[filename].filename) {
+            await bucket.deleteFiles({
+              prefix: `${StoragePath.GARAGES}${id}/`
+            });
+            file = bucket.file(`${StoragePath.GARAGES}${id}/${Date.now()}`);
+
+            const fileWriteStream = file.createWriteStream({
+              contentType: 'image/webp'
+            });
+            const sharpTransformStream = defaultGarageImageTransform();
+
+            await pipeline(
+              files[filename].stream as PassThrough,
+              sharpTransformStream,
+              fileWriteStream
+            );
+
+            await file.makePublic();
+            const url = file.publicUrl();
+            parsedData.image = url;
+          }
+        }
+
         const timestamp = Date.now();
         const garageRef = garagesRef.doc(id);
 
-        // TODO: upload files
+        try {
+          await firestore.runTransaction(async (t) => {
+            // get garage
+            const garageDoc = await t.get(garageRef);
+            const garage = garageDoc.data();
 
-        await firestore.runTransaction(async (t) => {
-          // get garage
-          const garageDoc = await t.get(garageRef);
-          const garage = garageDoc.data();
+            // only update garage exists and if creator id matches auth user id
+            if (!garage || garage.creator.id !== req.uid) {
+              throw new Error('unauthorized');
+            }
 
-          // only update garage exists and if creator id matches auth user id
-          if (!garage || garage.creator.id !== req.uid) {
-            throw new Error('unauthorized');
-          }
-
-          // update doc
-          t.update(garageRef, { ...data, updatedAt: timestamp });
-        });
+            // update doc
+            t.update(garageRef, { ...parsedData, updatedAt: timestamp });
+          });
+        } catch (err: any) {
+          await file?.delete();
+          throw new Error(err);
+        }
 
         return res.status(200).json({ id });
       } catch (err) {
@@ -135,7 +192,7 @@ async function handler(
 
         const garageRef = garagesRef.doc(params.id);
 
-        firestore.runTransaction(async (t) => {
+        await firestore.runTransaction(async (t) => {
           const garageDoc = await t.get(garageRef);
           const garage = garageDoc.data() as GarageDataType | undefined;
 
@@ -153,6 +210,10 @@ async function handler(
 
           // delete garage
           t.delete(garageRef);
+        });
+
+        await bucket.deleteFiles({
+          prefix: `${StoragePath.GARAGES}${params.id}/`
         });
 
         return res.status(200).json({ id: params.id });
