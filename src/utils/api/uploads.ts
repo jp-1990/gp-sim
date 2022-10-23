@@ -42,3 +42,40 @@ export const customOnFormidablePart =
     files[part.originalFilename].filename = part.originalFilename;
     part.pipe(passThrough);
   };
+
+/**
+ * Validates the input object against the array of expected keys. Will return false if there are any extra properties, or if partial is set to 'exact', and an object property is missing
+ *
+ * @param data - any object
+ * @param expectedKeys - string array of keys expected to exist on the data object
+ * @param partial - if 'partial', object properties can be absent
+ * @returns boolean
+ */
+export const validateObject = (
+  data: Record<string, any>,
+  expectedKeys: string[],
+  partial: 'partial' | 'exact' = 'partial'
+): boolean => {
+  switch (partial) {
+    case 'exact': {
+      // check all expected properties exist
+      for (const key of expectedKeys) {
+        if (!Object.prototype.hasOwnProperty.call(data, key)) return false;
+      }
+      // check there are no extra properties
+      const dataKeys = Object.keys(data);
+      for (const key of dataKeys) {
+        if (!expectedKeys.includes(key)) return false;
+      }
+      return true;
+    }
+    case 'partial': {
+      // check there are no extra properties
+      const dataKeys = Object.keys(data);
+      for (const key of dataKeys) {
+        if (!expectedKeys.includes(key)) return false;
+      }
+      return true;
+    }
+  }
+};
