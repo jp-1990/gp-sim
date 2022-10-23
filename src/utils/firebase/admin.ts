@@ -8,7 +8,8 @@ if (!admin.apps.length) {
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL
     }),
-    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    storageBucket: process.env.FIREBASE_STORAGE_PATH
   });
 }
 
@@ -67,6 +68,15 @@ enum CountShards {
 const FieldValue = admin.firestore.FieldValue;
 
 const firestore = admin.firestore();
+const storage = admin.storage();
 const auth = admin.auth();
 
-export { firestore, auth, Document, Collection, CountShards, FieldValue };
+export {
+  auth,
+  Collection,
+  CountShards,
+  Document,
+  firestore,
+  FieldValue,
+  storage
+};
