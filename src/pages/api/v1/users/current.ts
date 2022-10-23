@@ -72,7 +72,9 @@ async function handler(
           Omit<UpdateUserProfileDataType, 'imageFile'> & { image?: string }
         >((resolve, reject) => {
           const form = formidable({ multiples: true });
-          form.onPart = customOnFormidablePart(files, form, 'imageFile', 1);
+          form.onPart = customOnFormidablePart(files, form, [
+            { name: 'imageFile', limit: 1 }
+          ]);
           form.parse(req, (err, fields, _files) => {
             if (err) throw new Error(err);
             try {
