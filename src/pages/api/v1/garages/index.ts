@@ -6,12 +6,14 @@ import {
   GarageDataType,
   GaragesDataType,
   GaragesResponseType,
-  Method
+  Method,
+  UserDataType
 } from '../../../../types';
 import { defaultGarageImageTransform } from '../../../../utils/api/images';
 import {
   customOnFormidablePart,
-  UploadFiles
+  UploadFiles,
+  validateObject
 } from '../../../../utils/api/uploads';
 import {
   Collection,
@@ -37,6 +39,7 @@ async function handler(
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
+  const usersRef = firestore.collection(Collection.USERS);
 
   switch (method) {
     case Method.GET: {
@@ -97,6 +100,7 @@ async function handler(
         if (!req.isAuthenticated || !req.uid) {
           return res.status(401).json({ error: 'unauthorized' });
         }
+        const uid = req.uid;
 
         // parse req
         const files: UploadFiles = {};
@@ -108,18 +112,18 @@ async function handler(
               if (err) throw new Error(err);
               try {
                 // check req body
-                const properties = ['creator', 'description', 'title'] as const;
-                for (const property of properties) {
-                  if (!Object.prototype.hasOwnProperty.call(fields, property)) {
-                    return res
-                      .status(400)
-                      .json({ error: 'malformed request body' });
-                  }
-                }
                 const rawData = {
                   ...fields
                 } as unknown as CreateGarageDataType;
-                rawData.creator = JSON.parse(fields.creator as string);
+                const isValid = validateObject(
+                  rawData,
+                  ['description', 'title'],
+                  'exact'
+                );
+                if (!isValid)
+                  return res
+                    .status(400)
+                    .json({ error: 'malformed request body' });
 
                 resolve(rawData);
               } catch (err) {
@@ -133,22 +137,26 @@ async function handler(
         const newGarageRef = garagesRef.doc();
         const newGarageData: GarageDataType = {
           createdAt: timestamp,
-          drivers: [req.uid],
+          drivers: [uid],
           id: newGarageRef.id,
           image: '',
           liveries: [],
           updatedAt: timestamp,
+          creator: {
+            id: '',
+            image: '',
+            displayName: ''
+          },
           ...parsedData
         };
 
         // upload image to storage
         const filenames = Object.keys(files);
+        let file;
         for (const filename of filenames) {
           if (files[filename].stream && files[filename].filename) {
             const bucket = storage.bucket();
-            const file = bucket.file(
-              `${StoragePath.GARAGES}${newGarageRef.id}`
-            );
+            file = bucket.file(`${StoragePath.GARAGES}${newGarageRef.id}`);
 
             const fileWriteStream = file.createWriteStream({
               contentType: 'image/webp'
@@ -167,19 +175,31 @@ async function handler(
           }
         }
 
-        // batch write create doc, add to user
-        const batch = firestore.batch();
-        batch.set(newGarageRef, newGarageData);
+        // apply update
+        try {
+          await firestore.runTransaction(async (t) => {
+            // get creator
+            const creatorDoc = await t.get(usersRef.doc(uid));
+            const creator = creatorDoc.data() as UserDataType | undefined;
 
-        // update user doc
-        const userId = newGarageData.creator.id;
-        const userRef = firestore.collection(Collection.USERS).doc(userId);
-        batch.update(userRef, {
-          garages: FieldValue.arrayUnion(newGarageRef.id)
-        });
+            if (!creator) throw new Error('creator not found');
 
-        // run batch
-        await batch.commit();
+            newGarageData.creator.id = creator.id;
+            newGarageData.creator.displayName = creator.displayName;
+            newGarageData.creator.image = creator.image;
+
+            // set new garage
+            t.set(newGarageRef, newGarageData);
+
+            // update user doc
+            t.update(creatorDoc.ref, {
+              garages: FieldValue.arrayUnion(newGarageRef.id)
+            });
+          });
+        } catch (err: any) {
+          await file?.delete();
+          throw new Error(err);
+        }
 
         return res.status(200).json([newGarageData]);
       } catch (err) {
