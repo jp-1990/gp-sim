@@ -14,6 +14,7 @@ export type UploadFiles = {
  *
  * @param files - Object containing upload files ({@link UploadFile})
  * @param form - formidable IncomingForm instance
+ * @param dataKey - name of the form field which should contain the files
  * @param limit - number (default = 1). The number of files to allow
  *
  * @returns A function accepting (part) to overwrite the default formidable onPart function

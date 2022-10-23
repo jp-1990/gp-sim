@@ -26,8 +26,8 @@ import store, { apiSlice, useAppSelector, wrapper } from '../../../store/store';
 import {
   getGarageById,
   getGarages,
-  useDeleteLiveryFromGarageMutation,
-  useDeleteUserFromGarageMutation,
+  useDeleteLiveriesFromGarageMutation,
+  useDeleteUsersFromGarageMutation,
   useGetGarageByIdQuery
 } from '../../../store/garage/api-slice';
 import { useGetUsersQuery } from '../../../store/user/api-slice';
@@ -75,8 +75,8 @@ const Update: NextPage<Props> = ({ id }) => {
   const { data: liveriesData } = useGetLiveriesQuery(liveryFilters);
   const { toggle: toggleSelectedLiveries, selected: selectedLiveries } =
     useSelectedLiveries();
-  const [deleteLivery] = useDeleteLiveryFromGarageMutation();
-  const [deleteDriver] = useDeleteUserFromGarageMutation();
+  const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
+  const [deleteDriver] = useDeleteUsersFromGarageMutation();
   const { onDownload } = useDownloadLivery();
 
   useEffect(() => {

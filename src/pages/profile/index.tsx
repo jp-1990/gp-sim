@@ -26,12 +26,10 @@ import { useGarageFilters } from '../../hooks/use-garage-filters';
 import { useLiveryFilters } from '../../hooks/use-livery-filters';
 import {
   useDeleteGarageMutation,
+  useDeleteLiveriesFromGarageMutation,
   useGetGaragesQuery
 } from '../../store/garage/api-slice';
-import {
-  useDeleteLiveryMutation,
-  useGetLiveriesQuery
-} from '../../store/livery/api-slice';
+import { useGetLiveriesQuery } from '../../store/livery/api-slice';
 import {
   GaragesDataType,
   GaragesFilterKeys,
@@ -62,7 +60,7 @@ const Profile: NextPage = () => {
 
   const { data: liveries } = useGetLiveriesQuery(liveryFilters);
   const { data: garages } = useGetGaragesQuery(garageFilters);
-  const [deleteLivery] = useDeleteLiveryMutation();
+  const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
   const [deleteGarage] = useDeleteGarageMutation();
 
   useEffect(() => {

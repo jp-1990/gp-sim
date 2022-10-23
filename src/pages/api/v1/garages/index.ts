@@ -1,5 +1,6 @@
 import formidable from 'formidable';
-import type {} from 'next';
+import { PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
 import {
   CreateGarageDataType,
   GarageDataType,
@@ -7,12 +8,19 @@ import {
   GaragesResponseType,
   Method
 } from '../../../../types';
+import { defaultGarageImageTransform } from '../../../../utils/api/images';
+import {
+  customOnFormidablePart,
+  UploadFiles
+} from '../../../../utils/api/uploads';
 import {
   Collection,
   FieldValue,
   firestore,
   NextApiRequestWithAuth,
   NextApiResponse,
+  storage,
+  StoragePath,
   withAuth
 } from '../../../../utils/firebase/admin';
 
@@ -91,32 +99,29 @@ async function handler(
         }
 
         // parse req
+        const files: UploadFiles = {};
         const parsedData = await new Promise<CreateGarageDataType>(
           (resolve, reject) => {
             const form = formidable({ multiples: true });
-            form.parse(req, (err, fields, files) => {
+            form.onPart = customOnFormidablePart(files, form, 'imageFile', 1);
+            form.parse(req, (err, fields, _files) => {
               if (err) throw new Error(err);
               try {
                 // check req body
-                const rawData = { ...fields, ...files } as Record<string, any>;
-                const properties = [
-                  'creator',
-                  'description',
-                  'imageFiles',
-                  'title'
-                ] as const;
+                const properties = ['creator', 'description', 'title'] as const;
                 for (const property of properties) {
-                  if (
-                    !Object.prototype.hasOwnProperty.call(rawData, property)
-                  ) {
+                  if (!Object.prototype.hasOwnProperty.call(fields, property)) {
                     return res
                       .status(400)
                       .json({ error: 'malformed request body' });
                   }
                 }
-                rawData.creator = JSON.parse(rawData.creator);
+                const rawData = {
+                  ...fields
+                } as unknown as CreateGarageDataType;
+                rawData.creator = JSON.parse(fields.creator as string);
 
-                resolve(rawData as CreateGarageDataType);
+                resolve(rawData);
               } catch (err) {
                 reject(err);
               }
@@ -124,20 +129,43 @@ async function handler(
           }
         );
 
-        const { imageFiles, ...data } = parsedData;
         const timestamp = Date.now();
         const newGarageRef = garagesRef.doc();
         const newGarageData: GarageDataType = {
           createdAt: timestamp,
-          drivers: [],
+          drivers: [req.uid],
           id: newGarageRef.id,
           image: '',
           liveries: [],
           updatedAt: timestamp,
-          ...data
+          ...parsedData
         };
 
-        // TODO: upload files
+        // upload image to storage
+        const filenames = Object.keys(files);
+        for (const filename of filenames) {
+          if (files[filename].stream && files[filename].filename) {
+            const bucket = storage.bucket();
+            const file = bucket.file(
+              `${StoragePath.GARAGES}${newGarageRef.id}`
+            );
+
+            const fileWriteStream = file.createWriteStream({
+              contentType: 'image/webp'
+            });
+            const sharpTransformStream = defaultGarageImageTransform();
+
+            await pipeline(
+              files[filename].stream as PassThrough,
+              sharpTransformStream,
+              fileWriteStream
+            );
+
+            await file.makePublic();
+            const url = file.publicUrl();
+            newGarageData.image = url;
+          }
+        }
 
         // batch write create doc, add to user
         const batch = firestore.batch();

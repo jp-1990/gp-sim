@@ -16,12 +16,12 @@ export type GaragesResponseType = GaragesDataType;
 
 export interface CreateGarageDataType
   extends Pick<GarageDataType, 'creator' | 'title' | 'description'> {
-  imageFiles: Array<File>;
+  imageFile: File;
 }
 
 export type UpdateGarageDataType = Pick<GarageDataType, 'id'> &
   Partial<
     Pick<GarageDataType, 'title' | 'description'> & {
-      imageFiles: Array<File>;
+      imageFile: File;
     }
   >;
