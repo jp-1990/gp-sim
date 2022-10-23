@@ -19,16 +19,21 @@ export type UploadFiles = {
  * @returns A function accepting (part) to overwrite the default formidable onPart function
  */
 export const customOnFormidablePart =
-  (files: UploadFiles, form: IncomingForm, limit = 1) =>
+  (files: UploadFiles, form: IncomingForm, dataKey: string, limit = 1) =>
   (part: Part) => {
     // let formidable handle all non-file parts
     if (!part.originalFilename) {
       form._handlePart(part);
       return;
     }
-    // do not overwrite existing file or upload more files than limit
-    if (Object.keys(files).length === limit) return;
-    if (files[part.originalFilename]?.stream) return;
+
+    // do not overwrite existing file, upload more files than limit or when invalid datakey
+    if (
+      Object.keys(files).length >= limit ||
+      files[part.originalFilename]?.stream ||
+      part.name !== dataKey
+    )
+      return;
 
     const passThrough = new PassThrough();
     files[part.originalFilename] = {};
