@@ -57,6 +57,12 @@ enum Collection {
   SHARDS = 'shards'
 }
 
+enum StoragePath {
+  GARAGES = 'garages/',
+  LIVERIES = 'liveries/',
+  USERS = 'users/'
+}
+
 enum Document {
   LIVERY = 'livery'
 }
@@ -78,5 +84,6 @@ export {
   Document,
   firestore,
   FieldValue,
-  storage
+  storage,
+  StoragePath
 };

@@ -1,14 +1,23 @@
 import formidable from 'formidable';
+import { PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
 import {
   Method,
   UpdateUserProfileDataType,
   UserDataType
 } from '../../../../types';
+import { defaultUserImageTransform } from '../../../../utils/api/images';
+import {
+  customOnFormidablePart,
+  UploadFiles
+} from '../../../../utils/api/uploads';
 import {
   Collection,
   firestore,
   NextApiRequestWithAuth,
   NextApiResponse,
+  storage,
+  StoragePath,
   withAuth
 } from '../../../../utils/firebase/admin';
 
@@ -57,41 +66,33 @@ async function handler(
         }
 
         // parse req body
+        const files: UploadFiles = {};
         const parsedData = await new Promise<
-          Omit<UpdateUserProfileDataType, 'imageFile'> & {
-            imageFile: formidable.File;
-            image?: string | null;
-          }
+          Omit<UpdateUserProfileDataType, 'imageFile'> & { image?: string }
         >((resolve, reject) => {
           const form = formidable({ multiples: true });
-          form.parse(req, (err, fields, files) => {
+          form.onPart = customOnFormidablePart(files, form, 'imageFile', 1);
+          form.parse(req, (err, fields, _files) => {
             if (err) throw new Error(err);
             try {
               // check req body
               const data = {
-                ...fields,
-                ...files
-              } as unknown as Omit<UpdateUserProfileDataType, 'imageFile'> & {
-                imageFile: formidable.File;
-              };
+                ...fields
+              } as unknown as Omit<UpdateUserProfileDataType, 'imageFile'>;
 
               const properties = [
                 'about',
                 'forename',
                 'surname',
                 'email',
-                'displayName',
-                'imageFile'
+                'displayName'
               ] as const;
-              if (Array.isArray(data.imageFile)) {
-                return res
-                  .status(400)
-                  .json({ error: 'malformed request body' });
-              }
-              for (const key of Object.keys(
-                data
-              ) as (keyof UpdateUserProfileDataType)[]) {
-                if (!properties.includes(key)) {
+              for (const key of Object.keys(data)) {
+                if (
+                  !properties.includes(
+                    key as keyof Omit<UpdateUserProfileDataType, 'imageFile'>
+                  )
+                ) {
                   return res
                     .status(400)
                     .json({ error: 'malformed request body' });
@@ -105,24 +106,40 @@ async function handler(
           });
         });
 
-        // if no data, return
-        if (!Object.keys(parsedData).length) {
+        const filenames = Object.keys(files);
+        const parsedDataKeys = Object.keys(parsedData);
+
+        // if no update data, return
+        if (!filenames.length && !parsedDataKeys.length) {
           return res.status(200).json({ id: req.uid });
+        }
+
+        // upload image to storage
+        for (const filename of filenames) {
+          if (files[filename].stream && files[filename].filename) {
+            const bucket = storage.bucket();
+            const file = bucket.file(`${StoragePath.USERS}${req.uid}`);
+
+            const fileWriteStream = file.createWriteStream({
+              contentType: 'image/webp'
+            });
+            const sharpTransformStream = defaultUserImageTransform();
+
+            await pipeline(
+              files[filename].stream as PassThrough,
+              sharpTransformStream,
+              fileWriteStream
+            );
+
+            await file.makePublic();
+            const url = file.publicUrl();
+            parsedData.image = url;
+          }
         }
 
         const creatorUpdateFields: ('displayName' | 'image')[] = [];
         if (parsedData.displayName) creatorUpdateFields.push('displayName');
-
-        // TODO: upload image to storage
-        const { imageFile, ...updateData } = parsedData;
-
-        if (imageFile !== null || imageFile !== undefined) {
-          // upload image
-          // get url
-          // set updateData.image
-          creatorUpdateFields.push('image');
-          updateData.image = imageFile.originalFilename || '';
-        }
+        if (parsedData.image) creatorUpdateFields.push('image');
 
         // run update transaction
         const currentUserRef = usersRef.doc(req.uid);
@@ -147,9 +164,9 @@ async function handler(
               const creatorUpdateData: Record<string, any> = {};
               let shouldUpdate = false;
               for (const field of creatorUpdateFields) {
-                if (data.creator[field] !== updateData[field]) {
+                if (data.creator[field] !== parsedData[field]) {
                   shouldUpdate = true;
-                  creatorUpdateData[`creator.${field}`] = updateData[field];
+                  creatorUpdateData[`creator.${field}`] = parsedData[field];
                 }
               }
               if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
@@ -163,9 +180,9 @@ async function handler(
               const creatorUpdateData: Record<string, any> = {};
               let shouldUpdate = false;
               for (const field of creatorUpdateFields) {
-                if (data.creator[field] !== updateData[field]) {
+                if (data.creator[field] !== parsedData[field]) {
                   shouldUpdate = true;
-                  creatorUpdateData[`creator.${field}`] = updateData[field];
+                  creatorUpdateData[`creator.${field}`] = parsedData[field];
                 }
               }
               if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
@@ -173,7 +190,7 @@ async function handler(
           });
 
           // update user
-          t.update(currentUserRef, updateData);
+          t.update(currentUserRef, parsedData);
         });
 
         return res.status(200).json({ id: req.uid });
