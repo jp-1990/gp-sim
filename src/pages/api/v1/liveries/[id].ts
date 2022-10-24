@@ -47,8 +47,12 @@ async function handler(
         return res.status(500).json({ error: 'internal error' });
       }
     }
+    // TODO: decide on update logic
+
     case Method.DELETE: {
       try {
+        // TODO: decide on delete logic
+
         // check isAuthenticated
         if (!req.isAuthenticated || !req.uid) {
           return res.status(401).json({ error: 'unauthorized' });

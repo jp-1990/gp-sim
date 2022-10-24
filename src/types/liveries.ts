@@ -30,7 +30,7 @@ export type LiveriesResponseType = {
 export interface CreateLiveryDataType
   extends Pick<
     LiveryDataType,
-    'creator' | 'title' | 'description' | 'car' | 'price' | 'tags' | 'isPublic'
+    'title' | 'description' | 'car' | 'price' | 'tags' | 'isPublic'
   > {
   imageFiles: Array<File>;
   liveryZip: Blob;

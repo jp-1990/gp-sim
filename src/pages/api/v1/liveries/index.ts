@@ -3,7 +3,8 @@ import {
   LiveriesDataType,
   LiveriesResponseType,
   LiveryDataType,
-  Method
+  Method,
+  UserDataType
 } from '../../../../types';
 import {
   withAuth,
@@ -13,9 +14,19 @@ import {
   Collection,
   Document,
   CountShards,
-  FieldValue
+  FieldValue,
+  storage,
+  StoragePath
 } from '../../../../utils/firebase/admin';
 import formidable from 'formidable';
+import {
+  customOnFormidablePart,
+  UploadFiles,
+  validateObject
+} from '../../../../utils/api/uploads';
+import { PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
+import { defaultLiveryImageTransform } from '../../../../utils/api/images';
 
 //set bodyparser
 export const config = {
@@ -32,6 +43,8 @@ async function handler(
 ) {
   const method = req.method;
   const liveriesRef = firestore.collection(Collection.LIVERIES);
+  const garagesRef = firestore.collection(Collection.GARAGES);
+  const usersRef = firestore.collection(Collection.USERS);
   const countRef = firestore.collection(Collection.COUNT);
 
   switch (method) {
@@ -125,108 +138,160 @@ async function handler(
         if (!req.isAuthenticated || !req.uid) {
           return res.status(401).json({ error: 'unauthorized' });
         }
+        const uid = req.uid;
 
         // parse req
-        const parsedData = await new Promise<CreateLiveryDataType>(
-          (resolve, reject) => {
-            const form = formidable({ multiples: true });
-            form.parse(req, (err, fields, files) => {
-              if (err) throw new Error(err);
-              try {
-                // check req body
-                const rawData = { ...fields, ...files } as Record<string, any>;
-                const properties = [
+        const files: UploadFiles = {};
+        const parsedData = await new Promise<
+          Omit<CreateLiveryDataType, 'liveryZip' | 'imageFiles'>
+        >((resolve, reject) => {
+          const form = formidable({ multiples: true });
+          form.onPart = customOnFormidablePart(files, form, [
+            { name: 'imageFiles', limit: 4 },
+            { name: 'liveryZip', limit: 1 }
+          ]);
+          form.parse(req, (err, fields, _files) => {
+            if (err) throw new Error(err);
+            try {
+              // check req body
+              const rawData = { ...fields } as any;
+              const isValid = validateObject(
+                rawData,
+                [
                   'car',
-                  'creator',
                   'description',
                   'garage',
                   'garageKey',
-                  'imageFiles',
                   'isPublic',
-                  'liveryZip',
                   'price',
                   'tags',
                   'title'
-                ] as const;
-                for (const property of properties) {
-                  if (
-                    !Object.prototype.hasOwnProperty.call(rawData, property)
-                  ) {
-                    return res
-                      .status(400)
-                      .json({ error: 'malformed request body' });
-                  }
-                }
-                rawData.creator = JSON.parse(rawData.creator);
-                rawData.price = +rawData.price;
-                rawData.isPublic = rawData.isPublic === 'true' ? true : false;
+                ],
+                'exact'
+              );
+              if (!isValid)
+                return res
+                  .status(400)
+                  .json({ error: 'malformed request body' });
+              rawData.price = +rawData.price;
+              rawData.isPublic = rawData.isPublic === 'true' ? true : false;
 
-                resolve(rawData as CreateLiveryDataType);
-              } catch (err) {
-                reject(err);
-              }
-            });
-          }
-        );
+              resolve(rawData);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
 
-        const { liveryZip, imageFiles, garage, garageKey, ...data } =
-          parsedData;
+        const { garage, garageKey, ...data } = parsedData;
         const timestamp = Date.now();
         const newLiveryRef = liveriesRef.doc();
         const newLiveryData: LiveryDataType = {
           createdAt: timestamp,
+          creator: {
+            id: uid,
+            image: '',
+            displayName: ''
+          },
           deleted: false,
           downloads: 0,
           id: newLiveryRef.id,
           images: [],
           liveryFiles: '',
           rating: 0,
-          searchHelpers: [
-            ...data.tags.split(','),
-            data.title,
-            data.creator.displayName
-          ],
+          searchHelpers: [...data.tags.split(','), data.title],
           updatedAt: timestamp,
           ...data
         };
 
-        // TODO: upload files
+        const filenames = Object.keys(files);
 
-        // batch write create doc, increment count, add to user and garage
-        const batch = firestore.batch();
-        batch.set(newLiveryRef, newLiveryData);
-
-        // increment count on random shard
-        const shardId = Math.floor(Math.random() * CountShards.LIVERY);
-        const shardRef = countRef
-          .doc(Document.LIVERY)
-          .collection('shards')
-          .doc(shardId.toString());
-        batch.update(shardRef, { count: FieldValue.increment(1) });
-
-        // update user doc
-        const userId = newLiveryData.creator.id;
-        const userRef = firestore.collection(Collection.USERS).doc(userId);
-        batch.update(userRef, {
-          liveries: FieldValue.arrayUnion(newLiveryRef.id)
+        // ensure bucket path is clear
+        const bucket = storage.bucket();
+        await bucket.deleteFiles({
+          prefix: `${StoragePath.LIVERIES}${newLiveryRef.id}`
         });
 
-        // attempt to add to garage
-        if (garage && garageKey) {
-          const garageRef = firestore
-            .collection(Collection.GARAGES)
-            .doc(garage);
-          const garageDoc = await garageRef.get();
+        // upload files
+        const fileArray = [];
+        for (const [i, filename] of filenames.entries()) {
+          if (files[filename].stream && files[filename].filename) {
+            // get file path
+            const [type, subtype] = files[filename].mimetype?.split('/') || [];
+            const filePath = `${StoragePath.LIVERIES}${newLiveryRef.id}/${
+              type === 'image' ? type : subtype
+            }-${i}/${Date.now()}-${i}`;
 
-          if (garageDoc.exists && garageDoc.data()?.key === garageKey) {
-            batch.update(garageRef, {
-              liveries: FieldValue.arrayUnion(newLiveryRef.id)
+            const file = bucket.file(filePath);
+
+            // upload file
+            const fileWriteStream = file.createWriteStream({
+              contentType: files[filename].mimetype as string
             });
+            const transformStream =
+              subtype === 'zip'
+                ? new PassThrough()
+                : defaultLiveryImageTransform();
+
+            await pipeline(
+              files[filename].stream as PassThrough,
+              transformStream,
+              fileWriteStream
+            );
+
+            await file.makePublic();
+            const url = file.publicUrl();
+
+            if (type === 'image') newLiveryData.images.push(url);
+            if (subtype === 'zip') newLiveryData.liveryFiles = url;
+
+            fileArray.push(file);
           }
         }
 
-        // run batch
-        await batch.commit();
+        try {
+          await firestore.runTransaction(async (t) => {
+            // get creator
+            const creatorDoc = await t.get(usersRef.doc(uid));
+            const creator = creatorDoc.data() as UserDataType | undefined;
+
+            if (!creator) throw new Error('user not found');
+            newLiveryData.creator.displayName = creator.displayName;
+            newLiveryData.creator.image = creator.image;
+            newLiveryData.searchHelpers.push(creator.displayName);
+
+            // attempt garage update
+            if (garage && garageKey) {
+              const garageDoc = await t.get(garagesRef.doc(garageKey));
+              if (garageDoc.exists) {
+                t.update(garageDoc.ref, {
+                  liveries: FieldValue.arrayUnion(newLiveryRef.id)
+                });
+              }
+            }
+
+            // set livery
+            t.set(newLiveryRef, newLiveryData);
+
+            // increment count
+            const shardId = Math.floor(Math.random() * CountShards.LIVERY);
+            const shardRef = countRef
+              .doc(Document.LIVERY)
+              .collection('shards')
+              .doc(shardId.toString());
+            t.update(shardRef, { count: FieldValue.increment(1) });
+
+            // update creator
+            t.update(creatorDoc.ref, {
+              liveries: FieldValue.arrayUnion(newLiveryRef.id)
+            });
+          });
+        } catch (err: any) {
+          for (const file of fileArray) {
+            await file.delete();
+          }
+          throw new Error(err);
+        }
 
         return res.status(200).json(newLiveryData);
       } catch (err) {
