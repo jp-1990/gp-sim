@@ -50,44 +50,98 @@ async function handler(
         }
 
         const params = {
-          created: req.query.created as
-            | FirebaseFirestore.OrderByDirection
-            | undefined,
-          ids: req.query.ids as string | undefined,
-          user: req.uid,
-          search: req.query.search as string | undefined
+          created: (Array.isArray(req.query.created)
+            ? req.query.created[0]
+            : req.query.created || 'asc') as FirebaseFirestore.OrderByDirection,
+          ids: Array.isArray(req.query.ids)
+            ? req.query.ids[0]
+            : req.query.ids ?? '',
+          search: Array.isArray(req.query.search)
+            ? req.query.search[0]
+            : req.query.search ?? ''
         };
 
-        /*
-        // TODO: FILTERING LOGIC
-        filters:
-          ids
-          search
-          user 
-        */
-
-        // get garages
-        // prepare query
-        type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
-        const orders: Order[] = [['createdAt', params.created]];
+        // search and ids filters cannot be applied to the same query
+        const [definedParams, search] = (
+          Object.keys(params) as (keyof typeof params)[]
+        ).reduce(
+          (output, key) => {
+            if (!params[key]) return output;
+            if (key === 'search' && output[0].includes('ids')) {
+              output[1].push(key);
+              return output;
+            }
+            if (key === 'search') {
+              output[0].push(key);
+              output[1].push(key);
+              return output;
+            }
+            if (key === 'ids' && output[0].includes('search')) {
+              output[0] = output[0].filter((k) => k !== 'search');
+              output[0].push(key);
+              output[1].push('search');
+              return output;
+            }
+            output[0].push(key);
+            return output;
+          },
+          [[], []] as [string[], string[]]
+        );
 
         type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
-        const filters: Filter[] = [['creator.id', '==', params.user]];
+        const filters: Record<string, Filter> = {
+          ids: ['id', 'in', params.ids.split(',')],
+          search: [
+            'searchHelpers',
+            'array-contains-any',
+            [...new Set(params.search.split(' '))]
+          ]
+        };
 
+        type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
+        const orders: Record<string, Order> = {
+          created: ['createdAt', params.created]
+        };
+
+        // prepare query
         let query =
           garagesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
-        for (const filter of filters) query = query.where(...filter);
-        for (const order of orders) query = query.orderBy(...order);
+        for (const param of definedParams) {
+          if (filters[param]) query = query.where(...filters[param]);
+          if (orders[param]) query = query.orderBy(...orders[param]);
+        }
 
         // execute
-        const garagesSnapshot = await garagesRef.get();
+        const garagesSnapshot = await query.get();
 
         // process response
-        const garages: GaragesDataType = [];
+        let garages: GaragesDataType = [];
         garagesSnapshot.forEach((doc) => {
           const garage = doc.data() as unknown as GarageDataType;
           garages.push(garage);
         });
+
+        if (search.length) {
+          const searchTerms = [...new Set(params.search.split(' '))];
+          // weight by number of matched terms
+          const weightedSearch = garages.reduce((weighted, garage) => {
+            let weight = 0;
+            let searchMatch = false;
+            for (const term of searchTerms) {
+              if (garage.searchHelpers.includes(term.toLowerCase())) {
+                weight++;
+                searchMatch = true;
+              }
+            }
+            if (searchMatch) weighted.push({ weight, garage });
+            return weighted;
+          }, [] as { weight: number; garage: GarageDataType }[]);
+
+          // sort by weight and reassign to garages
+          garages = weightedSearch
+            .sort((a, b) => b.weight - a.weight)
+            .map((e) => e.garage);
+        }
 
         return res.status(200).json(garages);
       } catch (err) {
@@ -144,6 +198,9 @@ async function handler(
           image: '',
           liveries: [],
           updatedAt: timestamp,
+          searchHelpers: [...parsedData.title.split('')].map((e) =>
+            e.toLowerCase()
+          ),
           creator: {
             id: '',
             image: '',

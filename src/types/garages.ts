@@ -10,6 +10,7 @@ export interface GarageDataType {
   image: string;
   drivers: string[];
   liveries: string[];
+  searchHelpers: string[];
 }
 export type GaragesDataType = GarageDataType[];
 export type GaragesResponseType = GaragesDataType;
