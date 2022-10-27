@@ -52,7 +52,8 @@ async function handler(
         const params = {
           created: (Array.isArray(req.query.created)
             ? req.query.created[0]
-            : req.query.created || 'asc') as FirebaseFirestore.OrderByDirection,
+            : req.query.created ||
+              'desc') as FirebaseFirestore.OrderByDirection,
           ids: Array.isArray(req.query.ids)
             ? req.query.ids[0]
             : req.query.ids ?? '',
