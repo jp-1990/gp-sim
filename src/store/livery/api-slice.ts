@@ -1,11 +1,15 @@
-import { createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import {
+  createEntityAdapter,
+  createSelector,
+  EntityState
+} from '@reduxjs/toolkit';
 
 import {
   LiveryDataType,
   CreateLiveryDataType,
-  LiveriesResponseType,
   LiveriesFilters,
-  Method
+  Method,
+  LiveriesDataType
 } from '../../types';
 import { apiSlice } from '../store';
 import {
@@ -19,12 +23,7 @@ import {
 // ADAPTER
 
 const liveriesAdapter = createEntityAdapter<LiveryDataType>();
-const initialState = liveriesAdapter.getInitialState({
-  maxPrice: null as null | number,
-  perPage: null as null | number,
-  page: null as null | number,
-  total: null as null | number
-});
+const initialState = liveriesAdapter.getInitialState();
 export type LiverySliceStateType = typeof initialState;
 
 // API SLICE
@@ -40,14 +39,8 @@ export const liveryApiSlice = apiSlice.injectEndpoints({
         method: Method.GET,
         params: filters
       }),
-      transformResponse: (data: LiveriesResponseType) => {
-        return {
-          ...liveriesAdapter.setAll(initialState, data.liveries),
-          maxPrice: data.maxPrice,
-          perPage: data.perPage,
-          page: data.page,
-          total: data.total
-        };
+      transformResponse: (data: LiveriesDataType) => {
+        return liveriesAdapter.setAll(initialState, data);
       },
       keepUnusedDataFor: 300,
       providesTags: [GET_LIVERIES]
@@ -104,11 +97,11 @@ export const { getLiveries, getLiveryById, createLivery } =
   liveryApiSlice.endpoints;
 
 // SELECTORS
-
+// @ts-expect-error no idea
 export const selectGetLiveriesResult = getLiveries.select({});
 const selectLiveriesData = createSelector(
   selectGetLiveriesResult,
-  (getLiveriesResult) => getLiveriesResult.data
+  (getLiveriesResult) => getLiveriesResult.data as EntityState<LiveryDataType>
 );
 
 export const {
@@ -116,5 +109,6 @@ export const {
   selectIds: selectLiveryIds,
   selectById: selectLiveryById
 } = liveriesAdapter.getSelectors(
+  // @ts-expect-error no idea
   (state: LiveryApiSliceRootState) => selectLiveriesData(state) ?? initialState
 );

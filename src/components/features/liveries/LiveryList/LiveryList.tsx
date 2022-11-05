@@ -12,11 +12,11 @@ import LiveryCard from '../LiveryCard/LiveryCard';
 
 interface Props {
   liveries: EntityState<LiveryDataType> | undefined;
-  itemsPerPage?: number;
+  onClickLivery?: (livery: LiveryDataType) => void;
 }
 const LiveryList: ComponentWithAs<'section', ChakraProps & Props> = ({
   liveries,
-  itemsPerPage,
+  onClickLivery,
   ...chakraProps
 }) => {
   return (
@@ -25,6 +25,9 @@ const LiveryList: ComponentWithAs<'section', ChakraProps & Props> = ({
         {liveries?.ids.map((e) => {
           const target = liveries?.entities[e.valueOf()];
           if (!target) return null;
+          const onClick = onClickLivery
+            ? () => onClickLivery(target)
+            : undefined;
           const { id, creator, rating, title, car, images, price } = target;
           return (
             <GridItem key={e} colSpan={1}>
@@ -36,6 +39,7 @@ const LiveryList: ComponentWithAs<'section', ChakraProps & Props> = ({
                 image={images[0]}
                 price={price}
                 title={title}
+                onClick={onClick}
               />
             </GridItem>
           );

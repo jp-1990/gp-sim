@@ -1,45 +1,100 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Button, Flex } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { FormattedMessage } from 'react-intl';
 
-import { apiSlice, wrapper } from '../../store/store';
+import {
+  apiSlice,
+  useAppDispatch,
+  useAppSelector,
+  wrapper
+} from '../../store/store';
 import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import { getCars } from '../../store/car/api-slice';
+import {
+  FilterActionPayload,
+  filtersChanged,
+  lastLiveryChanged,
+  scrollYChanged,
+  selectFilters,
+  selectLastLiveryId,
+  selectLiveryEntities,
+  selectLiveryIds,
+  selectScrollY
+} from '../../store/pages/liveries-page-slice';
 
 import { LiveryList } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
-import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
+import { LIVERIES_URL, LIVERY_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import Link from 'next/link';
-import { LiveriesFilterKeys as Keys } from '../../types';
 import LiveryFilter, {
   Mode
 } from '../../components/features/liveries/LiveryFilter/LiveryFilter';
-import { useLiveryFilters } from '../../hooks/use-livery-filters';
+import { useRouter } from 'next/router';
+import { LiveryDataType } from '../../types';
 
 const Liveries: NextPage = () => {
-  const [maxPriceCap, setMaxPriceCap] = useState<number>(0);
+  const router = useRouter();
 
-  const { filters, setFilters } = useLiveryFilters();
+  const dispatch = useAppDispatch();
+  const filters = useAppSelector((state) => selectFilters(state));
+  const lastLiveryId = useAppSelector((state) => selectLastLiveryId(state));
+  const scrollY = useAppSelector((state) => selectScrollY(state));
 
-  const { data: liveries } = useGetLiveriesQuery(filters);
+  const liveries = {
+    ids: useAppSelector(selectLiveryIds),
+    entities: useAppSelector(selectLiveryEntities)
+  };
+
+  const { isFetching } = useGetLiveriesQuery(
+    {
+      ...filters,
+      lastLiveryId
+    },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  const loader = useRef(null);
+  const handleObserver: IntersectionObserverCallback = useCallback(
+    (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && !isFetching && liveries.ids.length) {
+        dispatch(lastLiveryChanged());
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [liveries.ids]
+  );
 
   useEffect(() => {
-    if (liveries?.maxPrice && liveries.maxPrice / 100 > maxPriceCap) {
-      const value = (liveries?.maxPrice || 0) / 100;
-      setMaxPriceCap(value);
-    }
-  }, [liveries?.maxPrice, maxPriceCap]);
+    const option = {
+      root: null,
+      rootMargin: '330px',
+      threshold: 0
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (loader.current) observer.observe(loader.current);
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
-  const onPageChange = (page: number) => () =>
-    setFilters({ key: Keys.PAGE, value: page });
+  useEffect(() => {
+    if (scrollY)
+      window.scrollTo({
+        top: scrollY,
+        behavior: 'auto'
+      });
+  }, [scrollY]);
 
-  const pages = Array.from(
-    Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
-  );
+  const onClickLivery = (livery: LiveryDataType) => {
+    dispatch(scrollYChanged(window.scrollY));
+    router.push(LIVERY_URL(livery.id));
+  };
+
+  const setFilters = (payload: FilterActionPayload) =>
+    dispatch(filtersChanged(payload));
 
   return (
     <MainLayout
@@ -62,29 +117,11 @@ const Liveries: NextPage = () => {
       </Flex>
       <LiveryFilter
         mode={Mode.FULL}
-        filters={filters}
         setFilters={setFilters}
-        maxPriceCap={maxPriceCap}
+        filters={filters}
       />
-      <LiveryList liveries={liveries} />
-      <Flex w="5xl" justifyContent="flex-end">
-        <Flex mt={4}>
-          {pages.map((page) => {
-            return (
-              <Button
-                mx={1}
-                border="1px solid #c4c4c4"
-                key={page + 1}
-                colorScheme={(liveries?.page || 0) === page ? 'red' : undefined}
-                lineHeight={1}
-                onClick={onPageChange(page)}
-              >
-                {page + 1}
-              </Button>
-            );
-          })}
-        </Flex>
-      </Flex>
+      <LiveryList liveries={liveries} onClickLivery={onClickLivery} />
+      <div ref={loader} />
     </MainLayout>
   );
 };
@@ -93,7 +130,8 @@ export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   store.dispatch(getCars.initiate());
-  store.dispatch(getLiveries.initiate({}));
+  // @ts-expect-error no idea
+  store.dispatch(getLiveries.initiate());
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
     props: {}

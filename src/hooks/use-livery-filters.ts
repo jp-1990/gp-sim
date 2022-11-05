@@ -9,8 +9,7 @@ const initialState = {
   priceMax: '00.00',
   created: Order.ASC,
   rating: '0',
-  user: '',
-  page: 0
+  user: ''
 };
 
 type FilterState = typeof initialState;

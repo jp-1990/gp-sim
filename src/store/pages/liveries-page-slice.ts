@@ -28,7 +28,7 @@ const initialState = liveriesAdapter.getInitialState({
 export type LiveryPageSliceStateType = typeof initialState;
 
 type FilterState = typeof initialState['filters'];
-type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
+export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
 
 const getLiveriesMatchFulfilled = (action: AnyAction) => {
   return apiSlice.endpoints.getLiveries?.matchFulfilled

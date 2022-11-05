@@ -36,13 +36,5 @@ describe('LiveryFilter', () => {
     expect(
       screen.getByLabelText(commonStrings.rating.defaultMessage)
     ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(commonStrings.minPrice.defaultMessage)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(commonStrings.maxPrice.defaultMessage)
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText('min')).toBeInTheDocument();
-    expect(screen.getByLabelText('max')).toBeInTheDocument();
   });
 });
