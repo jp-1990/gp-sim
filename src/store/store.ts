@@ -8,6 +8,8 @@ import { GET_GARAGES, GET_GARAGE_BY_ID } from './garage/constants';
 import { GET_LIVERIES } from './livery/constants';
 import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
+import { LIVERY_PAGE_SLICE_NAME } from './pages/constants';
+import liveriesPageSlice from './pages/liveries-page-slice';
 
 const axiosBaseQuery =
   (
@@ -56,13 +58,14 @@ export const apiSlice = createApi({
     }
   },
   tagTypes: [GET_LIVERIES, GET_GARAGES, GET_GARAGE_BY_ID, GET_USERS],
-  endpoints: () => ({})
+  endpoints: () => ({} as { getLiveries?: any })
 });
 
 export const storeConfig = {
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer
+    [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer,
+    [LIVERY_PAGE_SLICE_NAME]: liveriesPageSlice.reducer
   }
 };
 const makeStore = () =>
