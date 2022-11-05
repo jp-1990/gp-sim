@@ -20,7 +20,7 @@
     "@reduxjs/toolkit": "^1.8.5",
     "axios": "^0.27.2",
     "file-saver": "^2.0.5",
-    "firebase": "^9.11.0",
+    "firebase": "^9.13.0",
     "firebase-admin": "^11.1.0",
     "formidable": "^2.0.1",
     "framer-motion": "^7.5.3",
