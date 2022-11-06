@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Button, Flex } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FormattedMessage } from 'react-intl';
 
 import {
@@ -9,13 +11,13 @@ import {
   useAppSelector,
   wrapper
 } from '../../store/store';
-import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import { getCars } from '../../store/car/api-slice';
+import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import {
   FilterActionPayload,
+  activatePage,
   filtersChanged,
   lastLiveryChanged,
-  activatePage,
   scrollYChanged,
   selectLiveryEntities,
   selectLiveryIds,
@@ -24,18 +26,14 @@ import {
   selectScrollY
 } from '../../store/livery/scroll-slice';
 
-import { LiveryList } from '../../components/features';
+import { LiveryList, LiveryFilter, Mode } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
 import { LIVERIES_URL, LIVERY_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
-import Link from 'next/link';
-import LiveryFilter, {
-  Mode
-} from '../../components/features/liveries/LiveryFilter/LiveryFilter';
-import { useRouter } from 'next/router';
 import { LiveryDataType } from '../../types';
+import { useInfiniteScroll } from '../../hooks';
 
 const Liveries: NextPage = () => {
   const router = useRouter();
@@ -58,36 +56,14 @@ const Liveries: NextPage = () => {
     entities: useAppSelector(selectLiveryEntities)
   };
 
-  const { isFetching } = useGetLiveriesQuery(
+  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+  useGetLiveriesQuery(
     {
       ...filters,
       lastLiveryId
     },
     { refetchOnMountOrArgChange: true }
   );
-
-  const loader = useRef(null);
-  const handleObserver: IntersectionObserverCallback = useCallback(
-    (entries) => {
-      const target = entries[0];
-      if (target.isIntersecting && !isFetching && liveries.ids.length) {
-        dispatch(lastLiveryChanged());
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [liveries.ids]
-  );
-
-  useEffect(() => {
-    const option = {
-      root: null,
-      rootMargin: '330px',
-      threshold: 0
-    };
-    const observer = new IntersectionObserver(handleObserver, option);
-    if (loader.current) observer.observe(loader.current);
-    return () => observer.disconnect();
-  }, [handleObserver]);
 
   useEffect(() => {
     if (scrollY)
@@ -130,7 +106,7 @@ const Liveries: NextPage = () => {
         filters={filters}
       />
       <LiveryList liveries={liveries} onClickLivery={onClickLivery} />
-      <div ref={loader} />
+      <Loader />
     </MainLayout>
   );
 };
