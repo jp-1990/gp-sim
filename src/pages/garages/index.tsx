@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   chakra,
   Box,
@@ -10,16 +10,45 @@ import {
   Heading
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FormattedMessage } from 'react-intl';
 
-import { apiSlice, wrapper } from '../../store/store';
-import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
+import {
+  apiSlice,
+  useAppDispatch,
+  useAppSelector,
+  wrapper
+} from '../../store/store';
 import { getCars } from '../../store/car/api-slice';
+import { useGetLiveriesQuery } from '../../store/livery/api-slice';
+import { useGetGaragesQuery } from '../../store/garage/api-slice';
+import {
+  activatePage,
+  FilterActionPayload,
+  filtersChanged,
+  lastLiveryChanged,
+  scrollYChanged,
+  selectedGarageChanged,
+  selectedLiveriesChanged,
+  selectFilters,
+  selectLastLiveryId,
+  selectLiveryEntities,
+  selectLiveryIds,
+  selectScrollY,
+  selectSelectedGarage,
+  selectSelectedLiveries
+} from '../../store/livery/scroll-slice';
 
 import { MainLayout } from '../../components/layout';
-import { PageHeading, Unauthorized } from '../../components/shared';
+import {
+  PageHeading,
+  Unauthorized,
+  Table,
+  TableDataTypes
+} from '../../components/shared';
 import { ImageWithFallback } from '../../components/core';
+import { LiveryFilter, Mode } from '../../components/features';
 
 import {
   GARAGES_URL,
@@ -33,70 +62,99 @@ import {
   commonStrings,
   formStrings
 } from '../../utils/intl';
-import { LiveriesFilterKeys as Keys, LiveriesDataType } from '../../types';
-import { useGetGaragesQuery } from '../../store/garage/api-slice';
-import { Table } from '../../components/shared/Table/Table';
-import { TableDataTypes } from '../../components/shared/Table/types';
-import LiveryFilter, {
-  Mode
-} from '../../components/features/liveries/LiveryFilter/LiveryFilter';
+
+import { LiveriesDataType } from '../../types';
 import {
-  useLiveryFilters,
-  useSelectedLiveries,
-  useDownloadLivery
+  useAuthCheck,
+  useDownloadLivery,
+  useInfiniteScroll
 } from '../../hooks';
-import { useAuthCheck } from '../../hooks/use-auth-check';
 
 const Garages: NextPage = () => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(activatePage(GARAGES_URL));
+    return () => {
+      dispatch(activatePage(null));
+    };
+  }, [dispatch]);
+
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
-  // STATE
-  const [selectedGarage, setSelectedGarage] = useState<string>('');
-
   // HOOKS
-  const { filters, setFilters } = useLiveryFilters();
-  const {
-    toggle: toggleSelectedLiveries,
-    selected: selectedLiveries,
-    setSelected: setSelectedLiveries
-  } = useSelectedLiveries();
+  const filters = useAppSelector(selectFilters);
+  const lastLiveryId = useAppSelector(selectLastLiveryId);
+  const scrollY = useAppSelector(selectScrollY);
+  const selectedGarage = useAppSelector(selectSelectedGarage);
+  const selectedLiveries = useAppSelector(selectSelectedLiveries);
+
+  const liveries = {
+    ids: useAppSelector(selectLiveryIds),
+    entities: useAppSelector(selectLiveryEntities)
+  };
+
+  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+
   const { onDownload } = useDownloadLivery();
 
   // QUERIES
-  const { data: liveries } = useGetLiveriesQuery(filters);
   const { data: garages } = useGetGaragesQuery({});
 
-  /// EFFECTS
+  useGetLiveriesQuery(
+    {
+      ...filters,
+      lastLiveryId
+    },
+    { skip: selectedGarage === 'NULL', refetchOnMountOrArgChange: true }
+  );
+
   useEffect(() => {
-    setFilters({
-      key: Keys.IDS,
-      value:
-        garages?.entities[selectedGarage]?.liveries.join('&') ||
-        currentUser.data?.liveries.join('&') ||
-        ''
-    });
-  }, [
-    currentUser.data?.liveries,
-    garages?.entities,
-    selectedGarage,
-    setFilters
-  ]);
+    if (selectedGarage === 'NULL') {
+      onSelectGarage(null)();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (scrollY)
+      window.scrollTo({
+        top: scrollY,
+        behavior: 'auto'
+      });
+  }, [scrollY]);
 
   // HANDLERS
-  const onPageChange = (page: number) => () => {
-    setSelectedLiveries([]);
-    setFilters({ key: Keys.PAGE, value: page });
-  };
-  const onSelectGarage = (id: string | undefined) => () => {
-    setSelectedLiveries([]);
-    setSelectedGarage(id || '');
-    setFilters({ key: Keys.PAGE, value: 0 });
+  const setFilters = (payload: FilterActionPayload) =>
+    dispatch(filtersChanged(payload));
+
+  const toggleSelectedLiveries = (payload: string | string[]) =>
+    dispatch(selectedLiveriesChanged(payload));
+
+  const onClickLivery = (id: string) => {
+    dispatch(scrollYChanged(window.scrollY));
+    router.push(LIVERY_URL(id));
   };
 
-  const pages = Array.from(
-    Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
-  );
+  const onSelectGarage = (id: string | null | undefined) => () => {
+    if (id !== selectedGarage) {
+      dispatch(selectedGarageChanged(id ?? null));
+      if (id === null) {
+        setFilters({
+          key: 'ids',
+          value: currentUser.data?.liveries.join('&') ?? ''
+        });
+      }
+      if (typeof id === 'string') {
+        setFilters({
+          key: 'ids',
+          value: garages?.entities[id]?.liveries.join('&') ?? ''
+        });
+      }
+    }
+  };
 
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
@@ -141,7 +199,7 @@ const Garages: NextPage = () => {
         >
           <Box
             as="button"
-            onClick={onSelectGarage('')}
+            onClick={onSelectGarage(null)}
             key="userCollection"
             mb={2}
             mx={0.5}
@@ -149,7 +207,7 @@ const Garages: NextPage = () => {
             borderWidth="2px"
             borderRadius={6}
             borderColor={
-              selectedGarage === '' ? highlightedColor : 'blackAlpha.100'
+              selectedGarage === null ? highlightedColor : 'blackAlpha.100'
             }
             overflow="hidden"
             minW="3xs"
@@ -177,7 +235,7 @@ const Garages: NextPage = () => {
                     borderRadius={5}
                     px={2}
                     bg={
-                      selectedGarage === ''
+                      selectedGarage === null
                         ? highlightedColor
                         : 'blackAlpha.800'
                     }
@@ -309,12 +367,12 @@ const Garages: NextPage = () => {
         justifyContent="flex-start"
       >
         <Heading size="md" pb={4}>
-          {garages?.entities[selectedGarage]?.title ?? (
+          {garages?.entities[selectedGarage ?? '']?.title ?? (
             <FormattedMessage {...garageStrings.yourCollection} />
           )}
         </Heading>
         <Text fontSize="sm" pb={4}>
-          {garages?.entities[selectedGarage]?.description ?? (
+          {garages?.entities[selectedGarage ?? '']?.description ?? (
             <FormattedMessage {...garageStrings.yourCollectionDescription} />
           )}
         </Text>
@@ -331,11 +389,11 @@ const Garages: NextPage = () => {
       <Table<LiveriesDataType>
         actions={[
           ({ id }) => (
-            <Link href={LIVERY_URL(`${id}`)} passHref>
+            <a onClick={() => onClickLivery(id)}>
               <Button variant={'outline'} size="sm" colorScheme="red">
                 <FormattedMessage {...commonStrings.view} />
               </Button>
-            </Link>
+            </a>
           ),
           ({ id }) => (
             <Button
@@ -387,24 +445,7 @@ const Garages: NextPage = () => {
         onSelect={toggleSelectedLiveries}
         selected={selectedLiveries}
       />
-      <Flex w="5xl" justifyContent="flex-end">
-        <Flex mt={4}>
-          {pages.map((page) => {
-            return (
-              <Button
-                mx={1}
-                border="1px solid #c4c4c4"
-                key={page + 1}
-                colorScheme={(liveries?.page || 0) === page ? 'red' : undefined}
-                lineHeight={1}
-                onClick={onPageChange(page)}
-              >
-                {page + 1}
-              </Button>
-            );
-          })}
-        </Flex>
-      </Flex>
+      <Loader />
     </MainLayout>
   );
 };
@@ -413,7 +454,6 @@ export default Garages;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   store.dispatch(getCars.initiate());
-  store.dispatch(getLiveries.initiate({}));
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
     props: {}

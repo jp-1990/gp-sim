@@ -5,11 +5,8 @@ const initialState = {
   ids: '',
   search: '',
   car: '',
-  priceMin: '00.00',
-  priceMax: '00.00',
   created: Order.ASC,
-  rating: '0',
-  user: ''
+  rating: '0'
 };
 
 type FilterState = typeof initialState;

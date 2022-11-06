@@ -47,9 +47,9 @@ const Liveries: NextPage = () => {
     };
   }, [dispatch]);
 
-  const filters = useAppSelector((state) => selectFilters(state));
-  const lastLiveryId = useAppSelector((state) => selectLastLiveryId(state));
-  const scrollY = useAppSelector((state) => selectScrollY(state));
+  const filters = useAppSelector(selectFilters);
+  const lastLiveryId = useAppSelector(selectLastLiveryId);
+  const scrollY = useAppSelector(selectScrollY);
 
   const liveries = {
     ids: useAppSelector(selectLiveryIds),

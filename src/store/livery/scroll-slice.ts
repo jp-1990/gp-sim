@@ -1,13 +1,14 @@
 import {
   AnyAction,
   createEntityAdapter,
+  createSelector,
   createSlice,
   EntityId,
   EntityState,
   PayloadAction
 } from '@reduxjs/toolkit';
 import { KeyValueUnionOf, LiveryDataType, Order } from '../../types';
-import { LIVERIES_URL } from '../../utils/nav';
+import { GARAGES_URL, LIVERIES_URL } from '../../utils/nav';
 import { apiSlice } from '../store';
 import { LIVERY_SCROLL_SLICE_NAME } from './constants';
 
@@ -15,21 +16,28 @@ const initialFilters = {
   ids: '',
   search: '',
   car: '',
-  priceMin: '00.00',
-  priceMax: '00.00',
   created: Order.ASC,
-  rating: '0',
-  user: ''
+  rating: '0'
 };
 type FilterState = typeof initialFilters;
 export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
 
-type Pages = typeof LIVERIES_URL;
+type Pages = typeof LIVERIES_URL | typeof GARAGES_URL;
 
-const liveriesAdapter = createEntityAdapter<LiveryDataType>();
+const adapters = {
+  [LIVERIES_URL]: createEntityAdapter<LiveryDataType>(),
+  [GARAGES_URL]: createEntityAdapter<LiveryDataType>()
+};
 const initialState = {
-  [LIVERIES_URL]: liveriesAdapter.getInitialState({
+  [LIVERIES_URL]: adapters[LIVERIES_URL].getInitialState({
     scrollY: null as number | null,
+    filters: { ...initialFilters },
+    lastLiveryId: null as EntityId | null
+  }),
+  [GARAGES_URL]: adapters[GARAGES_URL].getInitialState({
+    scrollY: null as number | null,
+    selectedGarage: 'NULL' as string | null,
+    selectedLiveries: [] as string[],
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null
   }),
@@ -60,7 +68,7 @@ const liveryScrollSlice = createSlice({
           [action.payload.key]: action.payload.value
         };
 
-        liveriesAdapter.removeAll(state[activePage]);
+        adapters[activePage].removeAll(state[activePage]);
         state[activePage].lastLiveryId = null;
         if (state[activePage].scrollY) state[activePage].scrollY = null;
       }
@@ -68,7 +76,7 @@ const liveryScrollSlice = createSlice({
     lastLiveryChanged({ activePage, ...state }) {
       if (activePage) {
         state[activePage].lastLiveryId =
-          state[activePage].ids[state[activePage].ids.length - 1];
+          state[activePage].ids[state[activePage].ids.length - 1] ?? null;
       }
     },
     scrollYChanged(
@@ -77,6 +85,45 @@ const liveryScrollSlice = createSlice({
     ) {
       if (activePage) {
         state[activePage].scrollY = action.payload;
+      }
+    },
+    selectedGarageChanged(
+      { activePage, ...state },
+      action: PayloadAction<string | null>
+    ) {
+      if (
+        activePage === GARAGES_URL &&
+        state[GARAGES_URL].selectedGarage !== action.payload
+      ) {
+        state[GARAGES_URL].scrollY = null;
+        adapters[GARAGES_URL].removeAll(state[GARAGES_URL]);
+        state[GARAGES_URL].selectedLiveries = [];
+        state[GARAGES_URL].selectedGarage = action.payload;
+      }
+    },
+    selectedLiveriesChanged(
+      { activePage, ...state },
+      action: PayloadAction<string | string[]>
+    ) {
+      if (activePage === GARAGES_URL) {
+        let newState = state[GARAGES_URL].selectedLiveries;
+        if (typeof action.payload === 'string') {
+          if (state[GARAGES_URL].selectedLiveries.includes(action.payload)) {
+            newState = state[GARAGES_URL].selectedLiveries.filter(
+              (id) => id !== action.payload
+            );
+          }
+          if (!state[GARAGES_URL].selectedLiveries.includes(action.payload)) {
+            newState.push(action.payload);
+          }
+        } else if (Array.isArray(action.payload)) {
+          if (!action.payload.length) newState = [];
+          if (action.payload.length) {
+            newState = [...new Set([...newState, ...action.payload])];
+          }
+        }
+
+        state[GARAGES_URL].selectedLiveries = newState;
       }
     }
   },
@@ -88,7 +135,7 @@ const liveryScrollSlice = createSlice({
         action: PayloadAction<EntityState<LiveryDataType>>
       ) => {
         if (activePage) {
-          liveriesAdapter.addMany(
+          adapters[activePage].addMany(
             state[activePage],
             action.payload.entities as Record<EntityId, LiveryDataType>
           );
@@ -101,46 +148,80 @@ const liveryScrollSlice = createSlice({
 type LiveryScrollSliceRootState = {
   liveryScrollSlice: ReturnType<typeof liveryScrollSlice.reducer>;
 };
-type SelectLiveryScrollSlice<T> = (state: LiveryScrollSliceRootState) => T;
 
-const selectFilters: SelectLiveryScrollSlice<
-  LiveryScrollSliceStateType[Pages]['filters']
-> = ({ liveryScrollSlice: { activePage, ...state } }) => {
-  if (activePage) return state[activePage].filters;
-  return initialFilters;
-};
+const selectLiveryScrollSlice = (state: LiveryScrollSliceRootState) =>
+  state.liveryScrollSlice;
 
-const selectLastLiveryId: SelectLiveryScrollSlice<
-  LiveryScrollSliceStateType[Pages]['lastLiveryId']
-> = ({ liveryScrollSlice: { activePage, ...state } }) => {
-  if (activePage) return state[activePage].lastLiveryId;
-  return null;
-};
-
-const selectScrollY: SelectLiveryScrollSlice<
-  LiveryScrollSliceStateType[Pages]['scrollY']
-> = ({ liveryScrollSlice: { activePage, ...state } }) => {
-  if (activePage) return state[activePage].scrollY;
-  return null;
-};
-
-export const {
-  selectAll: selectAllLiveries,
-  selectIds: selectLiveryIds,
-  selectEntities: selectLiveryEntities,
-  selectById: selectLiveryById
-} = liveriesAdapter.getSelectors((state: LiveryScrollSliceRootState) => {
-  if (state.liveryScrollSlice.activePage) {
-    return state.liveryScrollSlice[state.liveryScrollSlice.activePage];
+const selectFilters = createSelector(
+  selectLiveryScrollSlice,
+  ({ activePage, ...state }) => {
+    if (activePage) return state[activePage].filters;
+    return initialFilters;
   }
-  return { ids: [], entities: {} };
-});
-export { selectFilters, selectLastLiveryId, selectScrollY };
+);
+
+const selectLastLiveryId = createSelector(
+  selectLiveryScrollSlice,
+  ({ activePage, ...state }) => {
+    if (activePage) return state[activePage].lastLiveryId;
+    return null;
+  }
+);
+
+const selectLiveryIds = createSelector(
+  selectLiveryScrollSlice,
+  ({ activePage, ...state }) => {
+    if (activePage) return state[activePage].ids;
+    return [];
+  }
+);
+
+const selectLiveryEntities = createSelector(
+  selectLiveryScrollSlice,
+  ({ activePage, ...state }) => {
+    if (activePage) return state[activePage].entities;
+    return {};
+  }
+);
+
+const selectScrollY = createSelector(
+  selectLiveryScrollSlice,
+  ({ activePage, ...state }) => {
+    if (activePage) return state[activePage].scrollY;
+    return null;
+  }
+);
+
+const selectSelectedGarage = createSelector(
+  selectLiveryScrollSlice,
+  (state) => {
+    return state[GARAGES_URL].selectedGarage;
+  }
+);
+
+const selectSelectedLiveries = createSelector(
+  selectLiveryScrollSlice,
+  (state) => {
+    return state[GARAGES_URL].selectedLiveries;
+  }
+);
+
+export {
+  selectFilters,
+  selectLastLiveryId,
+  selectLiveryIds,
+  selectLiveryEntities,
+  selectScrollY,
+  selectSelectedGarage,
+  selectSelectedLiveries
+};
 
 export const {
   activatePage,
   filtersChanged,
   lastLiveryChanged,
-  scrollYChanged
+  scrollYChanged,
+  selectedGarageChanged,
+  selectedLiveriesChanged
 } = liveryScrollSlice.actions;
 export default liveryScrollSlice;
