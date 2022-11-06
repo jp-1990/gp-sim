@@ -24,6 +24,7 @@ const initialState = {
   status: 'idle' as ThunkStatus,
   error: null as string | null
 };
+export type CurrentUserType = typeof initialState;
 
 const signIn = createAsyncThunk(
   `${CURRENT_USER_SLICE_NAME}/signIn`,

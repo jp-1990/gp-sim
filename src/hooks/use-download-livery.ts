@@ -1,4 +1,5 @@
 import { LiverySliceStateType } from '../store/livery/api-slice';
+import { CurrentUserType } from '../store/user/slice';
 
 export const useDownloadLivery = () => {
   const onDownload =
@@ -10,7 +11,7 @@ export const useDownloadLivery = () => {
     }: {
       targetLiveryId: string;
       selectedLiveries: string[];
-      currentUser: any;
+      currentUser: CurrentUserType;
       liveries: LiverySliceStateType | undefined;
     }) =>
     () => {
@@ -18,7 +19,7 @@ export const useDownloadLivery = () => {
         ...new Set([...selectedLiveries, targetLiveryId])
       ];
       const liveryFileURLs = liveriesToDownload.reduce((prev, id) => {
-        if (!currentUser.liveries.includes(`${id}`)) return prev;
+        if (!currentUser?.data?.liveries.includes(`${id}`)) return prev;
         const output = [...prev];
         const URL = liveries?.entities[id]?.liveryFiles;
         if (URL) output.push(URL);
