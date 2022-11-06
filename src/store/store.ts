@@ -5,11 +5,10 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
 import { GET_GARAGES, GET_GARAGE_BY_ID } from './garage/constants';
-import { GET_LIVERIES } from './livery/constants';
+import { GET_LIVERIES, LIVERY_SCROLL_SLICE_NAME } from './livery/constants';
+import { default as liveryScrollSlice } from './livery/scroll-slice';
 import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
-import { LIVERY_PAGE_SLICE_NAME } from './pages/constants';
-import liveriesPageSlice from './pages/liveries-page-slice';
 
 const axiosBaseQuery =
   (
@@ -65,7 +64,7 @@ export const storeConfig = {
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer,
-    [LIVERY_PAGE_SLICE_NAME]: liveriesPageSlice.reducer
+    [LIVERY_SCROLL_SLICE_NAME]: liveryScrollSlice.reducer
   }
 };
 const makeStore = () =>

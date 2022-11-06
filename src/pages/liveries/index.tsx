@@ -15,13 +15,14 @@ import {
   FilterActionPayload,
   filtersChanged,
   lastLiveryChanged,
+  activatePage,
   scrollYChanged,
-  selectFilters,
-  selectLastLiveryId,
   selectLiveryEntities,
   selectLiveryIds,
+  selectFilters,
+  selectLastLiveryId,
   selectScrollY
-} from '../../store/pages/liveries-page-slice';
+} from '../../store/livery/scroll-slice';
 
 import { LiveryList } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -40,6 +41,14 @@ const Liveries: NextPage = () => {
   const router = useRouter();
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(activatePage(LIVERIES_URL));
+    return () => {
+      dispatch(activatePage(null));
+    };
+  }, [dispatch]);
+
   const filters = useAppSelector((state) => selectFilters(state));
   const lastLiveryId = useAppSelector((state) => selectLastLiveryId(state));
   const scrollY = useAppSelector((state) => selectScrollY(state));
