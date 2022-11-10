@@ -8,7 +8,7 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import { KeyValueUnionOf, LiveryDataType, Order } from '../../types';
-import { GARAGES_URL, LIVERIES_URL } from '../../utils/nav';
+import { GARAGES_URL, LIVERIES_URL, PROFILE_URL } from '../../utils/nav';
 import { apiSlice } from '../store';
 import { LIVERY_SCROLL_SLICE_NAME } from './constants';
 
@@ -22,11 +22,12 @@ const initialFilters = {
 type FilterState = typeof initialFilters;
 export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
 
-type Pages = typeof LIVERIES_URL | typeof GARAGES_URL;
+type Pages = typeof LIVERIES_URL | typeof GARAGES_URL | typeof PROFILE_URL;
 
 const adapters = {
   [LIVERIES_URL]: createEntityAdapter<LiveryDataType>(),
-  [GARAGES_URL]: createEntityAdapter<LiveryDataType>()
+  [GARAGES_URL]: createEntityAdapter<LiveryDataType>(),
+  [PROFILE_URL]: createEntityAdapter<LiveryDataType>()
 };
 const initialState = {
   [LIVERIES_URL]: adapters[LIVERIES_URL].getInitialState({
@@ -38,6 +39,11 @@ const initialState = {
     scrollY: null as number | null,
     selectedGarage: 'NULL' as string | null,
     selectedLiveries: [] as string[],
+    filters: { ...initialFilters },
+    lastLiveryId: null as EntityId | null
+  }),
+  [PROFILE_URL]: adapters[LIVERIES_URL].getInitialState({
+    scrollY: null as number | null,
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null
   }),

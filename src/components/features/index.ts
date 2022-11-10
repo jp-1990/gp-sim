@@ -5,3 +5,4 @@ export {
   default as LiveryFilter,
   Mode
 } from './liveries/LiveryFilter/LiveryFilter';
+export { default as UpdateProfile } from './profie/UpdateProfile/UpdateProfile';

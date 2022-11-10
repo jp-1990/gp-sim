@@ -13,17 +13,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import LiveryFilter, {
-  Mode
-} from '../../components/features/liveries/LiveryFilter/LiveryFilter';
-import UpdateProfile from '../../components/features/profie/UpdateProfile/UpdateProfile';
+
+import { LiveryFilter, Mode, UpdateProfile } from '../../components/features';
 import { MainLayout } from '../../components/layout';
-import { Form, PageHeading, Unauthorized } from '../../components/shared';
-import { Table } from '../../components/shared/Table/Table';
-import { TableDataTypes } from '../../components/shared/Table/types';
-import { useAuthCheck } from '../../hooks/use-auth-check';
-import { useGarageFilters } from '../../hooks/use-garage-filters';
-import { useLiveryFilters } from '../../hooks/use-livery-filters';
+import {
+  Form,
+  PageHeading,
+  Unauthorized,
+  Table,
+  TableDataTypes
+} from '../../components/shared';
+
+import { useAuthCheck, useInfiniteScroll } from '../../hooks';
 import {
   useDeleteGarageMutation,
   useDeleteLiveriesFromGarageMutation,
@@ -31,11 +32,20 @@ import {
 } from '../../store/garage/api-slice';
 import { useGetLiveriesQuery } from '../../store/livery/api-slice';
 import {
-  GaragesDataType,
-  GaragesFilterKeys,
-  LiveriesDataType,
-  LiveriesFilterKeys
-} from '../../types';
+  activatePage,
+  FilterActionPayload,
+  filtersChanged,
+  lastLiveryChanged,
+  scrollYChanged,
+  selectFilters,
+  selectLastLiveryId,
+  selectLiveryEntities,
+  selectLiveryIds,
+  selectScrollY
+} from '../../store/livery/scroll-slice';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+
+import { GaragesDataType, LiveriesDataType } from '../../types';
 import {
   commonStrings,
   formStrings,
@@ -45,6 +55,16 @@ import {
 import { GARAGE_UPDATE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
 
 const Profile: NextPage = () => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(activatePage(PROFILE_URL));
+    return () => {
+      dispatch(activatePage(null));
+    };
+  }, [dispatch]);
+
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
@@ -52,53 +72,57 @@ const Profile: NextPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
 
   // HOOKS
-  const { query } = useRouter();
-  const { filters: liveryFilters, setFilters: setLiveryFilters } =
-    useLiveryFilters();
-  const { filters: garageFilters, setFilters: setGarageFilters } =
-    useGarageFilters();
+  const filters = useAppSelector(selectFilters);
+  const lastLiveryId = useAppSelector(selectLastLiveryId);
+  const scrollY = useAppSelector(selectScrollY);
 
-  const { data: liveries } = useGetLiveriesQuery(liveryFilters);
-  const { data: garages } = useGetGaragesQuery(garageFilters);
+  const liveries = {
+    ids: useAppSelector(selectLiveryIds),
+    entities: useAppSelector(selectLiveryEntities)
+  };
+
+  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+
+  // QUERIES
+  useGetLiveriesQuery(
+    {
+      ...filters,
+      lastLiveryId,
+      user: currentUser.data?.id || ''
+    },
+    { refetchOnMountOrArgChange: true }
+  );
+  const { data: garages } = useGetGaragesQuery({});
   const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
   const [deleteGarage] = useDeleteGarageMutation();
 
   useEffect(() => {
-    const tab = query.tab as string;
+    const tab = router.asPath.split('tab=')[1];
+    if (+tab === tabIndex && scrollY) {
+      window.scrollTo({
+        top: scrollY,
+        behavior: 'auto'
+      });
+    }
+  }, [router.asPath, scrollY, tabIndex]);
+
+  useEffect(() => {
+    const tab = router.asPath.split('tab=')[1];
     if (+tab !== tabIndex) setTabIndex(+tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query.tab]);
+  }, [router.asPath]);
 
-  useEffect(() => {
-    setLiveryFilters({
-      key: LiveriesFilterKeys.USER,
-      value: currentUser?.data?.id || ''
-    });
-  }, [currentUser, setLiveryFilters]);
+  // HANDLERS
+  const setFilters = (payload: FilterActionPayload) =>
+    dispatch(filtersChanged(payload));
 
-  useEffect(() => {
-    setGarageFilters({
-      key: GaragesFilterKeys.USER,
-      value: currentUser?.data?.id || ''
-    });
-  }, [currentUser, setGarageFilters]);
-
-  const liveryPages = Array.from(
-    Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
-  );
-  const garagePages = Array.from(
-    Array(Math.ceil((garages?.total || 1) / (garages?.perPage || 1))).keys()
-  );
-
-  const onLiveryPageChange = (page: number) => () => {
-    setLiveryFilters({ key: LiveriesFilterKeys.PAGE, value: page });
-  };
-
-  const onGaragePageChange = (page: number) => () => {
-    setGarageFilters({ key: GaragesFilterKeys.PAGE, value: page });
+  const onClickLivery = (id: string) => {
+    dispatch(scrollYChanged(window.scrollY));
+    router.push(LIVERY_URL(id));
   };
 
   const onTabsChange = (index: number) => {
+    router.push(PROFILE_URL, { query: { tab: `${index}` } });
     setTabIndex(index);
   };
 
@@ -154,8 +178,8 @@ const Profile: NextPage = () => {
               <LiveryFilter
                 pt={2}
                 mode={Mode.BASIC}
-                filters={liveryFilters}
-                setFilters={setLiveryFilters}
+                filters={filters}
+                setFilters={setFilters}
               />
               <Table<LiveriesDataType>
                 actions={[
@@ -169,11 +193,11 @@ const Profile: NextPage = () => {
                     </Button>
                   ),
                   ({ id }) => (
-                    <Link href={LIVERY_URL(`${id}`)} passHref>
+                    <a onClick={() => onClickLivery(id)}>
                       <Button variant={'solid'} size="sm" colorScheme="red">
                         <FormattedMessage {...commonStrings.view} />
                       </Button>
-                    </Link>
+                    </a>
                   )
                 ]}
                 columns={[
@@ -209,28 +233,6 @@ const Profile: NextPage = () => {
                   }, [] as LiveriesDataType) || []
                 }
               />
-              {liveryPages.length > 1 && (
-                <Flex w="5xl" justifyContent="flex-end">
-                  <Flex mt={4}>
-                    {liveryPages.map((page) => {
-                      return (
-                        <Button
-                          mx={1}
-                          border="1px solid #c4c4c4"
-                          key={page + 1}
-                          colorScheme={
-                            (liveries?.page || 0) === page ? 'red' : undefined
-                          }
-                          lineHeight={1}
-                          onClick={onLiveryPageChange(page)}
-                        >
-                          {page + 1}
-                        </Button>
-                      );
-                    })}
-                  </Flex>
-                </Flex>
-              )}
             </TabPanel>
             {/* garages list */}
             <TabPanel>
@@ -279,31 +281,10 @@ const Profile: NextPage = () => {
                   }, [] as GaragesDataType) || []
                 }
               />
-              {garagePages.length > 1 && (
-                <Flex w="5xl" justifyContent="flex-end">
-                  <Flex mt={4}>
-                    {garagePages.map((page) => {
-                      return (
-                        <Button
-                          mx={1}
-                          border="1px solid #c4c4c4"
-                          key={page + 1}
-                          colorScheme={
-                            (liveries?.page || 0) === page ? 'red' : undefined
-                          }
-                          lineHeight={1}
-                          onClick={onGaragePageChange(page)}
-                        >
-                          {page + 1}
-                        </Button>
-                      );
-                    })}
-                  </Flex>
-                </Flex>
-              )}
             </TabPanel>
           </TabPanels>
         </Tabs>
+        <Loader />
       </Flex>
     </MainLayout>
   );
