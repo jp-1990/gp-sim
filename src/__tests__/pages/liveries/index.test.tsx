@@ -15,7 +15,7 @@ const sortedData = [...data]
 const mostRecentLivery = sortedData[0];
 
 describe('Liveries', () => {
-  it.skip('renders a livery based on the default filter by created then by downloads', async () => {
+  it('renders a livery based on the default filter by created then by downloads', async () => {
     render(<Liveries />);
 
     await waitFor(() => {

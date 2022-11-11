@@ -45,3 +45,9 @@ window.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn()
 }));
+
+window.IntersectionObserver = jest.fn(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn()
+}));

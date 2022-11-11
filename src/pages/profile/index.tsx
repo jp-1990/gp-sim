@@ -108,7 +108,7 @@ const Profile: NextPage = () => {
 
   useEffect(() => {
     const tab = router.asPath.split('tab=')[1];
-    if (+tab !== tabIndex) setTabIndex(+tab);
+    if (!isNaN(+tab) && +tab !== tabIndex) setTabIndex(+tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 

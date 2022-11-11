@@ -10,7 +10,8 @@ jest.mock('next/router', () => ({
       route: '/',
       pathname: '',
       query: { tab: 0 },
-      asPath: ''
+      asPath: '',
+      push: jest.fn()
     };
   }
 }));
@@ -54,6 +55,10 @@ describe('Profile', () => {
     );
     expect(
       screen.getByRole('tab', { name: tabNames.liveries })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('tab', { name: tabNames.garages })
     ).toBeInTheDocument();
 
     const profileTab = screen.getByRole('tab', {

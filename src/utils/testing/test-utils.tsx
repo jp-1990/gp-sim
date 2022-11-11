@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { ChakraProvider } from '@chakra-ui/react';
-import { configureStore, current, Store } from '@reduxjs/toolkit';
+import { configureStore, Store } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import { apiSlice, storeConfig } from '../../store/store';
