@@ -9,12 +9,8 @@ export interface LiveriesFilters {
   ids?: string;
   search?: string;
   car?: string;
-  priceMin?: number;
-  priceMax?: number;
   created?: Order;
-  user?: string;
   rating?: string;
-  page?: number;
   lastLiveryId?: EntityId | null;
 }
 
@@ -22,12 +18,8 @@ export enum LiveriesFilterKeys {
   IDS = 'ids',
   SEARCH = 'search',
   CAR = 'car',
-  PRICE_MIN = 'priceMin',
-  PRICE_MAX = 'priceMax',
   CREATED = 'created',
-  USER = 'user',
-  RATING = 'rating',
-  PAGE = 'page'
+  RATING = 'rating'
 }
 
 export interface GaragesFilters {

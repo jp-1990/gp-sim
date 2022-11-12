@@ -1,7 +1,6 @@
 import {
   CreateLiveryDataType,
   LiveriesDataType,
-  LiveriesResponseType,
   LiveryDataType,
   Method,
   UserDataType
@@ -37,9 +36,7 @@ export const config = {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<
-    LiveriesResponseType | LiveryDataType | { error: string }
-  >
+  res: NextApiResponse<LiveriesDataType | LiveryDataType | { error: string }>
 ) {
   const method = req.method;
   const liveriesRef = firestore.collection(Collection.LIVERIES);
@@ -51,84 +48,139 @@ async function handler(
     case Method.GET: {
       try {
         const params = {
-          car: req.query.car as string | undefined,
-          created: req.query.created as string | undefined,
-          ids: req.query.ids as string | undefined,
-          page: req.query.page as string | undefined,
-          priceMax: req.query.priceMax as string | undefined,
-          priceMin: req.query.priceMin as string | undefined,
-          rating: req.query.rating as string | undefined,
-          search: req.query.search as string | undefined,
-          user: req.query.user as string | undefined
+          car: Array.isArray(req.query.car)
+            ? req.query.car[0]
+            : req.query.car ?? '',
+          created: (Array.isArray(req.query.created)
+            ? req.query.created[0]
+            : req.query.created ||
+              'desc') as FirebaseFirestore.OrderByDirection,
+          rating: Array.isArray(req.query.rating)
+            ? req.query.rating[0]
+            : req.query.rating ?? '',
+          search: Array.isArray(req.query.search)
+            ? req.query.search[0]
+            : req.query.search ?? ''
         };
-        const page = params.page ? +params.page : 0;
-        const limit = 20;
-        // const offset = page * limit;
 
-        /*
-        // TODO: ORDERING LOGIC
-        filters:
-          car
-          ids
-          priceMax
-          priceMin
-          rating
-          search
-          user
+        const ids =
+          (Array.isArray(req.query.ids) ? req.query.ids[0] : req.query.ids) ??
+          '';
+        const lastLiveryId =
+          (Array.isArray(req.query.lastLiveryId)
+            ? req.query.lastLiveryId[0]
+            : req.query.lastLiveryId) ?? null;
+        const limit = 12;
 
-        ordering:
-          created
-          downloads = default
-          price
-          rating
-        */
+        const definedParams = (
+          Object.keys(params) as (keyof typeof params)[]
+        ).reduce((output, param) => {
+          if (!params[param]) return output;
+          if (param.match(/rating/)) {
+            output.unshift('rating');
+            return output;
+          }
+          if (param.match(/search/)) {
+            output.unshift('search');
+            return output;
+          }
+          output.push(param);
+          return output;
+        }, [] as string[]);
 
-        // // get liveries
-        // // prepare query
-        // type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
-        // const orders: Order[] = [];
+        type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
+        const filters: Record<string, Filter> = {
+          car: ['car', '==', params.car],
+          rating: ['rating', '>=', +params.rating],
+          search: [
+            'searchHelpers',
+            'array-contains-any',
+            [...new Set(params.search.split(' '))]
+          ]
+        };
 
-        // type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
-        // const filters: Filter[] = [];
+        type Order = [string, FirebaseFirestore.OrderByDirection | undefined];
+        const orders: Record<string, Order> = {
+          created: ['createdAt', params.created],
+          rating: ['rating', 'desc']
+        };
 
-        // let query = liveriesRef.limit(limit); //.startAfter(offset).limit(limit);
-        // for (const order of orders) query = query.orderBy(...order);
-        // for (const filter of filters) query = query.where(...filter);
-
-        // execute
-        const liveriesSnapshot = await liveriesRef.get();
-
-        // process response
+        // GET LIVERIES
+        // if not filtering by ids, normal query
         const liveries: LiveriesDataType = [];
-        liveriesSnapshot.forEach((doc) => {
-          const livery = doc.data() as unknown as LiveryDataType;
-          liveries.push(livery);
-        });
+        if (!ids.length) {
+          // prepare query
+          let query =
+            liveriesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
+          for (const param of definedParams) {
+            if (filters[param]) query = query.where(...filters[param]);
+            if (orders[param]) query = query.orderBy(...orders[param]);
+          }
 
-        // find max price
-        const maxPrice = liveries.reduce((maxPrice, livery) => {
-          if ((livery.price ?? 0) > maxPrice) return livery.price ?? 0;
-          return maxPrice;
-        }, 0);
+          if (lastLiveryId) {
+            const lastLiveryDoc = await liveriesRef.doc(lastLiveryId).get();
+            query = query.startAfter(lastLiveryDoc);
+          }
 
-        // get total count from sum of count shards
-        const countSnapshot = await countRef
-          .doc(Document.LIVERY)
-          .collection(Collection.SHARDS)
-          .get();
-        let total = 0;
-        countSnapshot.forEach((shard) => {
-          total += shard.data().count;
-        });
+          // execute
+          const liveriesSnapshot = await query.limit(limit).get();
+          // process response
+          liveriesSnapshot.forEach((doc) => {
+            const livery = doc.data() as unknown as LiveryDataType;
+            liveries.push(livery);
+          });
+        }
 
-        return res.status(200).json({
-          liveries,
-          maxPrice,
-          total,
-          perPage: limit,
-          page: params.page ? +params.page : 0
-        });
+        // if filtering by ids, fetch in batches by id and filter on server
+        if (ids.length) {
+          const liveriesToFetch = ids.split('&');
+          let docs: (LiveryDataType | undefined)[];
+
+          // keep fetching in batches of 'limit' and filtering until there are at least 'limit' results
+          let offset = 0;
+          if (lastLiveryId) offset = liveriesToFetch.indexOf(lastLiveryId) + 1;
+
+          while (liveries.length < limit) {
+            const batch = liveriesToFetch.slice(offset, offset + limit);
+
+            docs = await Promise.all(
+              batch.map((id) =>
+                liveriesRef
+                  .doc(id)
+                  .get()
+                  .then((doc) => doc.data() as LiveryDataType)
+              )
+            );
+
+            docs = docs.filter((doc) => {
+              if (!doc) return false;
+              const filterByCar = definedParams.includes('car');
+              const filterByRating = definedParams.includes('rating');
+              const filterBySearch = definedParams.includes('search');
+
+              const match = [true, true, true];
+              if (filterByCar) match[0] = doc.car === params.car;
+              if (filterByRating) match[1] = doc.rating >= +params.rating;
+              if (filterBySearch)
+                match[2] = doc.searchHelpers.some(
+                  (helper: string) =>
+                    params.search.split(' ').indexOf(helper) >= 0
+                );
+
+              return !match.some((match_) => !match_);
+            });
+
+            liveries.push(...(docs as LiveriesDataType));
+
+            if (batch.length < limit) break;
+            offset += limit;
+          }
+        }
+
+        return res.status(200).json(liveries.slice(0, limit));
       } catch (err) {
+        console.log(err);
+
         return res.status(500).json({ error: 'internal error' });
       }
     }
@@ -199,7 +251,10 @@ async function handler(
           images: [],
           liveryFiles: '',
           rating: 0,
-          searchHelpers: [...data.tags.split(','), data.title],
+          searchHelpers: [
+            ...data.tags.split(','),
+            ...data.title.split(' ')
+          ].map((e) => e.toLowerCase()),
           updatedAt: timestamp,
           ...data
         };
@@ -258,7 +313,7 @@ async function handler(
             if (!creator) throw new Error('user not found');
             newLiveryData.creator.displayName = creator.displayName;
             newLiveryData.creator.image = creator.image;
-            newLiveryData.searchHelpers.push(creator.displayName);
+            newLiveryData.searchHelpers.push(creator.displayName.toLowerCase());
 
             // attempt garage update
             if (garage && garageKey) {

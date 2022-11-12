@@ -9,7 +9,7 @@ export const liveriesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/liveries`,
     (req, res, ctx) => {
-      const perPage = 30;
+      const perPage = 12;
       const params = [
         'ids',
         'search',
@@ -21,7 +21,7 @@ export const liveriesHandlers = [
         'user'
       ];
       const liveries = [...data.map((liv) => ({ ...liv, deleted: false }))];
-      liveries.sort((a, b) => b.downloads - a.downloads);
+      liveries.sort((a, b) => b.createdAt - a.createdAt);
 
       const extractedParams = [
         ...params.map((param) => req.url.searchParams.get(param))
@@ -36,32 +36,20 @@ export const liveriesHandlers = [
         string | null
       ];
       let filteredLiveries = applyLiveryFilters(liveries, extractedParams);
-      const maxPrice = filteredLiveries.reduce((prev, cur) => {
-        if (!cur.price) return prev;
-        if (cur?.price > prev) return cur.price;
-        return prev;
-      }, 0);
-      const total = filteredLiveries.length;
-      const page = req.url.searchParams.get('page');
 
-      if (page && !isNaN(+page)) {
-        filteredLiveries = filteredLiveries.slice(
-          +page * perPage,
-          +page * perPage + perPage
-        );
-      }
+      const lastLiveryId = req.url.searchParams.get('lastLiveryId');
 
-      return res(
-        ctx.delay(),
-        ctx.status(200),
-        ctx.json({
-          maxPrice,
-          perPage,
-          total,
-          liveries: filteredLiveries,
-          page: +(req.url.searchParams.get('page') || '0')
-        })
+      const lastLiveryIndex = filteredLiveries.findIndex(
+        (l) => l.id === lastLiveryId
       );
+      const sliceStart = lastLiveryIndex ? lastLiveryIndex + 1 : 0;
+
+      filteredLiveries = filteredLiveries.slice(
+        sliceStart,
+        sliceStart + perPage
+      );
+
+      return res(ctx.delay(200), ctx.status(200), ctx.json(filteredLiveries));
     }
   ),
   rest.post(
@@ -95,6 +83,7 @@ export const liveriesHandlers = [
 ];
 
 const formatPostLiveryResponse = (newLivery: CreateLiveryDataType) => {
+  const creator = { displayName: 'admin-test' };
   const { liveryZip, imageFiles, ...liveryData } = newLivery;
   const rating = undefined;
   const downloads = 0;
@@ -106,7 +95,7 @@ const formatPostLiveryResponse = (newLivery: CreateLiveryDataType) => {
   const updatedAt = now;
   const tags = liveryData.tags?.split(',') ?? [];
   const searchHelpers = Array.from(
-    new Set([...tags, liveryData.title, liveryData.creator.displayName])
+    new Set([...tags, liveryData.title, creator.displayName])
   );
 
   // add liveryId to user
