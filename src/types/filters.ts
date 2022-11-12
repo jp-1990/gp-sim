@@ -1,3 +1,5 @@
+import { EntityId } from '@reduxjs/toolkit';
+
 export enum Order {
   ASC = 'asc',
   DESC = 'desc'
@@ -11,8 +13,9 @@ export interface LiveriesFilters {
   priceMax?: number;
   created?: Order;
   user?: string;
-  rating?: number;
+  rating?: string;
   page?: number;
+  lastLiveryId?: EntityId | null;
 }
 
 export enum LiveriesFilterKeys {

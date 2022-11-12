@@ -17,8 +17,9 @@ import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { LOGIN_URL, SIGNUP_URL } from '../../utils/nav';
 import { Form, Input, SubmitButton } from '../../components/shared';
 import { commonStrings, formStrings } from '../../utils/intl';
-import { signIn, ThunkStatus } from '../../store/user/slice';
+import { signIn } from '../../store/user/slice';
 import Link from 'next/link';
+import { RequestStatus } from '../../types';
 
 const Login: NextPage = () => {
   const intl = useIntl();
@@ -91,7 +92,7 @@ const Login: NextPage = () => {
                   w="3xs"
                   mt={8}
                   lineHeight={1}
-                  isLoading={status === ThunkStatus.PENDING}
+                  isLoading={status === RequestStatus.PENDING}
                   loadingText={intl.formatMessage(commonStrings.loading)}
                 >
                   <FormattedMessage {...commonStrings.login} />

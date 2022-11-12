@@ -1,16 +1,23 @@
 import {
-  AnyAction,
+  createAsyncThunk,
   createEntityAdapter,
   createSelector,
   createSlice,
   EntityId,
-  EntityState,
-  PayloadAction
+  PayloadAction,
+  SerializedError
 } from '@reduxjs/toolkit';
-import { KeyValueUnionOf, LiveryDataType, Order } from '../../types';
+import axios from 'axios';
+import {
+  KeyValueUnionOf,
+  LiveriesDataType,
+  LiveriesFilters,
+  LiveryDataType,
+  Order,
+  RequestStatus
+} from '../../types';
 import { GARAGES_URL, LIVERIES_URL, PROFILE_URL } from '../../utils/nav';
-import { apiSlice } from '../store';
-import { LIVERY_SCROLL_SLICE_NAME } from './constants';
+import { LIVERIES_API_ROUTE, LIVERY_SCROLL_SLICE_NAME } from './constants';
 
 const initialFilters = {
   ids: '',
@@ -47,16 +54,36 @@ const initialState = {
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null
   }),
-  activePage: null as Pages | null
+  activePage: null as Pages | null,
+  error: null as null | SerializedError,
+  status: RequestStatus.IDLE as RequestStatus
 };
 export type LiveryScrollSliceStateType = typeof initialState;
 
-const getLiveriesMatchFulfilled = (action: AnyAction) => {
-  return apiSlice.endpoints.getLiveries?.matchFulfilled
-    ? apiSlice.endpoints.getLiveries?.matchFulfilled(action)
-    : false;
-};
+// THUNKS
+const getLiveries = createAsyncThunk(
+  `${LIVERY_SCROLL_SLICE_NAME}/getLiveries`,
+  async (args: Partial<LiveriesFilters>) => {
+    const { data } = await axios.get<LiveriesDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
+      {
+        params: args
+      }
+    );
+    return data;
+  },
+  {
+    condition: (args, { getState }) => {
+      const { [LIVERY_SCROLL_SLICE_NAME]: state } =
+        getState() as LiveryScrollSliceRootState;
+      if (state.status === RequestStatus.PENDING) return false;
+      if (state.activePage && state[state.activePage].filters.ids !== args.ids)
+        return false;
+    }
+  }
+);
 
+// SLICE
 const liveryScrollSlice = createSlice({
   name: LIVERY_SCROLL_SLICE_NAME,
   initialState,
@@ -64,10 +91,8 @@ const liveryScrollSlice = createSlice({
     activatePage(state, action: PayloadAction<Pages | null>) {
       state.activePage = action.payload;
     },
-    filtersChanged(
-      { activePage, ...state },
-      action: PayloadAction<FilterActionPayload>
-    ) {
+    filtersChanged(state, action: PayloadAction<FilterActionPayload>) {
+      const activePage = state.activePage;
       if (activePage) {
         state[activePage].filters = {
           ...state[activePage].filters,
@@ -79,24 +104,21 @@ const liveryScrollSlice = createSlice({
         if (state[activePage].scrollY) state[activePage].scrollY = null;
       }
     },
-    lastLiveryChanged({ activePage, ...state }) {
+    lastLiveryChanged(state) {
+      const activePage = state.activePage;
       if (activePage) {
         state[activePage].lastLiveryId =
           state[activePage].ids[state[activePage].ids.length - 1] ?? null;
       }
     },
-    scrollYChanged(
-      { activePage, ...state },
-      action: PayloadAction<number | null>
-    ) {
+    scrollYChanged(state, action: PayloadAction<number | null>) {
+      const activePage = state.activePage;
       if (activePage) {
         state[activePage].scrollY = action.payload;
       }
     },
-    selectedGarageChanged(
-      { activePage, ...state },
-      action: PayloadAction<string | null>
-    ) {
+    selectedGarageChanged(state, action: PayloadAction<string | null>) {
+      const activePage = state.activePage;
       if (
         activePage === GARAGES_URL &&
         state[GARAGES_URL].selectedGarage !== action.payload
@@ -107,10 +129,8 @@ const liveryScrollSlice = createSlice({
         state[GARAGES_URL].selectedGarage = action.payload;
       }
     },
-    selectedLiveriesChanged(
-      { activePage, ...state },
-      action: PayloadAction<string | string[]>
-    ) {
+    selectedLiveriesChanged(state, action: PayloadAction<string | string[]>) {
+      const activePage = state.activePage;
       if (activePage === GARAGES_URL) {
         let newState = state[GARAGES_URL].selectedLiveries;
         if (typeof action.payload === 'string') {
@@ -134,21 +154,25 @@ const liveryScrollSlice = createSlice({
     }
   },
   extraReducers(builder) {
-    builder.addMatcher(
-      getLiveriesMatchFulfilled,
-      (
-        { activePage, ...state },
-        action: PayloadAction<EntityState<LiveryDataType>>
-      ) => {
-        if (activePage) {
-          adapters[activePage].addMany(
-            state[activePage],
-            action.payload.entities as Record<EntityId, LiveryDataType>
-          );
-          if (state[activePage].scrollY) state[activePage].scrollY = null;
-        }
+    builder.addCase(getLiveries.pending, (state) => {
+      // todo loading state
+      state.error = null;
+      state.status = RequestStatus.PENDING;
+    });
+    builder.addCase(getLiveries.rejected, (state, action) => {
+      // todo error state
+      state.error = action.error;
+      state.status = RequestStatus.REJECTED;
+    });
+    builder.addCase(getLiveries.fulfilled, (state, action) => {
+      const activePage = state.activePage;
+      if (activePage) {
+        adapters[activePage].addMany(state[activePage], action.payload);
+        if (state[activePage].scrollY) state[activePage].scrollY = null;
+        state.error = null;
+        state.status = RequestStatus.FULFILLED;
       }
-    );
+    });
   }
 });
 type LiveryScrollSliceRootState = {
@@ -190,13 +214,11 @@ const selectLiveryEntities = createSelector(
   }
 );
 
-const selectScrollY = createSelector(
-  selectLiveryScrollSlice,
-  ({ activePage, ...state }) => {
-    if (activePage) return state[activePage].scrollY;
+const createSelectScrollY = (page: Pages) =>
+  createSelector(selectLiveryScrollSlice, ({ activePage, ...state }) => {
+    if (activePage && page === activePage) return state[activePage].scrollY;
     return null;
-  }
-);
+  });
 
 const selectSelectedGarage = createSelector(
   selectLiveryScrollSlice,
@@ -213,13 +235,17 @@ const selectSelectedLiveries = createSelector(
 );
 
 export {
+  createSelectScrollY,
   selectFilters,
   selectLastLiveryId,
   selectLiveryIds,
   selectLiveryEntities,
-  selectScrollY,
   selectSelectedGarage,
   selectSelectedLiveries
+};
+
+export const thunks = {
+  getLiveries
 };
 
 export const {

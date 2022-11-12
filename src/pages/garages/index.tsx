@@ -21,7 +21,6 @@ import {
   wrapper
 } from '../../store/store';
 import { getCars } from '../../store/car/api-slice';
-import { useGetLiveriesQuery } from '../../store/livery/api-slice';
 import { useGetGaragesQuery } from '../../store/garage/api-slice';
 import {
   activatePage,
@@ -35,9 +34,10 @@ import {
   selectLastLiveryId,
   selectLiveryEntities,
   selectLiveryIds,
-  selectScrollY,
+  createSelectScrollY,
   selectSelectedGarage,
-  selectSelectedLiveries
+  selectSelectedLiveries,
+  thunks
 } from '../../store/livery/scroll-slice';
 
 import { MainLayout } from '../../components/layout';
@@ -87,7 +87,7 @@ const Garages: NextPage = () => {
   // HOOKS
   const filters = useAppSelector(selectFilters);
   const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(selectScrollY);
+  const scrollY = useAppSelector(createSelectScrollY(GARAGES_URL));
   const selectedGarage = useAppSelector(selectSelectedGarage);
   const selectedLiveries = useAppSelector(selectSelectedLiveries);
 
@@ -103,27 +103,25 @@ const Garages: NextPage = () => {
   // QUERIES
   const { data: garages } = useGetGaragesQuery({});
 
-  useGetLiveriesQuery(
-    {
-      ...filters,
-      lastLiveryId
-    },
-    { skip: selectedGarage === 'NULL', refetchOnMountOrArgChange: true }
-  );
-
   useEffect(() => {
-    if (selectedGarage === 'NULL') {
-      onSelectGarage(null)();
-    }
+    if (selectedGarage === 'NULL' && currentUser.token) onSelectGarage(null)();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (scrollY)
+    if (currentUser.token) {
+      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, lastLiveryId]);
+
+  useEffect(() => {
+    if (scrollY && currentUser.token)
       window.scrollTo({
         top: scrollY,
         behavior: 'auto'
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollY]);
 
   // HANDLERS

@@ -3,7 +3,11 @@ import axios from 'axios';
 import Router from 'next/router';
 
 import { CURRENT_USER_SLICE_NAME, USERS_API_ROUTE } from './constants';
-import { CreateUserProfileDataType, UserDataType } from '../../types';
+import {
+  CreateUserProfileDataType,
+  RequestStatus,
+  UserDataType
+} from '../../types';
 import { auth, signInWithEmailAndPassword } from '../../utils/firebase/client';
 import {
   createUserWithEmailAndPassword,
@@ -11,17 +15,10 @@ import {
 } from 'firebase/auth';
 
 // CURRENT USER SLICE
-export enum ThunkStatus {
-  IDLE = 'idle',
-  PENDING = 'pending',
-  FULFILLED = 'fulfilled',
-  REJECTED = 'rejected'
-}
-
 const initialState = {
   token: null as string | null,
   data: null as UserDataType | null,
-  status: 'idle' as ThunkStatus,
+  status: 'idle' as RequestStatus,
   error: null as string | null
 };
 export type CurrentUserType = typeof initialState;
@@ -106,43 +103,43 @@ const userSlice = createSlice({
         state.data = null;
         state.token = null;
         state.error = null;
-        state.status = ThunkStatus.PENDING;
+        state.status = RequestStatus.PENDING;
       })
       .addCase(signIn.rejected, (state, payload) => {
         state.data = null;
         state.token = null;
         state.error = payload.error.message ?? null;
-        state.status = ThunkStatus.REJECTED;
+        state.status = RequestStatus.REJECTED;
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.data = action.payload.data;
         state.token = action.payload.token;
         state.error = null;
-        state.status = ThunkStatus.FULFILLED;
+        state.status = RequestStatus.FULFILLED;
       })
       .addCase(signOut.fulfilled, (state) => {
         state.data = null;
         state.token = null;
         state.error = null;
-        state.status = ThunkStatus.FULFILLED;
+        state.status = RequestStatus.FULFILLED;
       })
       .addCase(signUp.pending, (state) => {
         state.data = null;
         state.token = null;
         state.error = null;
-        state.status = ThunkStatus.PENDING;
+        state.status = RequestStatus.PENDING;
       })
       .addCase(signUp.rejected, (state, payload) => {
         state.data = null;
         state.token = null;
         state.error = payload.error.message ?? null;
-        state.status = ThunkStatus.REJECTED;
+        state.status = RequestStatus.REJECTED;
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.data = action.payload.data;
         state.token = action.payload.token;
         state.error = null;
-        state.status = ThunkStatus.FULFILLED;
+        state.status = RequestStatus.FULFILLED;
       });
   }
 });

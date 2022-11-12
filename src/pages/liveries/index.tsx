@@ -12,7 +12,6 @@ import {
   wrapper
 } from '../../store/store';
 import { getCars } from '../../store/car/api-slice';
-import { getLiveries, useGetLiveriesQuery } from '../../store/livery/api-slice';
 import {
   FilterActionPayload,
   activatePage,
@@ -23,7 +22,8 @@ import {
   selectLiveryIds,
   selectFilters,
   selectLastLiveryId,
-  selectScrollY
+  createSelectScrollY,
+  thunks
 } from '../../store/livery/scroll-slice';
 
 import { LiveryList, LiveryFilter, Mode } from '../../components/features';
@@ -49,7 +49,7 @@ const Liveries: NextPage = () => {
 
   const filters = useAppSelector(selectFilters);
   const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(selectScrollY);
+  const scrollY = useAppSelector(createSelectScrollY(LIVERIES_URL));
 
   const liveries = {
     ids: useAppSelector(selectLiveryIds),
@@ -57,13 +57,10 @@ const Liveries: NextPage = () => {
   };
 
   const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
-  useGetLiveriesQuery(
-    {
-      ...filters,
-      lastLiveryId
-    },
-    { refetchOnMountOrArgChange: true }
-  );
+
+  useEffect(() => {
+    dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+  }, [dispatch, filters, lastLiveryId]);
 
   useEffect(() => {
     if (scrollY)
@@ -115,8 +112,7 @@ export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   store.dispatch(getCars.initiate());
-  // @ts-expect-error no idea
-  store.dispatch(getLiveries.initiate());
+  store.dispatch(thunks.getLiveries({}));
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
     props: {}

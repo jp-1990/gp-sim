@@ -30,7 +30,6 @@ import {
   useDeleteLiveriesFromGarageMutation,
   useGetGaragesQuery
 } from '../../store/garage/api-slice';
-import { useGetLiveriesQuery } from '../../store/livery/api-slice';
 import {
   activatePage,
   FilterActionPayload,
@@ -41,7 +40,8 @@ import {
   selectLastLiveryId,
   selectLiveryEntities,
   selectLiveryIds,
-  selectScrollY
+  createSelectScrollY,
+  thunks
 } from '../../store/livery/scroll-slice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -74,7 +74,7 @@ const Profile: NextPage = () => {
   // HOOKS
   const filters = useAppSelector(selectFilters);
   const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(selectScrollY);
+  const scrollY = useAppSelector(createSelectScrollY(PROFILE_URL));
 
   const liveries = {
     ids: useAppSelector(selectLiveryIds),
@@ -84,31 +84,32 @@ const Profile: NextPage = () => {
   const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
 
   // QUERIES
-  useGetLiveriesQuery(
-    {
-      ...filters,
-      lastLiveryId,
-      user: currentUser.data?.id || ''
-    },
-    { refetchOnMountOrArgChange: true }
-  );
+  useEffect(() => {
+    if (currentUser.token) {
+      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, lastLiveryId]);
+
   const { data: garages } = useGetGaragesQuery({});
   const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
   const [deleteGarage] = useDeleteGarageMutation();
 
   useEffect(() => {
     const tab = router.asPath.split('tab=')[1];
-    if (+tab === tabIndex && scrollY) {
+    if (currentUser.token && +tab === tabIndex && scrollY) {
       window.scrollTo({
         top: scrollY,
         behavior: 'auto'
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath, scrollY, tabIndex]);
 
   useEffect(() => {
     const tab = router.asPath.split('tab=')[1];
-    if (!isNaN(+tab) && +tab !== tabIndex) setTabIndex(+tab);
+    if (currentUser.token && !isNaN(+tab) && +tab !== tabIndex)
+      setTabIndex(+tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.asPath]);
 
@@ -233,6 +234,7 @@ const Profile: NextPage = () => {
                   }, [] as LiveriesDataType) || []
                 }
               />
+              <Loader />
             </TabPanel>
             {/* garages list */}
             <TabPanel>
@@ -284,7 +286,6 @@ const Profile: NextPage = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-        <Loader />
       </Flex>
     </MainLayout>
   );
