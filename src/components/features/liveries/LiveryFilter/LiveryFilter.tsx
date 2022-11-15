@@ -102,40 +102,47 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
             })}
           </Select>
         </GridItem>
-        <GridItem colSpan={2} rowSpan={1}>
-          <Select
-            aria-label={commonStrings.createdAt.defaultMessage}
-            placeholder={intl.formatMessage(commonStrings.createdAtPlaceholder)}
-            value={filters.created}
-            onChange={onCreatedChange}
-          >
-            <option value={Order.ASC}>
-              {intl.formatMessage(commonStrings.createdAtMostRecent)}
-            </option>
-            <option value={Order.DESC}>
-              {intl.formatMessage(commonStrings.createdAtOldest)}
-            </option>
-          </Select>
-        </GridItem>
+
         {mode === Mode.FULL && (
-          <GridItem colSpan={2} rowSpan={1}>
-            <Select
-              aria-label={commonStrings.rating.defaultMessage}
-              placeholder={intl.formatMessage(commonStrings.ratingPlaceholder)}
-              value={filters.rating}
-              onChange={onRatingChange}
-            >
-              {[5, 4, 3, 2, 1].map((n) => {
-                return (
-                  <option key={n} value={n}>
-                    {intl.formatMessage(commonStrings.ratingValue, {
-                      stars: n
-                    })}
-                  </option>
-                );
-              })}
-            </Select>
-          </GridItem>
+          <>
+            <GridItem colSpan={2} rowSpan={1}>
+              <Select
+                aria-label={commonStrings.createdAt.defaultMessage}
+                placeholder={intl.formatMessage(
+                  commonStrings.createdAtPlaceholder
+                )}
+                value={filters.created}
+                onChange={onCreatedChange}
+              >
+                <option value={Order.ASC}>
+                  {intl.formatMessage(commonStrings.createdAtMostRecent)}
+                </option>
+                <option value={Order.DESC}>
+                  {intl.formatMessage(commonStrings.createdAtOldest)}
+                </option>
+              </Select>
+            </GridItem>
+            <GridItem colSpan={2} rowSpan={1}>
+              <Select
+                aria-label={commonStrings.rating.defaultMessage}
+                placeholder={intl.formatMessage(
+                  commonStrings.ratingPlaceholder
+                )}
+                value={filters.rating}
+                onChange={onRatingChange}
+              >
+                {[5, 4, 3, 2, 1].map((n) => {
+                  return (
+                    <option key={n} value={n}>
+                      {intl.formatMessage(commonStrings.ratingValue, {
+                        stars: n
+                      })}
+                    </option>
+                  );
+                })}
+              </Select>
+            </GridItem>
+          </>
         )}
       </Grid>
     </chakra.section>

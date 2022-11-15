@@ -17,9 +17,6 @@ describe('LiveryFilter', () => {
     expect(
       screen.getByLabelText(commonStrings.selectCar.defaultMessage)
     ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(commonStrings.createdAt.defaultMessage)
-    ).toBeInTheDocument();
   });
 
   it('renders all filters in FULL mode', () => {
