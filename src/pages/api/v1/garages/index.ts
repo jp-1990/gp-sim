@@ -208,7 +208,7 @@ async function handler(
           image: '',
           liveries: [],
           updatedAt: timestamp,
-          searchHelpers: [...parsedData.title.split('')].map((e) =>
+          searchHelpers: [...parsedData.title.split(' ')].map((e) =>
             e.toLowerCase()
           ),
           creator: {
