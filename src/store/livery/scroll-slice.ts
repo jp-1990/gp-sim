@@ -16,7 +16,12 @@ import {
   Order,
   RequestStatus
 } from '../../types';
-import { GARAGES_URL, LIVERIES_URL, PROFILE_URL } from '../../utils/nav';
+import {
+  GARAGES_URL,
+  LIVERIES_URL,
+  PROFILE_URL,
+  PROFILE_URL_ID
+} from '../../utils/nav';
 import { LIVERIES_API_ROUTE, LIVERY_SCROLL_SLICE_NAME } from './constants';
 
 const initialFilters = {
@@ -29,12 +34,17 @@ const initialFilters = {
 type FilterState = typeof initialFilters;
 export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
 
-type Pages = typeof LIVERIES_URL | typeof GARAGES_URL | typeof PROFILE_URL;
+type Pages =
+  | typeof LIVERIES_URL
+  | typeof GARAGES_URL
+  | typeof PROFILE_URL
+  | typeof PROFILE_URL_ID;
 
 const adapters = {
   [LIVERIES_URL]: createEntityAdapter<LiveryDataType>(),
   [GARAGES_URL]: createEntityAdapter<LiveryDataType>(),
-  [PROFILE_URL]: createEntityAdapter<LiveryDataType>()
+  [PROFILE_URL]: createEntityAdapter<LiveryDataType>(),
+  [PROFILE_URL_ID]: createEntityAdapter<LiveryDataType>()
 };
 const initialState = {
   [LIVERIES_URL]: adapters[LIVERIES_URL].getInitialState({
@@ -49,7 +59,12 @@ const initialState = {
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null
   }),
-  [PROFILE_URL]: adapters[LIVERIES_URL].getInitialState({
+  [PROFILE_URL]: adapters[PROFILE_URL].getInitialState({
+    scrollY: null as number | null,
+    filters: { ...initialFilters },
+    lastLiveryId: null as EntityId | null
+  }),
+  [PROFILE_URL_ID]: adapters[PROFILE_URL_ID].getInitialState({
     scrollY: null as number | null,
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null

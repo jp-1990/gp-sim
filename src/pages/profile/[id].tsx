@@ -1,13 +1,6 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Grid,
-  Text,
-  GridItem
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, Grid, Text, GridItem } from '@chakra-ui/react';
 import { GetStaticPaths, NextPage } from 'next';
+import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { ImageWithFallback } from '../../components/core';
 import { LiveryList } from '../../components/features';
@@ -15,42 +8,102 @@ import LiveryFilter, {
   Mode
 } from '../../components/features/liveries/LiveryFilter/LiveryFilter';
 import { MainLayout } from '../../components/layout';
-import { useLiveryFilters } from '../../hooks/use-livery-filters';
-import { useGetLiveriesQuery } from '../../store/livery/api-slice';
-import store, { apiSlice, wrapper } from '../../store/store';
+import { useInfiniteScroll } from '../../hooks';
+import {
+  activatePage,
+  selectFilters,
+  selectLastLiveryId,
+  createSelectScrollY,
+  selectLiveryEntities,
+  selectLiveryIds,
+  lastLiveryChanged,
+  thunks,
+  scrollYChanged,
+  FilterActionPayload,
+  filtersChanged
+} from '../../store/livery/scroll-slice';
+import store, {
+  apiSlice,
+  useAppDispatch,
+  useAppSelector,
+  wrapper
+} from '../../store/store';
 import {
   getUserById,
   getUsers,
   useGetUserByIdQuery
 } from '../../store/user/api-slice';
-import { LiveriesFilterKeys } from '../../types';
+import { LiveryDataType } from '../../types';
 import { isString } from '../../utils/functions';
-import { PROFILE_URL_BY_ID } from '../../utils/nav';
+import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
 
 interface Props {
   id: string;
 }
 const Profile: NextPage<Props> = ({ id }) => {
-  const { filters: liveryFilters, setFilters: setLiveryFilters } =
-    useLiveryFilters();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
-  const { data: liveries } = useGetLiveriesQuery(liveryFilters);
+  useEffect(() => {
+    dispatch(activatePage(PROFILE_URL_ID));
+    return () => {
+      dispatch(activatePage(null));
+    };
+  }, [dispatch]);
+
+  // HOOKS
+  const filters = useAppSelector(selectFilters);
+  const lastLiveryId = useAppSelector(selectLastLiveryId);
+  const scrollY = useAppSelector(createSelectScrollY(PROFILE_URL_ID));
+
+  const liveries = {
+    ids: useAppSelector(selectLiveryIds),
+    entities: useAppSelector(selectLiveryEntities)
+  };
+
+  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+
+  // QUERIES
   const { data: selectedUser } = useGetUserByIdQuery(id);
 
   useEffect(() => {
-    setLiveryFilters({
-      key: LiveriesFilterKeys.USER,
-      value: selectedUser?.id || ''
-    });
-  }, [selectedUser, setLiveryFilters]);
+    if (selectedUser?.liveries.length) {
+      setFilters({
+        key: 'ids',
+        value: selectedUser?.liveries.join('&') ?? ''
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser?.liveries]);
 
-  const liveryPages = Array.from(
-    Array(Math.ceil((liveries?.total || 1) / (liveries?.perPage || 1))).keys()
-  );
+  useEffect(() => {
+    if (selectedUser?.liveries.length) {
+      dispatch(
+        thunks.getLiveries({
+          ...filters,
+          lastLiveryId
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, lastLiveryId]);
 
-  const onLiveryPageChange = (page: number) => () => {
-    setLiveryFilters({ key: LiveriesFilterKeys.PAGE, value: page });
+  useEffect(() => {
+    if (scrollY)
+      window.scrollTo({
+        top: scrollY,
+        behavior: 'auto'
+      });
+  }, [scrollY]);
+
+  // HANDLERS
+  const onClickLivery = (livery: LiveryDataType) => {
+    dispatch(scrollYChanged(window.scrollY));
+    router.push(LIVERY_URL(livery.id));
   };
+
+  const setFilters = (payload: FilterActionPayload) =>
+    dispatch(filtersChanged(payload));
 
   return (
     <MainLayout
@@ -89,32 +142,11 @@ const Profile: NextPage<Props> = ({ id }) => {
       {/* liveries list */}
       <LiveryFilter
         mode={Mode.BASIC}
-        filters={liveryFilters}
-        setFilters={setLiveryFilters}
+        filters={filters}
+        setFilters={setFilters}
       />
-      <LiveryList liveries={liveries} />
-      {liveryPages.length > 1 && (
-        <Flex w="5xl" justifyContent="flex-end">
-          <Flex mt={4}>
-            {liveryPages.map((page) => {
-              return (
-                <Button
-                  mx={1}
-                  border="1px solid #c4c4c4"
-                  key={page + 1}
-                  colorScheme={
-                    (liveries?.page || 0) === page ? 'red' : undefined
-                  }
-                  lineHeight={1}
-                  onClick={onLiveryPageChange(page)}
-                >
-                  {page + 1}
-                </Button>
-              );
-            })}
-          </Flex>
-        </Flex>
-      )}
+      <LiveryList liveries={liveries} onClickLivery={onClickLivery} />
+      <Loader />
     </MainLayout>
   );
 };
