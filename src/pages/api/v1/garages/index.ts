@@ -54,44 +54,29 @@ async function handler(
             ? req.query.created[0]
             : req.query.created ||
               'desc') as FirebaseFirestore.OrderByDirection,
-          ids: Array.isArray(req.query.ids)
-            ? req.query.ids[0]
-            : req.query.ids ?? '',
           search: Array.isArray(req.query.search)
             ? req.query.search[0]
             : req.query.search ?? ''
         };
 
-        // search and ids filters cannot be applied to the same query
-        const [definedParams, search] = (
+        const ids =
+          (Array.isArray(req.query.ids) ? req.query.ids[0] : req.query.ids) ??
+          '';
+
+        const definedParams = (
           Object.keys(params) as (keyof typeof params)[]
-        ).reduce(
-          (output, key) => {
-            if (!params[key]) return output;
-            if (key === 'search' && output[0].includes('ids')) {
-              output[1].push(key);
-              return output;
-            }
-            if (key === 'search') {
-              output[0].push(key);
-              output[1].push(key);
-              return output;
-            }
-            if (key === 'ids' && output[0].includes('search')) {
-              output[0] = output[0].filter((k) => k !== 'search');
-              output[0].push(key);
-              output[1].push('search');
-              return output;
-            }
-            output[0].push(key);
+        ).reduce((output, param) => {
+          if (!params[param]) return output;
+          if (param.match(/search/)) {
+            output.unshift('search');
             return output;
-          },
-          [[], []] as [string[], string[]]
-        );
+          }
+          output.push(param);
+          return output;
+        }, [] as (keyof typeof params)[]);
 
         type Filter = [string, FirebaseFirestore.WhereFilterOp, any];
         const filters: Record<string, Filter> = {
-          ids: ['id', 'in', params.ids.split(',')],
           search: [
             'searchHelpers',
             'array-contains-any',
@@ -104,44 +89,68 @@ async function handler(
           created: ['createdAt', params.created]
         };
 
-        // prepare query
-        let query =
-          garagesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
-        for (const param of definedParams) {
-          if (filters[param]) query = query.where(...filters[param]);
-          if (orders[param]) query = query.orderBy(...orders[param]);
+        // GET GARAGES
+        // if not filtering by ids, normal query
+        const garages: GaragesDataType = [];
+        if (!ids.length) {
+          // prepare query
+          let query =
+            garagesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
+          for (const param of definedParams) {
+            if (filters[param]) query = query.where(...filters[param]);
+            if (orders[param]) query = query.orderBy(...orders[param]);
+          }
+
+          // execute
+          const garagesSnapshot = await query.get();
+
+          // process response
+          garagesSnapshot.forEach((doc) => {
+            const garage = doc.data() as unknown as GarageDataType;
+            garages.push(garage);
+          });
         }
 
-        // execute
-        const garagesSnapshot = await query.get();
+        // if filtering by ids, fetch all by id and filter on server
+        if (ids.length) {
+          const garagesToFetch = ids.split('&');
+          let docs: (GarageDataType | undefined)[];
 
-        // process response
-        let garages: GaragesDataType = [];
-        garagesSnapshot.forEach((doc) => {
-          const garage = doc.data() as unknown as GarageDataType;
-          garages.push(garage);
-        });
+          docs = await Promise.all(
+            garagesToFetch.map((id) =>
+              garagesRef
+                .doc(id)
+                .get()
+                .then((doc) => doc.data() as GarageDataType)
+            )
+          );
 
-        if (search.length) {
-          const searchTerms = [...new Set(params.search.split(' '))];
-          // weight by number of matched terms
-          const weightedSearch = garages.reduce((weighted, garage) => {
-            let weight = 0;
-            let searchMatch = false;
-            for (const term of searchTerms) {
-              if (garage.searchHelpers.includes(term.toLowerCase())) {
-                weight++;
-                searchMatch = true;
-              }
-            }
-            if (searchMatch) weighted.push({ weight, garage });
-            return weighted;
-          }, [] as { weight: number; garage: GarageDataType }[]);
+          // apply filters
+          docs = docs.filter((doc) => {
+            if (!doc) return false;
+            const filterBySearch = definedParams.includes('search');
 
-          // sort by weight and reassign to garages
-          garages = weightedSearch
-            .sort((a, b) => b.weight - a.weight)
-            .map((e) => e.garage);
+            const match = [true];
+            if (filterBySearch)
+              match[0] = doc.searchHelpers.some(
+                (helper: string) =>
+                  params.search.split(' ').indexOf(helper) >= 0
+              );
+
+            return !match.some((match_) => !match_);
+          });
+
+          garages.push(...(docs as GaragesDataType));
+
+          // apply order
+          if (definedParams.includes('created'))
+            garages.sort((a, b) => {
+              const order = {
+                asc: a.createdAt - b.createdAt,
+                desc: b.createdAt - a.createdAt
+              };
+              return order[params.created];
+            });
         }
 
         return res.status(200).json(garages);
