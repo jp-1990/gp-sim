@@ -44,7 +44,7 @@ const signIn = createAsyncThunk(
       }
     );
 
-    Router.push('/');
+    Router.back();
     return { data, token };
   }
 );
