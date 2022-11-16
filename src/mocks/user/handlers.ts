@@ -8,6 +8,25 @@ import userData from '../../utils/dev-data/users.json';
 import liveriesData from '../../utils/dev-data/liveries.json';
 
 export const userHandlers = [
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/users/current/liveries`,
+    (req, res, ctx) => {
+      const token = req.headers.get('authorization');
+      const liveriesToAdd = (req.body as Record<string, any>)
+        .liveries as string[];
+
+      if (!token) return res(ctx.delay(), ctx.status(401));
+
+      const user = userData.find((el) => el.id === '0');
+      if (!user) return res(ctx.delay(), ctx.status(404));
+
+      user.liveries.push(...liveriesToAdd);
+
+      return res(ctx.delay(), ctx.status(200), ctx.json(user));
+    }
+  ),
   rest.get(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -118,7 +137,7 @@ export const userHandlers = [
 const formatPutUserResponse = (
   payload: UpdateUserProfileDataType
 ): UserDataType => {
-  const { imageFiles, ...userData } = payload;
+  const userData = payload;
   const garages: string[] = [];
   const liveries: string[] = [];
 
@@ -140,5 +159,5 @@ const formatPutUserResponse = (
     garages,
     liveries,
     lastLogin: now
-  };
+  } as UserDataType;
 };
