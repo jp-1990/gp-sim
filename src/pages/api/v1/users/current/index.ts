@@ -5,13 +5,13 @@ import {
   Method,
   UpdateUserProfileDataType,
   UserDataType
-} from '../../../../types';
-import { defaultUserImageTransform } from '../../../../utils/api/images';
+} from '../../../../../types';
+import { defaultUserImageTransform } from '../../../../../utils/api/images';
 import {
   customOnFormidablePart,
   UploadFiles,
   validateObject
-} from '../../../../utils/api/uploads';
+} from '../../../../../utils/api/uploads';
 import {
   Collection,
   firestore,
@@ -20,7 +20,7 @@ import {
   storage,
   StoragePath,
   withAuth
-} from '../../../../utils/firebase/admin';
+} from '../../../../../utils/firebase/admin';
 
 //set bodyparser
 export const config = {
