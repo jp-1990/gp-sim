@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { GetStaticPaths, NextPage } from 'next';
-
-import store, { apiSlice, useAppSelector, wrapper } from '../../store/store';
-import {
-  getLiveries,
-  getLiveryById,
-  useGetLiveryByIdQuery
-} from '../../store/livery/api-slice';
-
-import { isString, numberToPrice } from '../../utils/functions';
+import { useRouter } from 'next/router';
 import {
   Box,
   Button,
@@ -17,14 +10,30 @@ import {
   Grid,
   GridItem,
   Heading,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
+
+import store, {
+  apiSlice,
+  useAppDispatch,
+  useAppSelector,
+  wrapper
+} from '../../store/store';
+import {
+  getLiveries,
+  getLiveryById,
+  useGetLiveryByIdQuery
+} from '../../store/livery/api-slice';
+
 import { MainLayout } from '../../components/layout';
-import { ImageWithFallback, Rating } from '../../components/core';
-import { Tags } from '../../components/core';
-import { FormattedMessage } from 'react-intl';
-import { commonStrings } from '../../utils/intl';
-import { LIVERY_URL } from '../../utils/nav';
+import { ImageWithFallback, Rating, Tags } from '../../components/core';
+
+import { isString } from '../../utils/functions';
+import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
+import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
+import { useUpdateUserLiveriesMutation } from '../../store/user/api-slice';
+import { updateLiveries } from '../../store/user/slice';
 
 interface Props {
   id: string;
@@ -32,10 +41,52 @@ interface Props {
 const Livery: NextPage<Props> = ({ id }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
-  const { data: livery } = useGetLiveryByIdQuery(id);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const intl = useIntl();
+  const toast = useToast({
+    duration: 8000,
+    isClosable: true,
+    position: 'top',
+    containerStyle: {
+      marginTop: '1.25rem'
+    }
+  });
+
   const currentUser = useAppSelector((state) => state.currentUserSlice);
 
+  const { data: livery } = useGetLiveryByIdQuery(id);
+  const [updateUserLiveries, { isLoading }] = useUpdateUserLiveriesMutation();
+
   const isInUserCollection = currentUser.data?.liveries.includes(id);
+
+  const onAddToCollection = async () => {
+    const payload = [id];
+    if (!currentUser.token) return router.push(LOGIN_URL);
+
+    try {
+      await updateUserLiveries({
+        liveries: payload,
+        token: currentUser.token
+      }).unwrap();
+
+      dispatch(updateLiveries(payload));
+
+      toast({
+        title: intl.formatMessage(formStrings.updateSuccess, {
+          item: intl.formatMessage(commonStrings.liveries)
+        }),
+        status: 'success'
+      });
+    } catch (err) {
+      toast({
+        title: intl.formatMessage(formStrings.updateError, {
+          item: intl.formatMessage(commonStrings.liveries).toLocaleLowerCase()
+        }),
+        status: 'error'
+      });
+    }
+  };
 
   return (
     <MainLayout
@@ -123,22 +174,22 @@ const Livery: NextPage<Props> = ({ id }) => {
             </Grid>
             <Tags pb={12} tags={livery?.tags?.split(',') || []} />
             {!isInUserCollection && (
-              <>
-                <Heading size="md" pb={4}>
-                  {typeof livery?.price !== 'string'
-                    ? numberToPrice(livery?.price || 0)
-                    : livery?.price}
-                </Heading>
-                <Button
-                  bg="gray.900"
-                  color="white"
-                  size="md"
-                  w={40}
-                  lineHeight={1}
-                >
-                  <FormattedMessage {...commonStrings.addToBasket} />
-                </Button>
-              </>
+              <Button
+                bg="gray.900"
+                color="white"
+                size="md"
+                w={40}
+                lineHeight={1}
+                disabled={isLoading}
+                onClick={onAddToCollection}
+              >
+                <FormattedMessage {...commonStrings.addToCollection} />
+              </Button>
+            )}
+            {isInUserCollection && (
+              <Heading size="md" pb={4}>
+                <FormattedMessage {...liveryStrings.inColletion} />
+              </Heading>
             )}
           </Flex>
         </chakra.section>
@@ -166,10 +217,11 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  // @ts-expect-error no idea
   const { data } = await store.dispatch(getLiveries.initiate({}));
-  const ids = data?.ids ?? [];
+  const ids = (data as any)?.ids ?? [];
   return {
-    paths: ids.map((id) => ({
+    paths: ids.map((id: any) => ({
       params: {
         id: `${id.valueOf()}`
       }

@@ -11,6 +11,10 @@ const liveries = {
   liveriesSummary: {
     id: 'utils.intl.liveries.liveriesSummary',
     defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+  },
+  inColletion: {
+    id: 'utils.intl.liveries.inColletion',
+    defaultMessage: `This livery is in your collection`
   }
 };
 

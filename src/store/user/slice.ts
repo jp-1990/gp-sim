@@ -95,6 +95,11 @@ const userSlice = createSlice({
   reducers: {
     updateToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload;
+    },
+    updateLiveries(state, action: PayloadAction<string[]>) {
+      const newState = state;
+      for (const livery of action.payload) newState.data?.liveries.push(livery);
+      return newState;
     }
   },
   extraReducers: (builder) => {
@@ -144,6 +149,6 @@ const userSlice = createSlice({
   }
 });
 
-export const { updateToken } = userSlice.actions;
+export const { updateToken, updateLiveries } = userSlice.actions;
 export { signIn, signOut, signUp };
 export default userSlice;

@@ -60,15 +60,12 @@ describe('Livery', () => {
       liveryNotInCurrentUserCollection;
     const downloadNum = `${downloads} Downloads`;
     const carAndTitle = `${car} - ${title}`;
-    const price = `£${(liveryNotInCurrentUserCollection.price / 100).toFixed(
-      2
-    )}`;
+
     await waitFor(() => {
       expect(screen.queryAllByText(carAndTitle)).toHaveLength(1);
       expectAllToBeInDocument([
         downloadNum,
         creator.displayName,
-        price,
         ...tags.split(',')
       ]);
     });

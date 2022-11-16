@@ -3,6 +3,7 @@ import {
   GET_USERS,
   GET_USER_BY_ID,
   UPDATE_PROFILE,
+  UPDATE_USER_LIVERIES,
   USERS_API_ROUTE
 } from './constants';
 import {
@@ -62,6 +63,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
           }
         };
       }
+    }),
+    [UPDATE_USER_LIVERIES]: builder.mutation<
+      UserDataType,
+      { liveries: string[] } & Token
+    >({
+      query: (updateData) => {
+        const { token, ...data } = updateData;
+        return {
+          data,
+          url: `${USERS_API_ROUTE}/current/liveries`,
+          method: Method.PATCH,
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token
+          }
+        };
+      }
     })
   })
 });
@@ -69,9 +87,10 @@ export const userApiSlice = apiSlice.injectEndpoints({
 // HOOKS
 
 export const {
-  useUpdateUserProfileMutation,
   useGetUsersQuery,
-  useGetUserByIdQuery
+  useGetUserByIdQuery,
+  useUpdateUserProfileMutation,
+  useUpdateUserLiveriesMutation
 } = userApiSlice;
 
 // ENDPOINTS
