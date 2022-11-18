@@ -2,6 +2,14 @@ import {
   Button,
   Flex,
   Heading,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
@@ -27,9 +35,9 @@ import {
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
 import {
   useDeleteGarageMutation,
-  useDeleteLiveriesFromGarageMutation,
   useGetGaragesQuery
 } from '../../store/garage/api-slice';
+import { useDeleteLiveryMutation } from '../../store/livery/api-slice';
 import {
   activatePage,
   FilterActionPayload,
@@ -70,6 +78,11 @@ const Profile: NextPage = () => {
 
   // STATE
   const [tabIndex, setTabIndex] = useState(0);
+  const [modal, setModal] = useState({
+    id: undefined as string | undefined,
+    type: undefined as 'garage' | 'livery' | undefined,
+    open: false
+  });
 
   // HOOKS
   const filters = useAppSelector(selectFilters);
@@ -92,8 +105,10 @@ const Profile: NextPage = () => {
   }, [filters, lastLiveryId]);
 
   const { data: garages } = useGetGaragesQuery({});
-  const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
-  const [deleteGarage] = useDeleteGarageMutation();
+  const deletions = {
+    garage: useDeleteGarageMutation()[0],
+    livery: useDeleteLiveryMutation()[0]
+  };
 
   useEffect(() => {
     const tab = router.asPath.split('tab=')[1];
@@ -127,6 +142,19 @@ const Profile: NextPage = () => {
     setTabIndex(index);
   };
 
+  const onOpenModal = (id: string, type: 'garage' | 'livery') => {
+    setModal({ id, type, open: true });
+  };
+
+  const onCloseModal = () => {
+    setModal({ id: undefined, type: undefined, open: false });
+  };
+
+  const onDelete = () => {
+    if (modal.id && modal.type) deletions[modal.type](modal.id);
+    onCloseModal();
+  };
+
   if (!currentUser.token) return <Unauthorized />;
   return (
     <MainLayout
@@ -138,6 +166,40 @@ const Profile: NextPage = () => {
         heading={<FormattedMessage {...profileStrings.profileHeading} />}
         paragraph={<FormattedMessage {...profileStrings.profileSummary} />}
       />
+      <Modal onClose={onCloseModal} isOpen={modal.open} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <FormattedMessage
+              {...profileStrings.deleteItem}
+              values={{
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                item: <FormattedMessage {...commonStrings[modal.type!]} />
+              }}
+            />
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormattedMessage
+              {...profileStrings.deleteItemAreYouSure}
+              values={{
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                item: <FormattedMessage {...commonStrings[modal.type!]} />
+              }}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Button onClick={onCloseModal}>
+                <FormattedMessage {...commonStrings.cancel} />
+              </Button>
+              <Button variant={'solid'} colorScheme="red" onClick={onDelete}>
+                <FormattedMessage {...commonStrings.delete} />
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Flex w="full" maxW="5xl" my={5}>
         <Tabs
           variant="enclosed"
@@ -188,7 +250,7 @@ const Profile: NextPage = () => {
                     <Button
                       variant={'outline'}
                       size="sm"
-                      onClick={() => deleteLivery(id)}
+                      onClick={() => onOpenModal(id, 'livery')}
                     >
                       <FormattedMessage {...commonStrings.delete} />
                     </Button>
@@ -244,7 +306,7 @@ const Profile: NextPage = () => {
                     <Button
                       variant={'outline'}
                       size="sm"
-                      onClick={() => deleteGarage(id)}
+                      onClick={() => onOpenModal(id, 'garage')}
                     >
                       <FormattedMessage {...commonStrings.delete} />
                     </Button>

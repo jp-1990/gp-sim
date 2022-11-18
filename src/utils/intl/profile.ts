@@ -31,6 +31,14 @@ const profile = {
   profileSummary: {
     id: 'utils.intl.profile.profileSummary',
     defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+  },
+  deleteItem: {
+    id: 'utils.intl.liveries.deleteItem',
+    defaultMessage: `Delete {item}`
+  },
+  deleteItemAreYouSure: {
+    id: 'utils.intl.liveries.deleteItemAreYouSure',
+    defaultMessage: `Are you sure you want to delete this { item }?`
   }
 };
 
