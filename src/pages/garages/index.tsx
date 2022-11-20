@@ -171,13 +171,6 @@ const Garages: NextPage = () => {
       />
       <Flex w="full" maxW="5xl" my={5}>
         <Button colorScheme="red" w="3xs" lineHeight={1}>
-          <Link href={LIVERY_CREATE_URL}>
-            <a>
-              <FormattedMessage {...liveryStrings.uploadALivery} />
-            </a>
-          </Link>
-        </Button>
-        <Button colorScheme="red" w="3xs" lineHeight={1} ml={2}>
           <Link href={GARAGE_CREATE_URL}>
             <a>
               <FormattedMessage {...garageStrings.createAGarage} />
