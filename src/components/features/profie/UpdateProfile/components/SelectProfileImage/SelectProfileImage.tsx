@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { SelectFiles } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
-import { Button, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { ImageWithFallback } from '../../../../../core';
 
 /**
@@ -28,18 +28,10 @@ const SelectProfileImage = () => {
         if (!state) return null;
         const { [stateKeys.IMAGE_FILES]: images } = { ...state };
         return (
-          <Grid
-            templateColumns="repeat(4, 1fr)"
-            templateRows="repeat(1, minmax(8rem, auto))"
-            gap={3}
-            pt={3}
-            w="3xl"
-          >
+          <Box gap={3} pt={3}>
             {images.map((image, i) => (
-              <GridItem
+              <Box
                 key={i}
-                colSpan={1}
-                rowSpan={1}
                 display="flex"
                 flexDir="column"
                 borderRadius={4}
@@ -47,15 +39,18 @@ const SelectProfileImage = () => {
                 position="relative"
                 border="1px solid"
                 borderColor="gray.200"
+                w="xs"
               >
                 <ImageWithFallback
-                  h="full"
-                  w="full"
+                  position={'relative'}
+                  h="xs"
+                  w="xs"
                   imgUrl={URL.createObjectURL(image)}
                   imgAlt={image.name}
                 />
                 <Button
                   size="sm"
+                  w="xs"
                   borderRadius={0}
                   onClick={() => onRemove(i)}
                   colorScheme="blackAlpha"
@@ -64,9 +59,9 @@ const SelectProfileImage = () => {
                 >
                   {<FormattedMessage {...commonStrings.remove} />}
                 </Button>
-              </GridItem>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         );
       }}
     </SelectFiles>

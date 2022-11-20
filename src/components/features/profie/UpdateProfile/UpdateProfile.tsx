@@ -52,16 +52,16 @@ const UpdateProfile: React.FC<Props> = ({
       minW="5xl"
       mt={4}
     >
-      <GridItem colSpan={3}>
-        <Forename />
-      </GridItem>
-      <GridItem colSpan={3} rowSpan={3} mt={6}>
+      <GridItem colSpan={4}>
         <SelectProfileImage />
       </GridItem>
-      <GridItem colSpan={3}>
+      <GridItem colSpan={4}>
+        <Forename />
+      </GridItem>
+      <GridItem colSpan={4}>
         <Surname />
       </GridItem>
-      <GridItem colSpan={3}>
+      <GridItem colSpan={4}>
         <Email />
       </GridItem>
       <GridItem colSpan={4}>
