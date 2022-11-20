@@ -8,7 +8,7 @@ describe('Create livery', () => {
     render(<Create />);
     expect(
       screen.getAllByText(liveryStrings.uploadHeading.defaultMessage)
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(
       screen.getByText(liveryStrings.uploadSummary.defaultMessage)
     ).toBeInTheDocument();

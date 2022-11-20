@@ -8,7 +8,7 @@ describe('Create garage', () => {
     render(<Create />);
     expect(
       screen.getAllByText(garageStrings.createHeading.defaultMessage)
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(
       screen.getByText(garageStrings.createSummary.defaultMessage)
     ).toBeInTheDocument();

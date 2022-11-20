@@ -4,14 +4,12 @@ import { FormattedMessage } from 'react-intl';
 import { Box, chakra, Flex, Heading, Text } from '@chakra-ui/react';
 
 import { MainLayout } from '../../components/layout';
-import { Breadcrumbs } from '../../components/core';
 import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
 
 import { apiSlice, wrapper } from '../../store/store';
 import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
-import { breadcrumbOptions } from '../../components/features/liveries/CreateLivery/config';
 import { useAuthCheck } from '../../hooks/use-auth-check';
 import { Unauthorized } from '../../components/shared';
 
@@ -29,7 +27,6 @@ const Create: NextPage = () => {
       urlPath={LIVERY_CREATE_URL}
     >
       <Box maxW="5xl" w="5xl" display="flex" flexDir={'column'}>
-        <Breadcrumbs options={breadcrumbOptions} />
         <chakra.section pt={8}>
           <Flex direction="column" maxW="5xl">
             <Heading size="xl" pb={4}>
