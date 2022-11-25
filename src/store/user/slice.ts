@@ -25,27 +25,15 @@ export type CurrentUserType = typeof initialState;
 
 const signIn = createAsyncThunk(
   `${CURRENT_USER_SLICE_NAME}/signIn`,
-  async ({ email, password }: { email: string; password: string }) => {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const { user } = userCredential;
-
-    // use token from sign in to get current user data
+  async (
+    { email, password }: { email: string; password: string },
+    { dispatch }
+  ) => {
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
     const token = await user.getIdToken();
-    const { data } = await axios.get<UserDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}/current`,
-      {
-        headers: {
-          authorization: token
-        }
-      }
-    );
+    dispatch(getCurrentUser(token));
 
     Router.back();
-    return { data, token };
   }
 );
 
@@ -89,6 +77,22 @@ const signOut = createAsyncThunk(
   }
 );
 
+const getCurrentUser = createAsyncThunk(
+  `${CURRENT_USER_SLICE_NAME}/setCurrentUser`,
+  async (token: string) => {
+    const { data } = await axios.get<UserDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}/current`,
+      {
+        headers: {
+          authorization: token
+        }
+      }
+    );
+
+    return { data, token };
+  }
+);
+
 const userSlice = createSlice({
   name: CURRENT_USER_SLICE_NAME,
   initialState,
@@ -110,17 +114,23 @@ const userSlice = createSlice({
         state.error = null;
         state.status = RequestStatus.PENDING;
       })
-      .addCase(signIn.rejected, (state, payload) => {
+      .addCase(signIn.rejected, (state, action) => {
         state.data = null;
         state.token = null;
-        state.error = payload.error.message ?? null;
+        state.error = action.error.message ?? null;
         state.status = RequestStatus.REJECTED;
       })
-      .addCase(signIn.fulfilled, (state, action) => {
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.data = action.payload.data;
         state.token = action.payload.token;
         state.error = null;
         state.status = RequestStatus.FULFILLED;
+      })
+      .addCase(getCurrentUser.rejected, (state, action) => {
+        state.data = null;
+        state.token = null;
+        state.error = action.error.message ?? null;
+        state.status = RequestStatus.REJECTED;
       })
       .addCase(signOut.fulfilled, (state) => {
         state.data = null;
@@ -134,10 +144,10 @@ const userSlice = createSlice({
         state.error = null;
         state.status = RequestStatus.PENDING;
       })
-      .addCase(signUp.rejected, (state, payload) => {
+      .addCase(signUp.rejected, (state, action) => {
         state.data = null;
         state.token = null;
-        state.error = payload.error.message ?? null;
+        state.error = action.error.message ?? null;
         state.status = RequestStatus.REJECTED;
       })
       .addCase(signUp.fulfilled, (state, action) => {
@@ -150,5 +160,5 @@ const userSlice = createSlice({
 });
 
 export const { updateToken, updateLiveries } = userSlice.actions;
-export { signIn, signOut, signUp };
+export { getCurrentUser, signIn, signOut, signUp };
 export default userSlice;

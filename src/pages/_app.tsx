@@ -7,14 +7,14 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 
-import { wrapper } from '../store/store';
+import { useAppDispatch, wrapper } from '../store/store';
 import theme from '../styles/chakra-theme';
 
 import English from '../../lang/en.json';
 import French from '../../lang/fr.json';
 
 import { auth } from '../utils/firebase/client';
-import { updateToken } from '../store/user/slice';
+import { getCurrentUser } from '../store/user/slice';
 
 if (process.env.NODE_ENV === 'development') {
   require('../mocks');
@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { locale, defaultLocale } = useRouter();
+  const dispatch = useAppDispatch();
 
   const messages = useMemo(() => {
     switch (locale) {
@@ -36,12 +37,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   // listen for auth token changes, update current user slice
   useEffect(() => {
-    const unsub = auth.onIdTokenChanged(async (user) => {
-      const token = user ? await user.getIdToken() : null;
-      updateToken(token);
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        dispatch(getCurrentUser(token));
+      }
     });
     return () => unsub();
-  }, []);
+  }, [dispatch]);
 
   return (
     <IntlProvider
