@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import fs from 'fs';
 import { randomUUID } from 'crypto';
 import { randomNumber } from './utils';
@@ -14,7 +15,7 @@ interface Car {
   class: string;
 }
 
-const createUsersData = (n: number = 19) => {
+const createUsersData = (n = 19) => {
   const users = [];
   for (let i = 0; i <= n; i++) {
     const name = names[randomNumber(0, 19)];
