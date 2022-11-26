@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   Button,
   Flex,
@@ -102,7 +103,7 @@ const Profile: NextPage = () => {
       dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, lastLiveryId]);
+  }, [currentUser, filters, lastLiveryId]);
 
   const { data: garages } = useGetGaragesQuery({});
   const deletions = {
@@ -119,14 +120,14 @@ const Profile: NextPage = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath, scrollY, tabIndex]);
+  }, [currentUser, router.asPath, scrollY, tabIndex]);
 
   useEffect(() => {
     const tab = router.asPath.split('tab=')[1];
     if (currentUser.token && !isNaN(+tab) && +tab !== tabIndex)
       setTabIndex(+tab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath]);
+  }, [currentUser, router.asPath]);
 
   // HANDLERS
   const setFilters = (payload: FilterActionPayload) =>
@@ -173,7 +174,6 @@ const Profile: NextPage = () => {
             <FormattedMessage
               {...profileStrings.deleteItem}
               values={{
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 item: <FormattedMessage {...commonStrings[modal.type!]} />
               }}
             />
@@ -183,8 +183,11 @@ const Profile: NextPage = () => {
             <FormattedMessage
               {...profileStrings.deleteItemAreYouSure}
               values={{
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                item: <FormattedMessage {...commonStrings[modal.type!]} />
+                item: (
+                  <span style={{ textTransform: 'lowercase' }}>
+                    <FormattedMessage {...commonStrings[modal.type!]} />
+                  </span>
+                )
               }}
             />
           </ModalBody>

@@ -50,18 +50,8 @@ import {
 import { ImageWithFallback } from '../../components/core';
 import { LiveryFilter, Mode } from '../../components/features';
 
-import {
-  GARAGES_URL,
-  GARAGE_CREATE_URL,
-  LIVERY_CREATE_URL,
-  LIVERY_URL
-} from '../../utils/nav';
-import {
-  liveryStrings,
-  garageStrings,
-  commonStrings,
-  formStrings
-} from '../../utils/intl';
+import { GARAGES_URL, GARAGE_CREATE_URL, LIVERY_URL } from '../../utils/nav';
+import { garageStrings, commonStrings, formStrings } from '../../utils/intl';
 
 import { LiveriesDataType } from '../../types';
 import {
@@ -106,7 +96,7 @@ const Garages: NextPage = () => {
   useEffect(() => {
     if (selectedGarage === 'NULL' && currentUser.token) onSelectGarage(null)();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     if (currentUser.token) {

@@ -1,6 +1,7 @@
 import Router from 'next/router';
 import { useEffect } from 'react';
 import { useAppSelector } from '../store/store';
+import { auth } from '../utils/firebase/client';
 import { LOGIN_URL } from '../utils/nav';
 
 /**
@@ -8,10 +9,15 @@ import { LOGIN_URL } from '../utils/nav';
  */
 export const useAuthCheck = () => {
   const currentUser = useAppSelector((state) => state.currentUserSlice);
+
   useEffect(() => {
-    if (!currentUser.token) {
-      Router.push(LOGIN_URL);
-    }
-  }, [currentUser.token]);
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        Router.push(LOGIN_URL);
+      }
+    });
+    return () => unsub();
+  }, []);
+
   return { currentUser };
 };
