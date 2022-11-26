@@ -69,12 +69,8 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/garages/:id/liveries`,
     (req, res, ctx) => {
-      const { ids } = req.params as { ids: string };
-      return res(
-        ctx.delay(),
-        ctx.status(200),
-        ctx.json({ ids: ids.split(',') })
-      );
+      const { id } = req.params as { id: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
     }
   ),
   rest.patch(
@@ -95,8 +91,8 @@ export const garagesHandlers = [
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/garages/:id/users`,
     (req, res, ctx) => {
-      const { ids } = req.params as { ids: string };
-      return res(ctx.delay(), ctx.status(200), ctx.json({ ids }));
+      const { id } = req.params as { id: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
     }
   ),
   rest.patch(
@@ -113,7 +109,7 @@ export const garagesHandlers = [
 const formatPostGarageResponse = (
   newGarage: CreateGarageDataType
 ): GarageDataType => {
-  const { imageFiles, ...garageData } = newGarage;
+  const { imageFile: _, ...garageData } = newGarage;
   const drivers: string[] = [];
   const liveries: string[] = [];
 
@@ -122,6 +118,12 @@ const formatPostGarageResponse = (
   const now = new Date(Date.now()).valueOf();
   const createdAt = now;
   const updatedAt = now;
+  const creator = {
+    id: '0',
+    displayName: '',
+    image: ''
+  };
+  const searchHelpers = [garageData.title];
 
   // add garageId to user
 
@@ -131,10 +133,12 @@ const formatPostGarageResponse = (
   return {
     ...garageData,
     createdAt,
+    creator,
     drivers,
     id,
     image,
     liveries,
+    searchHelpers,
     updatedAt
   };
 };

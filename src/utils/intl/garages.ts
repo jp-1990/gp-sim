@@ -70,6 +70,10 @@ const edit = {
   updateGarage: {
     id: 'utils.intl.garages.updateGarage',
     defaultMessage: 'Save Changes'
+  },
+  deleteItemAreYouSure: {
+    id: 'utils.intl.liveries.deleteItemAreYouSure',
+    defaultMessage: `Are you sure you want to delete these { item }?`
   }
 };
 

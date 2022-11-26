@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from 'react';
 import { GetStaticPaths, NextPage } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FormattedMessage } from 'react-intl';
 import {
   Box,
@@ -8,6 +10,14 @@ import {
   chakra,
   Flex,
   Heading,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
@@ -22,7 +32,12 @@ import { TableDataTypes } from '../../../components/shared/Table/types';
 
 import UpdateGarage from '../../../components/features/garages/UpdateGarage/UpdateGarage';
 
-import store, { apiSlice, useAppSelector, wrapper } from '../../../store/store';
+import store, {
+  apiSlice,
+  useAppDispatch,
+  useAppSelector,
+  wrapper
+} from '../../../store/store';
 import {
   getGarageById,
   getGarages,
@@ -31,13 +46,34 @@ import {
   useGetGarageByIdQuery
 } from '../../../store/garage/api-slice';
 import { useGetUsersQuery } from '../../../store/user/api-slice';
+import {
+  activatePage,
+  createSelectScrollY,
+  FilterActionPayload,
+  filtersChanged,
+  lastLiveryChanged,
+  scrollYChanged,
+  selectedLiveriesChanged,
+  selectFilters,
+  selectLastLiveryId,
+  selectLiveryEntities,
+  selectLiveryIds,
+  selectSelectedLiveries,
+  thunks
+} from '../../../store/livery/scroll-slice';
 
 import {
+  GARAGES_URL_ID,
   GARAGE_UPDATE_URL,
   LIVERY_URL,
   PROFILE_URL_BY_ID
 } from '../../../utils/nav';
-import { commonStrings, formStrings, garageStrings } from '../../../utils/intl';
+import {
+  commonStrings,
+  formStrings,
+  garageStrings,
+  profileStrings
+} from '../../../utils/intl';
 import { isString } from '../../../utils/functions';
 
 import {
@@ -45,39 +81,87 @@ import {
   PublicUserDataType,
   UserFilterKeys
 } from '../../../types';
-import { useLiveryFilters } from '../../../hooks/use-livery-filters';
-import { useGetLiveriesQuery } from '../../../store/livery/api-slice';
 import {
-  useDownloadLivery,
-  useSelectedLiveries,
-  useUserFilters
+  useInfiniteScroll,
+  useUserFilters,
+  useAuthCheck
 } from '../../../hooks';
-import { useAuthCheck } from '../../../hooks/use-auth-check';
 import { Unauthorized } from '../../../components/shared';
 
 interface Props {
   id: string;
 }
 const Update: NextPage<Props> = ({ id }) => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(activatePage(GARAGES_URL_ID));
+    return () => {
+      dispatch(activatePage(null));
+    };
+  }, [dispatch]);
+
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
   // STATE
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
+  const [modal, setModal] = useState({
+    ids: undefined as string[] | undefined,
+    type: undefined as 'drivers' | 'liveries' | undefined,
+    open: false
+  });
 
   // HOOKS
+  const filters = useAppSelector(selectFilters);
+  const lastLiveryId = useAppSelector(selectLastLiveryId);
+  const scrollY = useAppSelector(createSelectScrollY(GARAGES_URL_ID));
+  const selectedLiveries = useAppSelector(selectSelectedLiveries);
+
+  const liveries = {
+    ids: useAppSelector(selectLiveryIds),
+    entities: useAppSelector(selectLiveryEntities)
+  };
+
+  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
-  const { filters: liveryFilters, setFilters: setLiveryFilters } =
-    useLiveryFilters();
 
   const { data: garageData } = useGetGarageByIdQuery(id);
   const { data: userData } = useGetUsersQuery(userFilters);
-  const { data: liveriesData } = useGetLiveriesQuery(liveryFilters);
-  const { toggle: toggleSelectedLiveries, selected: selectedLiveries } =
-    useSelectedLiveries();
-  const [deleteLivery] = useDeleteLiveriesFromGarageMutation();
-  const [deleteDriver] = useDeleteUsersFromGarageMutation();
-  const { onDownload } = useDownloadLivery();
+
+  const deleters = {
+    liveries: useDeleteLiveriesFromGarageMutation()[0],
+    drivers: useDeleteUsersFromGarageMutation()[0]
+  };
+
+  // EFFECTS
+  useEffect(() => {
+    if (currentUser.token) {
+      setLiveryFilters({
+        key: 'ids',
+        value: garageData?.liveries.join('&') ?? ''
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser.token) {
+      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, filters, lastLiveryId]);
+
+  useEffect(() => {
+    if (scrollY && currentUser.token)
+      window.scrollTo({
+        top: scrollY,
+        behavior: 'auto'
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, scrollY]);
 
   useEffect(() => {
     if (garageData?.drivers) {
@@ -88,15 +172,7 @@ const Update: NextPage<Props> = ({ id }) => {
     }
   }, [garageData?.drivers, setUserFilters]);
 
-  useEffect(() => {
-    if (garageData?.liveries) {
-      setLiveryFilters({
-        key: UserFilterKeys.IDS,
-        value: garageData?.liveries.join('&')
-      });
-    }
-  }, [garageData?.liveries, setLiveryFilters]);
-
+  // HANDLERS;s
   const toggleSelectedDrivers = (id: string | string[]) => {
     if (typeof id === 'object') return setSelectedDrivers(id);
     setSelectedDrivers((prev) => {
@@ -105,8 +181,32 @@ const Update: NextPage<Props> = ({ id }) => {
     });
   };
 
-  const disableDownload = (liveryId: string | number) =>
-    !currentUser?.data?.liveries.find((id) => `${liveryId}` === id);
+  const setLiveryFilters = (payload: FilterActionPayload) =>
+    dispatch(filtersChanged(payload));
+
+  const toggleSelectedLiveries = (payload: string | string[]) =>
+    dispatch(selectedLiveriesChanged(payload));
+
+  const onClickLivery = (id: string) => {
+    dispatch(scrollYChanged(window.scrollY));
+    router.push(LIVERY_URL(id));
+  };
+
+  const onOpenModal = (ids: string[], type: 'drivers' | 'liveries') => {
+    setModal({ ids, type, open: true });
+  };
+
+  const onCloseModal = () => {
+    setModal({ ids: undefined, type: undefined, open: false });
+  };
+
+  const onDelete = () => {
+    if (modal.ids && modal.type && garageData) {
+      for (const id of modal.ids)
+        deleters[modal.type]({ garageId: garageData.id, id });
+    }
+    onCloseModal();
+  };
 
   if (!currentUser.token) return <Unauthorized />;
   return (
@@ -141,6 +241,43 @@ const Update: NextPage<Props> = ({ id }) => {
             image={garageData.image}
           />
         )}
+        <Modal onClose={onCloseModal} isOpen={modal.open} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              <FormattedMessage
+                {...profileStrings.deleteItem}
+                values={{
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  item: <FormattedMessage {...commonStrings[modal.type!]} />
+                }}
+              />
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormattedMessage
+                {...garageStrings.deleteItemAreYouSure}
+                values={{
+                  item: (
+                    <span style={{ textTransform: 'lowercase' }}>
+                      <FormattedMessage {...commonStrings[modal.type!]} />
+                    </span>
+                  )
+                }}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <HStack>
+                <Button onClick={onCloseModal}>
+                  <FormattedMessage {...commonStrings.cancel} />
+                </Button>
+                <Button variant={'solid'} colorScheme="red" onClick={onDelete}>
+                  <FormattedMessage {...commonStrings.delete} />
+                </Button>
+              </HStack>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Tabs
           mt={2}
           variant="enclosed"
@@ -161,38 +298,21 @@ const Update: NextPage<Props> = ({ id }) => {
               {/* liveries list */}
               <Table<LiveriesDataType>
                 actions={[
-                  ({ id }) => (
-                    <Link href={LIVERY_URL(`${id}`)} passHref>
-                      <Button variant={'outline'} size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.view} />
-                      </Button>
-                    </Link>
-                  ),
-                  ({ id }) => (
+                  () => (
                     <Button
-                      disabled={disableDownload(id)}
-                      onClick={onDownload({
-                        selectedLiveries,
-                        currentUser,
-                        liveries: liveriesData,
-                        targetLiveryId: id
-                      })}
-                      variant={'solid'}
+                      onClick={() => onOpenModal(selectedLiveries, 'liveries')}
+                      variant={'outline'}
                       size="sm"
-                      colorScheme="red"
-                    >
-                      <FormattedMessage {...commonStrings.download} />
-                    </Button>
-                  ),
-                  ({ id }) => (
-                    <Button
-                      onClick={() => deleteLivery(id)}
-                      variant={'ghost'}
-                      size="sm"
-                      colorScheme="red"
                     >
                       <FormattedMessage {...commonStrings.delete} />
                     </Button>
+                  ),
+                  ({ id }) => (
+                    <a onClick={() => onClickLivery(id)}>
+                      <Button variant="solid" size="sm" colorScheme="red">
+                        <FormattedMessage {...commonStrings.view} />
+                      </Button>
+                    </a>
                   )
                 ]}
                 columns={[
@@ -218,9 +338,9 @@ const Update: NextPage<Props> = ({ id }) => {
                   }
                 ]}
                 data={
-                  liveriesData?.ids.reduce((prev, id) => {
+                  liveries?.ids.reduce((prev, id) => {
                     const output = [...prev];
-                    const livery = liveriesData.entities[id];
+                    const livery = liveries.entities[id];
                     if (livery) output.push(livery);
                     return output;
                   }, [] as LiveriesDataType) || []
@@ -228,27 +348,27 @@ const Update: NextPage<Props> = ({ id }) => {
                 onSelect={toggleSelectedLiveries}
                 selected={selectedLiveries}
               />
+              <Loader />
             </TabPanel>
             {/* users list */}
             <TabPanel>
               <Table<PublicUserDataType[]>
                 actions={[
+                  () => (
+                    <Button
+                      variant={'outline'}
+                      size="sm"
+                      onClick={() => onOpenModal(selectedDrivers, 'drivers')}
+                    >
+                      <FormattedMessage {...commonStrings.delete} />
+                    </Button>
+                  ),
                   ({ id }) => (
                     <Link href={PROFILE_URL_BY_ID(`${id}`)} passHref>
                       <Button variant={'solid'} size="sm" colorScheme="red">
                         <FormattedMessage {...commonStrings.view} />
                       </Button>
                     </Link>
-                  ),
-                  ({ id }) => (
-                    <Button
-                      variant={'ghost'}
-                      size="sm"
-                      onClick={() => deleteDriver(id)}
-                      colorScheme="red"
-                    >
-                      <FormattedMessage {...commonStrings.delete} />
-                    </Button>
                   )
                 ]}
                 columns={[

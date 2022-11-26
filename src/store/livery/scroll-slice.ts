@@ -18,6 +18,7 @@ import {
 } from '../../types';
 import {
   GARAGES_URL,
+  GARAGES_URL_ID,
   LIVERIES_URL,
   PROFILE_URL,
   PROFILE_URL_ID
@@ -37,12 +38,14 @@ export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
 type Pages =
   | typeof LIVERIES_URL
   | typeof GARAGES_URL
+  | typeof GARAGES_URL_ID
   | typeof PROFILE_URL
   | typeof PROFILE_URL_ID;
 
 const adapters = {
   [LIVERIES_URL]: createEntityAdapter<LiveryDataType>(),
   [GARAGES_URL]: createEntityAdapter<LiveryDataType>(),
+  [GARAGES_URL_ID]: createEntityAdapter<LiveryDataType>(),
   [PROFILE_URL]: createEntityAdapter<LiveryDataType>(),
   [PROFILE_URL_ID]: createEntityAdapter<LiveryDataType>()
 };
@@ -55,6 +58,12 @@ const initialState = {
   [GARAGES_URL]: adapters[GARAGES_URL].getInitialState({
     scrollY: null as number | null,
     selectedGarage: 'NULL' as string | null,
+    selectedLiveries: [] as string[],
+    filters: { ...initialFilters },
+    lastLiveryId: null as EntityId | null
+  }),
+  [GARAGES_URL_ID]: adapters[GARAGES_URL_ID].getInitialState({
+    scrollY: null as number | null,
     selectedLiveries: [] as string[],
     filters: { ...initialFilters },
     lastLiveryId: null as EntityId | null
@@ -146,15 +155,15 @@ const liveryScrollSlice = createSlice({
     },
     selectedLiveriesChanged(state, action: PayloadAction<string | string[]>) {
       const activePage = state.activePage;
-      if (activePage === GARAGES_URL) {
-        let newState = state[GARAGES_URL].selectedLiveries;
+      if (activePage === GARAGES_URL || activePage === GARAGES_URL_ID) {
+        let newState = state[activePage].selectedLiveries;
         if (typeof action.payload === 'string') {
-          if (state[GARAGES_URL].selectedLiveries.includes(action.payload)) {
-            newState = state[GARAGES_URL].selectedLiveries.filter(
+          if (state[activePage].selectedLiveries.includes(action.payload)) {
+            newState = state[activePage].selectedLiveries.filter(
               (id) => id !== action.payload
             );
           }
-          if (!state[GARAGES_URL].selectedLiveries.includes(action.payload)) {
+          if (!state[activePage].selectedLiveries.includes(action.payload)) {
             newState.push(action.payload);
           }
         } else if (Array.isArray(action.payload)) {
@@ -164,7 +173,7 @@ const liveryScrollSlice = createSlice({
           }
         }
 
-        state[GARAGES_URL].selectedLiveries = newState;
+        state[activePage].selectedLiveries = newState;
       }
     }
   },
@@ -244,8 +253,10 @@ const selectSelectedGarage = createSelector(
 
 const selectSelectedLiveries = createSelector(
   selectLiveryScrollSlice,
-  (state) => {
-    return state[GARAGES_URL].selectedLiveries;
+  ({ activePage, ...state }) => {
+    if (activePage === GARAGES_URL || activePage === GARAGES_URL_ID)
+      return state[activePage].selectedLiveries;
+    return [];
   }
 );
 

@@ -14,10 +14,10 @@ import {
   CREATE_GARAGE,
   DELETE_GARAGE,
   UPDATE_GARAGE,
-  DELETE_LIVERIES_FROM_GARAGE,
-  DELETE_USERS_FROM_GARAGE,
-  UPDATE_LIVERIES_IN_GARAGE,
-  UPDATE_USERS_IN_GARAGE,
+  DELETE_LIVERIES_FROM_GARAGE as DELETE_LIVERY_FROM_GARAGE,
+  DELETE_USERS_FROM_GARAGE as DELETE_USER_FROM_GARAGE,
+  UPDATE_LIVERIES_IN_GARAGE as UPDATE_LIVERY_IN_GARAGE,
+  UPDATE_USERS_IN_GARAGE as UPDATE_USER_IN_GARAGE,
   GARAGE_API_ROUTE
 } from './constants';
 
@@ -86,7 +86,7 @@ export const garageApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: [GET_GARAGES]
     }),
-    [UPDATE_LIVERIES_IN_GARAGE]: builder.mutation<{ ids: string[] }, string>({
+    [UPDATE_LIVERY_IN_GARAGE]: builder.mutation<{ ids: string[] }, string>({
       query: (id) => {
         return {
           url: `${GARAGE_API_ROUTE}/${id}/liveries`,
@@ -95,16 +95,20 @@ export const garageApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: [GET_GARAGES]
     }),
-    [DELETE_LIVERIES_FROM_GARAGE]: builder.mutation<{ ids: string[] }, string>({
-      query: (id) => {
+    [DELETE_LIVERY_FROM_GARAGE]: builder.mutation<
+      { id: string },
+      { garageId: string; id: string }
+    >({
+      query: ({ garageId, id }) => {
         return {
-          url: `${GARAGE_API_ROUTE}/${id}/liveries`,
-          method: Method.DELETE
+          url: `${GARAGE_API_ROUTE}/${garageId}/liveries`,
+          method: Method.DELETE,
+          params: id
         };
       },
       invalidatesTags: [GET_GARAGES]
     }),
-    [UPDATE_USERS_IN_GARAGE]: builder.mutation<{ ids: string[] }, string>({
+    [UPDATE_USER_IN_GARAGE]: builder.mutation<{ ids: string[] }, string>({
       query: (id) => {
         return {
           url: `${GARAGE_API_ROUTE}/${id}/users`,
@@ -113,11 +117,15 @@ export const garageApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: [GET_GARAGES]
     }),
-    [DELETE_USERS_FROM_GARAGE]: builder.mutation<{ ids: string[] }, string>({
-      query: (id) => {
+    [DELETE_USER_FROM_GARAGE]: builder.mutation<
+      { id: string },
+      { garageId: string; id: string }
+    >({
+      query: ({ garageId, id }) => {
         return {
-          url: `${GARAGE_API_ROUTE}/${id}/users`,
-          method: Method.DELETE
+          url: `${GARAGE_API_ROUTE}/${garageId}/users`,
+          method: Method.DELETE,
+          params: id
         };
       },
       invalidatesTags: [GET_GARAGES]
