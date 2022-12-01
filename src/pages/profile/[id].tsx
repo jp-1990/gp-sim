@@ -111,7 +111,13 @@ const Profile: NextPage<Props> = ({ id }) => {
       pageDescription="User profile home screen."
       urlPath={PROFILE_URL_BY_ID(id)}
     >
-      <Grid pt={8} maxW="5xl" templateColumns={`repeat(2, auto)`} gap={8}>
+      <Grid
+        pt={8}
+        pr={8}
+        maxW="5xl"
+        templateColumns={`repeat(2, auto)`}
+        gap={8}
+      >
         <GridItem>
           <Flex direction="column" maxW="5xl">
             <Heading size="2xl" pb={4}>
@@ -126,11 +132,11 @@ const Profile: NextPage<Props> = ({ id }) => {
           <Box
             position="relative"
             borderWidth="2px"
-            borderRadius={6}
+            borderRadius={200}
             borderColor={'blackAlpha.100'}
             overflow="hidden"
             h={200}
-            w={280}
+            w={200}
           >
             <ImageWithFallback
               imgAlt={selectedUser?.displayName}

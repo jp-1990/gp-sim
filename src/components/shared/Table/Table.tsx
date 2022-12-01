@@ -120,8 +120,8 @@ export const Table = <DataT extends TableData>({
                       borderRadius={6}
                       borderColor={'blackAlpha.100'}
                       overflow="hidden"
-                      h={20}
-                      w={28}
+                      h="61px"
+                      w="108px"
                     >
                       <ImageWithFallback
                         imgAlt={row['title'] ?? 'image'}

@@ -33,8 +33,7 @@ describe('LiverCard', () => {
       testLivery;
     expectAllToBeInDocument([
       ...Object.values(testValues),
-      creator.displayName,
-      `£${(price / 100).toFixed(2)}`
+      creator.displayName
     ]);
   });
 

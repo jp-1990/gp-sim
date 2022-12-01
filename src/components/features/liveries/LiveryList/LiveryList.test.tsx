@@ -17,9 +17,9 @@ describe('LiverCard', () => {
   const dataCopy = [...data];
   dataCopy.length = 10;
   const liveryData = dataCopy.reduce(
-    (acc, cur) => {
-      const prev = { ids: [...acc.ids], entities: { ...acc.entities } };
+    (prev, cur: any) => {
       prev.ids.push(cur.id);
+      cur.deleted = false;
       prev.entities[cur.id] = cur;
       return prev;
     },
@@ -35,15 +35,11 @@ describe('LiverCard', () => {
       const {
         title,
         car,
-        creator: { displayName },
-        price
+        creator: { displayName }
       } = livery;
       expect(screen.getAllByText(title).length).toBeGreaterThan(0);
       expect(screen.getAllByText(car).length).toBeGreaterThan(0);
       expect(screen.getAllByText(displayName).length).toBeGreaterThan(0);
-      expect(
-        screen.getAllByText(`£${(price / 100).toFixed(2)}`).length
-      ).toBeGreaterThan(0);
     });
   });
 });

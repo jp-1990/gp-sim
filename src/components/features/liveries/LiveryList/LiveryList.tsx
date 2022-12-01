@@ -21,7 +21,7 @@ const LiveryList: ComponentWithAs<'section', ChakraProps & Props> = ({
 }) => {
   return (
     <chakra.section pt={9} {...chakraProps}>
-      <Grid templateColumns="repeat(3, 1fr)" gap={4} w="5xl">
+      <Grid templateColumns="repeat(3, 1fr)" gap={4} maxW="5xl">
         {liveries?.ids.map((e) => {
           const target = liveries?.entities[e.valueOf()];
           if (!target) return null;

@@ -1,14 +1,5 @@
 import { useEffect } from 'react';
-import {
-  chakra,
-  Box,
-  Grid,
-  GridItem,
-  Button,
-  Flex,
-  Text,
-  Heading
-} from '@chakra-ui/react';
+import { chakra, Box, Button, Flex, Text, Heading } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -184,6 +175,7 @@ const Garages: NextPage = () => {
             key="userCollection"
             mb={2}
             mx={0.5}
+            p={2}
             position="relative"
             borderWidth="2px"
             borderRadius={6}
@@ -191,46 +183,34 @@ const Garages: NextPage = () => {
               selectedGarage === null ? highlightedColor : 'blackAlpha.100'
             }
             overflow="hidden"
-            minW="3xs"
+            h="240px"
+            minW="240px"
           >
-            <Grid
-              templateColumns="repeat(6, 1fr)"
-              templateRows="repeat(2, minmax(5rem, auto))"
-              p={2}
-              zIndex="1"
+            <Flex
+              direction="column"
+              alignItems="center"
+              justifyContent="flex-start"
+              h="full"
+              maxW="15rem"
+              overflow="hidden"
               position="relative"
-              top="0"
-              left="0"
+              zIndex={1}
             >
-              <GridItem colSpan={6} rowSpan={1}>
-                <Flex
-                  direction="column"
-                  alignItems="center"
-                  justifyContent="flex-start"
-                  h="full"
-                  maxW="15rem"
-                  overflow="hidden"
-                >
-                  <Text
-                    color={'white'}
-                    borderRadius={5}
-                    px={2}
-                    bg={
-                      selectedGarage === null
-                        ? highlightedColor
-                        : 'blackAlpha.800'
-                    }
-                    fontSize="sm"
-                    noOfLines={1}
-                    w="full"
-                    textAlign="center"
-                  >
-                    <FormattedMessage {...garageStrings.yourCollection} />
-                  </Text>
-                </Flex>
-              </GridItem>
-              <GridItem colSpan={6} rowSpan={1}></GridItem>
-            </Grid>
+              <Text
+                color={'white'}
+                borderRadius={5}
+                px={2}
+                bg={
+                  selectedGarage === null ? highlightedColor : 'blackAlpha.800'
+                }
+                fontSize="sm"
+                noOfLines={1}
+                w="full"
+                textAlign="center"
+              >
+                <FormattedMessage {...garageStrings.yourCollection} />
+              </Text>
+            </Flex>
             <ImageWithFallback
               imgAlt="user livery collection"
               imgUrl={''}
@@ -247,10 +227,13 @@ const Garages: NextPage = () => {
           {garages.ids.map((id) => (
             <Box
               as="button"
+              display="flex"
+              flexDir="column"
               onClick={onSelectGarage(garages.entities[id]?.id)}
               key={id}
               mb={2}
               mx={0.5}
+              p={2}
               position="relative"
               borderWidth="2px"
               borderRadius={6}
@@ -258,70 +241,56 @@ const Garages: NextPage = () => {
                 id === selectedGarage ? highlightedColor : 'blackAlpha.100'
               }
               overflow="hidden"
-              minW="3xs"
+              h="240px"
+              minW="240px"
             >
-              <Grid
-                templateColumns="repeat(6, 1fr)"
-                templateRows="repeat(2, minmax(5rem, auto))"
-                p={2}
-                zIndex="1"
+              <Flex
+                direction="column"
+                alignItems="center"
+                justifyContent="flex-start"
                 position="relative"
-                top="0"
-                left="0"
+                zIndex={1}
+                w="full"
+                overflow="hidden"
               >
-                <GridItem colSpan={6} rowSpan={1}>
-                  <Flex
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="flex-start"
-                    h="full"
-                    maxW="15rem"
-                    overflow="hidden"
-                  >
-                    <Text
-                      color={'white'}
-                      borderRadius={5}
-                      px={2}
-                      bg={
-                        id === selectedGarage
-                          ? highlightedColor
-                          : 'blackAlpha.800'
-                      }
-                      fontSize="sm"
-                      noOfLines={1}
-                      w="full"
-                      textAlign="center"
-                    >
-                      {garages.entities[id]?.title}
-                    </Text>
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={6} rowSpan={1}>
-                  <Flex
-                    direction="column"
-                    alignItems="flex-start"
-                    justifyContent="flex-end"
-                    h="full"
-                    maxW="15rem"
-                    overflow="hidden"
-                  >
-                    <Text
-                      color={'white'}
-                      borderRadius={5}
-                      px={2}
-                      bg={
-                        id === selectedGarage
-                          ? highlightedColor
-                          : 'blackAlpha.800'
-                      }
-                      fontSize="sm"
-                      noOfLines={1}
-                    >
-                      {garages.entities[id]?.creator.displayName}
-                    </Text>
-                  </Flex>
-                </GridItem>
-              </Grid>
+                <Text
+                  color={'white'}
+                  borderRadius={5}
+                  px={2}
+                  bg={
+                    id === selectedGarage ? highlightedColor : 'blackAlpha.800'
+                  }
+                  fontSize="sm"
+                  noOfLines={1}
+                  textAlign="center"
+                  w="full"
+                >
+                  {garages.entities[id]?.title}
+                </Text>
+              </Flex>
+              <Flex flex={1} />
+              <Flex
+                direction="column"
+                alignItems="flex-start"
+                justifyContent="flex-end"
+                maxW="15rem"
+                position="relative"
+                zIndex={1}
+                overflow="hidden"
+              >
+                <Text
+                  color={'white'}
+                  borderRadius={5}
+                  px={2}
+                  bg={
+                    id === selectedGarage ? highlightedColor : 'blackAlpha.800'
+                  }
+                  fontSize="sm"
+                  noOfLines={1}
+                >
+                  {garages.entities[id]?.creator.displayName}
+                </Text>
+              </Flex>
               <ImageWithFallback
                 imgAlt={garages.entities[id]?.title}
                 imgUrl={garages.entities[id]?.image}

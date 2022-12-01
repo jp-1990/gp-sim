@@ -7,8 +7,6 @@ import {
   Button,
   chakra,
   Flex,
-  Grid,
-  GridItem,
   Heading,
   Text,
   useToast
@@ -107,71 +105,61 @@ const Livery: NextPage<Props> = ({ id }) => {
                 values={{ downloads: livery?.downloads || '-' }}
               />
             </Text>
-            <Grid
-              templateColumns="repeat(24, 1fr)"
-              templateRows="repeat(4, minmax(5rem, auto))"
-              gap={4}
-              w="5xl"
-              pb={4}
-            >
-              <GridItem colSpan={5} rowSpan={4}>
-                <Grid
-                  templateColumns="repeat(1, 1fr)"
-                  templateRows="repeat(4, 1fr)"
-                  gap={2}
+            <Flex pb={4}>
+              <Flex direction="column">
+                {Array(4)
+                  .fill('')
+                  .map((_, i) => {
+                    const src = livery?.images[i] || '';
+                    return (
+                      <Box
+                        key={(livery?.title ?? '') + i}
+                        position="relative"
+                        borderRadius={3}
+                        overflow="hidden"
+                        onClick={() => setSelectedImage(i)}
+                        borderColor={selectedImage === i ? 'red' : undefined}
+                        borderWidth={2}
+                        w="160px"
+                        h="90px"
+                        mr={4}
+                        mt={i === 0 ? 0 : 1}
+                      >
+                        <ImageWithFallback
+                          imgUrl={src}
+                          imgAlt={livery?.title}
+                          bg="gray.200"
+                          h="full"
+                          w="full"
+                        />
+                      </Box>
+                    );
+                  })}
+              </Flex>
+              <Flex
+                position="relative"
+                borderRadius={5}
+                overflow="hidden"
+                minW="662px"
+                h="372px"
+              >
+                <ImageWithFallback
+                  imgUrl={livery?.images[selectedImage]}
+                  imgAlt={livery?.title}
+                  bg="gray.200"
                   h="full"
-                >
-                  {Array(4)
-                    .fill('')
-                    .map((_, i) => {
-                      const src = livery?.images[i] || '';
-                      return (
-                        <Box
-                          key={(livery?.title ?? '') + i}
-                          position="relative"
-                          borderRadius={3}
-                          overflow="hidden"
-                          onClick={() => setSelectedImage(i)}
-                          borderColor={selectedImage === i ? 'red' : undefined}
-                          borderWidth={2}
-                        >
-                          <ImageWithFallback
-                            imgUrl={src}
-                            imgAlt={livery?.title}
-                            bg="gray.200"
-                            h="full"
-                            w="full"
-                          />
-                        </Box>
-                      );
-                    })}
-                </Grid>
-              </GridItem>
-              <GridItem colSpan={14} rowSpan={4}>
-                <Box
-                  position="relative"
-                  borderRadius={5}
-                  overflow="hidden"
-                  h="full"
-                >
-                  <ImageWithFallback
-                    imgUrl={livery?.images[selectedImage]}
-                    imgAlt={livery?.title}
-                    bg="gray.200"
-                    h="full"
-                    w="full"
-                  />
-                </Box>
-              </GridItem>
-              <GridItem colSpan={5} rowSpan={4} pl={0}>
+                  w="full"
+                />
+              </Flex>
+              <Flex direction="column" ml={4}>
                 <Heading size="md" pb={4}>
                   {livery?.creator.displayName}
                 </Heading>
                 <Text fontSize="sm" pb={4}>
                   {livery?.description}
                 </Text>
-              </GridItem>
-            </Grid>
+              </Flex>
+            </Flex>
             <Tags pb={12} tags={livery?.tags?.split(',') || []} />
             {!isInUserCollection && (
               <Button

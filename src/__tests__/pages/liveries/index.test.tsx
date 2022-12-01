@@ -23,9 +23,6 @@ describe('Liveries', () => {
         screen.getAllByText(mostRecentLivery.creator.displayName)
       ).toBeTruthy();
       expect(screen.getAllByText(mostRecentLivery.title)).toBeTruthy();
-      expect(
-        screen.getAllByText(`£${(mostRecentLivery.price / 100).toFixed(2)}`)
-      ).toBeTruthy();
     });
   });
 });

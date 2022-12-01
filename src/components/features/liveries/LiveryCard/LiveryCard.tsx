@@ -1,11 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { LinkBox, Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react';
+import { LinkBox, Flex, Text } from '@chakra-ui/react';
 
 import { ImageWithFallback, Rating } from '../../../core';
 import { LiveryDataType } from '../../../../types';
 import { LIVERY_URL } from '../../../../utils/nav';
-import { numberToPrice } from '../../../../utils/functions';
+// import { numberToPrice } from '../../../../utils/functions';
 
 type Props = Pick<
   LiveryDataType,
@@ -31,7 +31,7 @@ const LiveryCard: React.FC<Props> = ({
   creator,
   id,
   image = '',
-  price = 'Free',
+  // price,
   rating,
   title,
   onClick
@@ -43,95 +43,80 @@ const LiveryCard: React.FC<Props> = ({
   return (
     <LinkBox as="button">
       <a onClick={onClick_}>
-        <Box
+        <Flex
+          direction={'column'}
           position="relative"
           border="1px"
           borderRadius={5}
           borderColor="gray.200"
           overflow="hidden"
+          w="320px"
+          h="180px"
         >
-          <Grid
-            templateColumns="repeat(6, 1fr)"
-            templateRows="repeat(3, minmax(5rem, auto))"
-            p={2}
-            zIndex="1"
-            position="relative"
-            top="0"
-            left="0"
-          >
-            <GridItem colSpan={4} rowSpan={1}>
-              <Flex
-                direction="column"
-                alignItems="flex-start"
-                justifyContent="flex-start"
-                h="full"
-              ></Flex>
-            </GridItem>
-            <GridItem colSpan={2} rowSpan={1}>
-              <Rating rating={rating} />
-            </GridItem>
-            <GridItem colSpan={6} rowSpan={1}></GridItem>
-            <GridItem colSpan={5} rowSpan={1}>
-              <Flex
-                direction="column"
-                alignItems="flex-start"
-                justifyContent="flex-end"
-                h="full"
-                maxW="15rem"
-                overflow="hidden"
+          <Flex p={2} zIndex="1" position="relative">
+            <Flex flex={1} />
+            <Rating rating={rating} />
+          </Flex>
+          <Flex h={'full'} opacity={0.7} />
+          <Flex p={2} zIndex="2" position="relative">
+            <Flex
+              direction="column"
+              alignItems="flex-start"
+              justifyContent="flex-end"
+              h="full"
+              maxW="15rem"
+              overflow="hidden"
+            >
+              <Text
+                color={'white'}
+                borderRadius={2}
+                px={1}
+                bg={mainColor}
+                fontSize="sm"
+                noOfLines={1}
               >
-                <Text
-                  color={'white'}
-                  borderRadius={2}
-                  px={1}
-                  bg={mainColor}
-                  fontSize="sm"
-                  noOfLines={1}
-                >
-                  {creator.displayName}
-                </Text>
-                <Text
-                  color={'white'}
-                  borderRadius={2}
-                  px={1}
-                  bg={'blackAlpha.800'}
-                  fontSize="sm"
-                  noOfLines={1}
-                >
-                  {title}
-                </Text>
-                <Text
-                  color={'white'}
-                  borderRadius={2}
-                  px={1}
-                  bg={'blackAlpha.800'}
-                  fontSize="sm"
-                  noOfLines={1}
-                >
-                  {car}
-                </Text>
-              </Flex>
-            </GridItem>
-            <GridItem colSpan={1} rowSpan={1}>
-              <Flex
-                direction="column"
-                alignItems="flex-end"
-                justifyContent="flex-end"
-                h="full"
+                {creator.displayName}
+              </Text>
+              <Text
+                color={'white'}
+                borderRadius={2}
+                px={1}
+                bg={'blackAlpha.800'}
+                fontSize="sm"
+                noOfLines={1}
               >
-                <Text
-                  color={'white'}
-                  borderRadius={2}
-                  px={1}
-                  bg={'blackAlpha.800'}
-                  fontSize="sm"
-                  noOfLines={1}
-                >
-                  {typeof price !== 'string' ? numberToPrice(price) : price}
-                </Text>
-              </Flex>
-            </GridItem>
-          </Grid>
+                {title}
+              </Text>
+              <Text
+                color={'white'}
+                borderRadius={2}
+                px={1}
+                bg={'blackAlpha.800'}
+                fontSize="sm"
+                noOfLines={1}
+              >
+                {car}
+              </Text>
+            </Flex>
+            {/* <Flex flex={1} />
+            <Flex
+              direction="column"
+              alignItems="flex-end"
+              justifyContent="flex-end"
+              minW="52px"
+            >
+              <Text
+                color={'white'}
+                borderRadius={2}
+                px={1}
+                bg={'blackAlpha.800'}
+                fontSize="sm"
+                noOfLines={1}
+              >
+                {typeof price !== 'string' ? numberToPrice(price) : price}
+              </Text>
+            </Flex> */}
+          </Flex>
           <ImageWithFallback
             imgAlt={title}
             imgUrl={image}
@@ -143,7 +128,7 @@ const LiveryCard: React.FC<Props> = ({
             h="full"
             w="full"
           />
-        </Box>
+        </Flex>
       </a>
     </LinkBox>
   );
