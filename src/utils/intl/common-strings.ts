@@ -12,6 +12,10 @@ const actions = {
     id: 'utils.intl.commonStrings.addToCollection',
     defaultMessage: 'Add to Collection'
   },
+  backTo: {
+    id: 'utils.intl.commonStrings.backTo',
+    defaultMessage: 'Back to {value}'
+  },
   cancel: {
     id: 'utils.intl.commonStrings.cancel',
     defaultMessage: 'Cancel'
@@ -36,6 +40,10 @@ const actions = {
     id: 'utils.intl.commonStrings.edit',
     defaultMessage: `Edit`
   },
+  forgottenPassword: {
+    id: 'utils.intl.commonStrings.forgottenPassword',
+    defaultMessage: 'Forgotten your password?'
+  },
   login: {
     id: 'utils.intl.commonStrings.login',
     defaultMessage: 'Login'
@@ -47,6 +55,10 @@ const actions = {
   remove: {
     id: 'utils.intl.commonStrings.remove',
     defaultMessage: 'Remove'
+  },
+  resetPassword: {
+    id: 'utils.intl.commonStrings.resetPassword',
+    defaultMessage: 'Reset Password'
   },
   saveChanges: {
     id: 'utils.intl.commonStrings.saveChanges',
@@ -63,6 +75,10 @@ const actions = {
   selectFiles: {
     id: 'utils.intl.commonStrings.selectFiles',
     defaultMessage: 'Select Files'
+  },
+  sendResetPasswordEmail: {
+    id: 'utils.intl.commonStrings.sendResetPasswordEmail',
+    defaultMessage: 'Send Password Reset Email'
   },
   signUp: {
     id: 'uti.intl.commonStrings.signUp',

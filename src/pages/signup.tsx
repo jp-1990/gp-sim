@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NextPage } from 'next';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -13,18 +13,19 @@ import {
   Text
 } from '@chakra-ui/react';
 
-import { MainLayout } from '../../components/layout';
+import { MainLayout } from '../components/layout';
 
-import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
-import { SIGNUP_URL } from '../../utils/nav';
-import { Form, Input, SubmitButton, useForm } from '../../components/shared';
+import { useAppDispatch, useAppSelector, wrapper } from '../store/store';
+import { SIGNUP_URL } from '../utils/nav';
+import { Form, Input, SubmitButton, useForm } from '../components/shared';
 import {
   FOCUS_BORDER_COLOR,
   validatorOptions
-} from '../../components/shared/Form/utils';
-import { commonStrings, formStrings } from '../../utils/intl';
-import { signUp, ThunkStatus } from '../../store/user/slice';
-import ControlWrapper from '../../components/shared/Form/components/ControlWrapper/ControlWrapper';
+} from '../components/shared/Form/utils';
+import { commonStrings, formStrings } from '../utils/intl';
+import { resetStatus, signUp } from '../store/user/slice';
+import ControlWrapper from '../components/shared/Form/components/ControlWrapper/ControlWrapper';
+import { RequestStatus } from '../types';
 
 const validators = {
   displayName: [validatorOptions.NON_NULL_STRING],
@@ -49,7 +50,13 @@ type FormState = {
 const SignupForm = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.currentUserSlice);
+  const { status } = useAppSelector((state) => state.currentUserSlice);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetStatus());
+    };
+  }, [dispatch]);
 
   const { state, setStateImmutably } = useForm<FormState>();
 
@@ -157,7 +164,7 @@ const SignupForm = () => {
             w="2xs"
             mt={20}
             lineHeight={1}
-            isLoading={status === ThunkStatus.PENDING}
+            isLoading={status === RequestStatus.PENDING}
             loadingText={intl.formatMessage(commonStrings.loading)}
           >
             <FormattedMessage {...commonStrings.signUp} />

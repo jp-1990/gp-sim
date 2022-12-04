@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NextPage } from 'next';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -11,30 +11,37 @@ import {
   Text
 } from '@chakra-ui/react';
 
-import { MainLayout } from '../../components/layout';
+import { MainLayout } from '../components/layout';
 
-import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
-import { LOGIN_URL, SIGNUP_URL } from '../../utils/nav';
-import { Form, Input, SubmitButton } from '../../components/shared';
-import { commonStrings, formStrings } from '../../utils/intl';
-import { signIn } from '../../store/user/slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../store/store';
+import { LOGIN_URL, RESET_PASSWORD } from '../utils/nav';
+import { Form, Input, SubmitButton } from '../components/shared';
+import { commonStrings, formStrings } from '../utils/intl';
+import { RequestStatus } from '../types';
+import { resetPassword, resetStatus } from '../store/user/slice';
 import Link from 'next/link';
-import { RequestStatus } from '../../types';
 
 const Login: NextPage = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.currentUserSlice);
+  const { status } = useAppSelector((state) => state.currentUserSlice);
 
-  const onSubmit = async (state: { email: string; password: string }) => {
-    dispatch(signIn(state));
+  useEffect(() => {
+    return () => {
+      dispatch(resetStatus());
+    };
+  }, [dispatch]);
+
+  const onSubmit = async (state: { email: string }) => {
+    if (!state.email) return;
+    dispatch(resetPassword(state.email));
   };
 
   return (
     <MainLayout
-      pageTitle="Login"
-      pageDescription="Login with your email and password"
-      urlPath={LOGIN_URL}
+      pageTitle="Reset password"
+      pageDescription="Reset your password"
+      urlPath={RESET_PASSWORD}
     >
       <Box
         maxW="5xl"
@@ -48,10 +55,10 @@ const Login: NextPage = () => {
         <chakra.section pt={8}>
           <Flex direction="column" alignItems={'center'} maxW="5xl">
             <Heading size="xl" pb={4}>
-              <FormattedMessage {...commonStrings.login} />
+              <FormattedMessage {...commonStrings.resetPassword} />
             </Heading>
             <Text fontSize="md">
-              <FormattedMessage {...formStrings.welcomeBack} />
+              <FormattedMessage {...commonStrings.forgottenPassword} />
             </Text>
           </Flex>
         </chakra.section>
@@ -62,6 +69,7 @@ const Login: NextPage = () => {
             gap={4}
             w="xs"
             my={8}
+            mb={0}
           >
             <GridItem rowSpan={3} colSpan={12}>
               <Input
@@ -69,15 +77,6 @@ const Login: NextPage = () => {
                 label={<FormattedMessage {...formStrings.email} />}
                 aria-label={intl.formatMessage(formStrings.email)}
                 placeholder={intl.formatMessage(formStrings.emailPlaceholder)}
-              />
-            </GridItem>
-            <GridItem rowSpan={3} colSpan={12}>
-              <Input
-                stateKey={'password'}
-                label={<FormattedMessage {...formStrings.password} />}
-                aria-label={intl.formatMessage(formStrings.password)}
-                placeholder={'********'}
-                type="password"
               />
             </GridItem>
             <GridItem rowSpan={4} colSpan={12}>
@@ -95,22 +94,19 @@ const Login: NextPage = () => {
                   isLoading={status === RequestStatus.PENDING}
                   loadingText={intl.formatMessage(commonStrings.loading)}
                 >
-                  <FormattedMessage {...commonStrings.login} />
+                  <FormattedMessage {...commonStrings.resetPassword} />
                 </SubmitButton>
-                <Text hidden={!error} mt={4} color={'red.500'}>
-                  <FormattedMessage {...formStrings.emailOrPasswordError} />
-                </Text>
               </Box>
             </GridItem>
           </Grid>
         </Form>
-        <Text pt={8} pb={1} fontSize="md">
-          <FormattedMessage {...formStrings.noAccount} />
-        </Text>
-        <Link href={{ pathname: SIGNUP_URL }}>
+        <Link href={{ pathname: LOGIN_URL }}>
           <a>
             <Text as="b" fontSize="lg" color={'red.600'}>
-              <FormattedMessage {...commonStrings.signUp} />
+              <FormattedMessage
+                {...commonStrings.backTo}
+                values={{ value: intl.formatMessage(commonStrings.login) }}
+              />
             </Text>
           </a>
         </Link>

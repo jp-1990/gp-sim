@@ -2,7 +2,11 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Router from 'next/router';
 
-import { CURRENT_USER_SLICE_NAME, USERS_API_ROUTE } from './constants';
+import {
+  ALLOWED_RESET_PASSWORD_ERRORS,
+  CURRENT_USER_SLICE_NAME,
+  USERS_API_ROUTE
+} from './constants';
 import {
   CreateUserProfileDataType,
   RequestStatus,
@@ -11,7 +15,8 @@ import {
 import { auth, signInWithEmailAndPassword } from '../../utils/firebase/client';
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 
 // CURRENT USER SLICE
@@ -77,6 +82,13 @@ const signOut = createAsyncThunk(
   }
 );
 
+const resetPassword = createAsyncThunk(
+  `${CURRENT_USER_SLICE_NAME}/resetPassword`,
+  async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  }
+);
+
 const getCurrentUser = createAsyncThunk(
   `${CURRENT_USER_SLICE_NAME}/setCurrentUser`,
   async (token: string) => {
@@ -97,6 +109,10 @@ const userSlice = createSlice({
   name: CURRENT_USER_SLICE_NAME,
   initialState,
   reducers: {
+    resetStatus(state) {
+      state.error = null;
+      state.status = RequestStatus.IDLE;
+    },
     updateToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload;
     },
@@ -155,10 +171,33 @@ const userSlice = createSlice({
         state.token = action.payload.token;
         state.error = null;
         state.status = RequestStatus.FULFILLED;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.error = null;
+        state.status = RequestStatus.PENDING;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        if (
+          action.error.code &&
+          !ALLOWED_RESET_PASSWORD_ERRORS.includes(action.error.code)
+        ) {
+          state.data = null;
+          state.token = null;
+          state.error = action.error.message ?? null;
+          state.status = RequestStatus.REJECTED;
+        } else {
+          state.status = RequestStatus.IDLE;
+        }
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.data = null;
+        state.token = null;
+        state.error = null;
+        state.status = RequestStatus.FULFILLED;
       });
   }
 });
 
-export const { updateToken, updateLiveries } = userSlice.actions;
-export { getCurrentUser, signIn, signOut, signUp };
+export const { resetStatus, updateToken, updateLiveries } = userSlice.actions;
+export { getCurrentUser, signIn, signOut, signUp, resetPassword };
 export default userSlice;

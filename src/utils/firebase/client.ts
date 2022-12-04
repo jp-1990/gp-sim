@@ -13,5 +13,8 @@ initializeApp(firebaseConfig);
 
 const auth = getAuth();
 
-export { signInWithEmailAndPassword } from 'firebase/auth';
+export {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from 'firebase/auth';
 export { auth };
