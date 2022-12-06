@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { server } from './src/mocks/server';
+import { testServer } from './src/mocks/server';
 
 import next from 'next';
 import { loadEnvConfig } from '@next/env';
@@ -32,17 +32,17 @@ loadEnvConfig(process.cwd());
 window.URL.createObjectURL = jest.fn((file) => `/${file.name}`);
 
 // Establish API mocking before all tests.
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => testServer.listen({ onUnhandledRequest: 'error' }));
 // Reset any request handlers that we may add during the tests,
 beforeEach(() => {
   jest.resetModules();
 });
 // so they don't affect other tests.
 afterEach(() => {
-  server.resetHandlers();
+  testServer.resetHandlers();
 });
 // Clean up after the tests are finished.
-afterAll(() => server.close());
+afterAll(() => testServer.close());
 
 window.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),

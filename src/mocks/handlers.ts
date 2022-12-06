@@ -9,3 +9,10 @@ export const handlers = [
   ...liveriesHandlers,
   ...userHandlers
 ];
+
+export const testHandlers = [
+  ...carsHandlers,
+  ...garagesHandlers,
+  ...liveriesHandlers,
+  ...userHandlers
+];
