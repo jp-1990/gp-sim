@@ -1,7 +1,6 @@
+import { getCars } from '../../../../lib/getCars';
 import { CarsDataType, Method } from '../../../../types';
 import {
-  Collection,
-  firestore,
   NextApiRequestWithAuth,
   NextApiResponse,
   withAuth
@@ -12,13 +11,10 @@ async function handler(
   res: NextApiResponse<CarsDataType | { error: string }>
 ) {
   const method = req.method;
-  const carsRef = firestore.collection(Collection.CARS);
 
   switch (method) {
     case Method.GET: {
-      const carsDoc = await carsRef.doc('cars').get();
-      const cars = carsDoc.data() as { cars: CarsDataType } | undefined;
-      const result = cars ? cars.cars : [];
+      const result = await getCars();
 
       return res.status(200).json(result);
     }
