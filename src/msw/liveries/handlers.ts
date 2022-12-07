@@ -84,7 +84,11 @@ export const liveriesHandlers = [
 
 const formatPostLiveryResponse = (newLivery: CreateLiveryDataType) => {
   const creator = { displayName: 'admin-test' };
-  const { liveryZip, imageFiles, ...liveryData } = newLivery;
+  const {
+    liveryZip: _liveryZip,
+    imageFiles: _imageFiles,
+    ...liveryData
+  } = newLivery;
   const rating = undefined;
   const downloads = 0;
 

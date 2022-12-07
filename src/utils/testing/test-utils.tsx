@@ -82,29 +82,7 @@ const cars = JSON.parse(carData) as CarsDataType;
 
 const defaultPreloadedState = {
   api: {
-    queries: {
-      'getCars(undefined)': {
-        status: 'fulfilled',
-        endpointName: 'getCars',
-        requestId: 'HqeJivaMUHLfCw6zDHfwP',
-        startedTimeStamp: new Date(Date.now()).valueOf() - 200,
-        data: {
-          ...cars.reduce(
-            (acc, curr, i) => {
-              const prev = { ...acc };
-              prev.ids.push(`${i}`);
-              prev.entities[`${i}`] = curr;
-              return prev;
-            },
-            { ids: [], entities: {} } as {
-              ids: string[];
-              entities: Record<string, CarDataType>;
-            }
-          )
-        },
-        fulfilledTimeStamp: new Date(Date.now()).valueOf()
-      }
-    },
+    queries: {},
     mutations: {},
     provided: {},
     subscriptions: {},
@@ -119,7 +97,23 @@ const defaultPreloadedState = {
       reducerPath: 'api'
     }
   },
-  currentUserSlice: defaultCurrentUserSlice
+  currentUserSlice: defaultCurrentUserSlice,
+  carSlice: {
+    ...cars.reduce(
+      (acc, curr, i) => {
+        const prev = { ...acc };
+        prev.ids.push(`${i}`);
+        prev.entities[`${i}`] = curr;
+        return prev;
+      },
+      { ids: [], entities: {} } as {
+        ids: string[];
+        entities: Record<string, CarDataType>;
+      }
+    ),
+    status: 'fulfilled',
+    error: null
+  }
 };
 
 interface Props {

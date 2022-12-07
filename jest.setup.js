@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { testServer } from './src/mocks/server';
+import { testServer } from './src/msw/server';
 
 import next from 'next';
 import { loadEnvConfig } from '@next/env';
@@ -24,6 +24,8 @@ jest.mock('firebase/auth', () => {
     signOut: jest.fn()
   };
 });
+
+jest.mock('src/lib/getCars.ts');
 
 next({});
 
