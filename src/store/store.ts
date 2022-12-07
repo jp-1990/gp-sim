@@ -9,6 +9,8 @@ import { GET_LIVERIES, LIVERY_SCROLL_SLICE_NAME } from './livery/constants';
 import { default as liveryScrollSlice } from './livery/scroll-slice';
 import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
+import { default as carSlice } from './car/slice';
+import { CAR_SLICE_NAME } from './car/constants';
 
 const axiosBaseQuery =
   (
@@ -63,6 +65,7 @@ export const apiSlice = createApi({
 export const storeConfig = {
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    [CAR_SLICE_NAME]: carSlice.reducer,
     [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer,
     [LIVERY_SCROLL_SLICE_NAME]: liveryScrollSlice.reducer
   }

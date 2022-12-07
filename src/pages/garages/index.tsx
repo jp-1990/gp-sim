@@ -5,13 +5,8 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FormattedMessage } from 'react-intl';
 
-import {
-  apiSlice,
-  useAppDispatch,
-  useAppSelector,
-  wrapper
-} from '../../store/store';
-import { getCars } from '../../store/car/api-slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
+import { actions } from '../../store/car/slice';
 import { useGetGaragesQuery } from '../../store/garage/api-slice';
 import {
   activatePage,
@@ -50,6 +45,7 @@ import {
   useDownloadLivery,
   useInfiniteScroll
 } from '../../hooks';
+import { getCars } from '../../lib/getCars';
 
 const Garages: NextPage = () => {
   const router = useRouter();
@@ -403,8 +399,9 @@ const Garages: NextPage = () => {
 export default Garages;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  store.dispatch(getCars.initiate());
-  await Promise.all(apiSlice.util.getRunningOperationPromises());
+  const cars = await getCars();
+  store.dispatch(actions.setCars(cars));
+
   return {
     props: {}
   };

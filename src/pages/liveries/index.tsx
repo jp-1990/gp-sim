@@ -11,7 +11,6 @@ import {
   useAppSelector,
   wrapper
 } from '../../store/store';
-import { getCars } from '../../store/car/api-slice';
 import {
   FilterActionPayload,
   activatePage,
@@ -25,6 +24,7 @@ import {
   createSelectScrollY,
   thunks
 } from '../../store/livery/scroll-slice';
+import { actions } from '../../store/car/slice';
 
 import { LiveryList, LiveryFilter, Mode } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -34,6 +34,7 @@ import { LIVERIES_URL, LIVERY_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import { LiveryDataType } from '../../types';
 import { useInfiniteScroll } from '../../hooks';
+import { getCars } from '../../lib/getCars';
 
 const Liveries: NextPage = () => {
   const router = useRouter();
@@ -111,7 +112,9 @@ const Liveries: NextPage = () => {
 export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  store.dispatch(getCars.initiate());
+  const cars = await getCars();
+  store.dispatch(actions.setCars(cars));
+
   store.dispatch(thunks.getLiveries({}));
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {

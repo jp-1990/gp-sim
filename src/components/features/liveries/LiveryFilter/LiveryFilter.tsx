@@ -16,7 +16,8 @@ import {
   FiltersType,
   SetFiltersType
 } from '../../../../hooks/use-livery-filters';
-import { useGetCarsQuery } from '../../../../store/car/api-slice';
+import { selectors } from '../../../../store/car/slice';
+import { useAppSelector } from '../../../../store/store';
 import { LiveriesFilterKeys as Keys, Order } from '../../../../types';
 import { commonStrings } from '../../../../utils/intl';
 
@@ -36,7 +37,7 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
   ...chakraProps
 }) => {
   const intl = useIntl();
-  const { data: cars } = useGetCarsQuery();
+  const cars = useAppSelector(selectors.selectCars);
 
   // HANDLERS
   const onSearchChange = (event: ChangeEvent<HTMLInputElement>) =>
@@ -91,12 +92,10 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
             onChange={onCarChange}
             value={filters.car}
           >
-            {cars?.ids.map((id) => {
-              const target = cars.entities[id];
-              if (!target) return null;
+            {cars.map((car) => {
               return (
-                <option key={id + target.name} value={target.name}>
-                  {target.name}
+                <option key={car.id + car.name} value={car.name}>
+                  {car.name}
                 </option>
               );
             })}

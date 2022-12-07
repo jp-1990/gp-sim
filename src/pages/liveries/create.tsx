@@ -5,19 +5,18 @@ import { Box, chakra, Flex, Heading, Text } from '@chakra-ui/react';
 
 import { MainLayout } from '../../components/layout';
 import CreateLivery from '../../components/features/liveries/CreateLivery/CreateLivery';
+import { Unauthorized } from '../../components/shared';
 
-import { apiSlice, wrapper } from '../../store/store';
-import { getCars, useGetCarsQuery } from '../../store/car/api-slice';
+import { wrapper } from '../../store/store';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { useAuthCheck } from '../../hooks/use-auth-check';
-import { Unauthorized } from '../../components/shared';
+import { getCars } from '../../lib/getCars';
+import { actions } from '../../store/car/slice';
 
 const Create: NextPage = () => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
-
-  useGetCarsQuery();
 
   if (!currentUser.token) return <Unauthorized />;
   return (
@@ -46,8 +45,9 @@ const Create: NextPage = () => {
 export default Create;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  store.dispatch(getCars.initiate());
-  await Promise.all(apiSlice.util.getRunningOperationPromises());
+  const cars = await getCars();
+  store.dispatch(actions.setCars(cars));
+
   return {
     props: {}
   };

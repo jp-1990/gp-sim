@@ -5,11 +5,7 @@ import { Select } from '../../../../../shared';
 import { formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
 import { useAppSelector } from '../../../../../../store/store';
-import {
-  selectAllCars,
-  selectCarIds
-} from '../../../../../../store/car/api-slice';
-import { EntityId } from '@reduxjs/toolkit';
+import { selectors } from '../../../../../../store/car/slice';
 
 /**
  * Select car input for liveries/create page. Uses Select inside a form provider
@@ -18,8 +14,7 @@ const SelectCar: React.FC = () => {
   const [safeToRender, setSafeToRender] = useState<boolean | undefined>();
   const intl = useIntl();
 
-  const cars = useAppSelector(selectAllCars);
-  const ids = useAppSelector(selectCarIds);
+  const cars = useAppSelector(selectors.selectCars);
 
   useEffect(() => {
     setSafeToRender(true);
@@ -38,11 +33,10 @@ const SelectCar: React.FC = () => {
       w="sm"
     >
       {safeToRender &&
-        ids.map((id: EntityId) => {
-          const targetCar = cars[+id];
+        cars.map((car) => {
           return (
-            <option key={id + targetCar.name} value={targetCar.name}>
-              {targetCar.name}
+            <option key={car.id + car.name} value={car.name}>
+              {car.name}
             </option>
           );
         })}
