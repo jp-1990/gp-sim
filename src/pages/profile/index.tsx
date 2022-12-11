@@ -35,9 +35,9 @@ import {
 
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
 import {
-  useDeleteGarageMutation,
-  useGetGaragesQuery
-} from '../../store/garage/api-slice';
+  selectors as garageSelectors,
+  thunks as garageThunks
+} from '../../store/garage/slice';
 import { useDeleteLiveryMutation } from '../../store/livery/api-slice';
 import {
   activatePage,
@@ -50,7 +50,7 @@ import {
   selectLiveryEntities,
   selectLiveryIds,
   createSelectScrollY,
-  thunks
+  thunks as liveryScrollThunks
 } from '../../store/livery/scroll-slice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 
@@ -69,6 +69,7 @@ const Profile: NextPage = () => {
 
   useEffect(() => {
     dispatch(activatePage(PROFILE_URL));
+    dispatch(garageThunks.getGarages());
     return () => {
       dispatch(activatePage(null));
     };
@@ -100,14 +101,17 @@ const Profile: NextPage = () => {
   // QUERIES
   useEffect(() => {
     if (currentUser.token) {
-      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, filters, lastLiveryId]);
 
-  const { data: garages } = useGetGaragesQuery({});
+  const garages = {
+    ids: useAppSelector(garageSelectors.selectGarageIds),
+    entities: useAppSelector(garageSelectors.selectGarageEntities)
+  };
   const deletions = {
-    garage: useDeleteGarageMutation()[0],
+    garage: (id: string) => dispatch(garageThunks.deleteGarageById({ id })),
     livery: useDeleteLiveryMutation()[0]
   };
 

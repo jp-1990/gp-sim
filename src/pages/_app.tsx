@@ -17,7 +17,7 @@ import { auth } from '../utils/firebase/client';
 import { getCurrentUser } from '../store/user/slice';
 
 if (process.env.NODE_ENV === 'development') {
-  require('../mocks');
+  require('../msw');
 }
 
 function MyApp({ Component, pageProps }: AppProps) {

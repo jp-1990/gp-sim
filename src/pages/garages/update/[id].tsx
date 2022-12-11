@@ -38,13 +38,7 @@ import store, {
   useAppSelector,
   wrapper
 } from '../../../store/store';
-import {
-  getGarageById,
-  getGarages,
-  useDeleteLiveriesFromGarageMutation,
-  useDeleteUsersFromGarageMutation,
-  useGetGarageByIdQuery
-} from '../../../store/garage/api-slice';
+import { getGarageById, getGarages } from '../../../store/garage/api-slice';
 import { useGetUsersQuery } from '../../../store/user/api-slice';
 import {
   activatePage,
@@ -59,7 +53,7 @@ import {
   selectLiveryEntities,
   selectLiveryIds,
   selectSelectedLiveries,
-  thunks
+  thunks as liveryScrollThunks
 } from '../../../store/livery/scroll-slice';
 
 import {
@@ -87,6 +81,11 @@ import {
   useAuthCheck
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
+import {
+  thunks as garageThunks,
+  selectors as garageSelectors,
+  thunks
+} from '../../../store/garage/slice';
 
 interface Props {
   id: string;
@@ -97,10 +96,11 @@ const Update: NextPage<Props> = ({ id }) => {
 
   useEffect(() => {
     dispatch(activatePage(GARAGES_URL_ID));
+    dispatch(garageThunks.getGarageById({ id }));
     return () => {
       dispatch(activatePage(null));
     };
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
@@ -118,6 +118,7 @@ const Update: NextPage<Props> = ({ id }) => {
   const lastLiveryId = useAppSelector(selectLastLiveryId);
   const scrollY = useAppSelector(createSelectScrollY(GARAGES_URL_ID));
   const selectedLiveries = useAppSelector(selectSelectedLiveries);
+  const garageData = useAppSelector(garageSelectors.createSelectGarageById(id));
 
   const liveries = {
     ids: useAppSelector(selectLiveryIds),
@@ -128,12 +129,13 @@ const Update: NextPage<Props> = ({ id }) => {
 
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
 
-  const { data: garageData } = useGetGarageByIdQuery(id);
   const { data: userData } = useGetUsersQuery(userFilters);
 
   const deleters = {
-    liveries: useDeleteLiveriesFromGarageMutation()[0],
-    drivers: useDeleteUsersFromGarageMutation()[0]
+    liveries: async (id: string, ids: string[]) =>
+      dispatch(thunks.updateGarageByIdLiveries({ id, liveriesToRemove: ids })),
+    drivers: async (id: string, ids: string[]) =>
+      dispatch(thunks.updateGarageByIdUsers({ id, usersToRemove: ids }))
   };
 
   // EFFECTS
@@ -149,7 +151,7 @@ const Update: NextPage<Props> = ({ id }) => {
 
   useEffect(() => {
     if (currentUser.token) {
-      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, filters, lastLiveryId]);
@@ -202,8 +204,7 @@ const Update: NextPage<Props> = ({ id }) => {
 
   const onDelete = () => {
     if (modal.ids && modal.type && garageData) {
-      for (const id of modal.ids)
-        deleters[modal.type]({ garageId: garageData.id, id });
+      deleters[modal.type](garageData.id, modal.ids);
     }
     onCloseModal();
   };

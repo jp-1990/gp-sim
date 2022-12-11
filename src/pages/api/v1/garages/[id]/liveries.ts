@@ -84,6 +84,7 @@ async function handler(
         return res.status(500).json({ error: 'internal error' });
       }
     }
+    // TODO this endpoint should no longer be hit. use patch for add/remove liveries from garage
     case Method.DELETE: {
       try {
         // check isAuthenticated

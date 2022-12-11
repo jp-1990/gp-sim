@@ -2,15 +2,16 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-
 import { createWrapper, HYDRATE } from 'next-redux-wrapper';
-import { GET_GARAGES, GET_GARAGE_BY_ID } from './garage/constants';
+
+import { default as carSlice } from './car/slice';
+import { CAR_SLICE_NAME } from './car/constants';
+import { GARAGE_SLICE_NAME } from './garage/constants';
+import { default as garageSlice } from './garage/slice';
 import { GET_LIVERIES, LIVERY_SCROLL_SLICE_NAME } from './livery/constants';
 import { default as liveryScrollSlice } from './livery/scroll-slice';
 import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
-import { default as carSlice } from './car/slice';
-import { CAR_SLICE_NAME } from './car/constants';
 
 const axiosBaseQuery =
   (
@@ -58,7 +59,7 @@ export const apiSlice = createApi({
       return action.payload[reducerPath];
     }
   },
-  tagTypes: [GET_LIVERIES, GET_GARAGES, GET_GARAGE_BY_ID, GET_USERS],
+  tagTypes: [GET_LIVERIES, GET_USERS],
   endpoints: () => ({} as { getLiveries?: any })
 });
 
@@ -67,6 +68,7 @@ export const storeConfig = {
     [apiSlice.reducerPath]: apiSlice.reducer,
     [CAR_SLICE_NAME]: carSlice.reducer,
     [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer,
+    [GARAGE_SLICE_NAME]: garageSlice.reducer,
     [LIVERY_SCROLL_SLICE_NAME]: liveryScrollSlice.reducer
   }
 };

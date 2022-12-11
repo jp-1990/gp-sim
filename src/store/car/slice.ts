@@ -8,6 +8,7 @@ import axios from 'axios';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { CarDataType, CarsDataType, RequestStatus } from '../../types';
+import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
 import { CARS_API_ROUTE, CAR_SLICE_NAME, GET_CARS } from './constants';
 
 // CARS SLICE
@@ -41,6 +42,9 @@ const getCars = createAsyncThunk(
   }
 );
 
+const [thunkPending, thunkRejected] =
+  getTypedThunkPendingAndRejectedCallbacks<CarSliceStateType>();
+
 // SLICE
 const carSlice = createSlice({
   name: CAR_SLICE_NAME,
@@ -60,17 +64,11 @@ const carSlice = createSlice({
         const action = _action as unknown as { payload: KnownRootState };
         return {
           ...state,
-          ...action.payload.carSlice
+          ...action.payload[CAR_SLICE_NAME]
         };
       })
-      .addCase(getCars.pending, (state) => {
-        state.error = null;
-        state.status = RequestStatus.PENDING;
-      })
-      .addCase(getCars.rejected, (state, action) => {
-        state.error = action.error.message ?? null;
-        state.status = RequestStatus.REJECTED;
-      })
+      .addCase(getCars.pending, thunkPending)
+      .addCase(getCars.rejected, thunkRejected)
       .addCase(
         getCars.fulfilled,
         (state, action: PayloadAction<CarsDataType>) => {

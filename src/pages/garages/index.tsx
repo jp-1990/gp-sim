@@ -7,7 +7,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { actions } from '../../store/car/slice';
-import { useGetGaragesQuery } from '../../store/garage/api-slice';
 import {
   activatePage,
   FilterActionPayload,
@@ -23,8 +22,12 @@ import {
   createSelectScrollY,
   selectSelectedGarage,
   selectSelectedLiveries,
-  thunks
+  thunks as liveryScrollThunks
 } from '../../store/livery/scroll-slice';
+import {
+  selectors as garageSelectors,
+  thunks as garageThunks
+} from '../../store/garage/slice';
 
 import { MainLayout } from '../../components/layout';
 import {
@@ -53,6 +56,7 @@ const Garages: NextPage = () => {
 
   useEffect(() => {
     dispatch(activatePage(GARAGES_URL));
+    dispatch(garageThunks.getGarages());
     return () => {
       dispatch(activatePage(null));
     };
@@ -68,6 +72,10 @@ const Garages: NextPage = () => {
   const selectedGarage = useAppSelector(selectSelectedGarage);
   const selectedLiveries = useAppSelector(selectSelectedLiveries);
 
+  const garages = {
+    ids: useAppSelector(garageSelectors.selectGarageIds),
+    entities: useAppSelector(garageSelectors.selectGarageEntities)
+  };
   const liveries = {
     ids: useAppSelector(selectLiveryIds),
     entities: useAppSelector(selectLiveryEntities)
@@ -77,8 +85,7 @@ const Garages: NextPage = () => {
 
   const { onDownload } = useDownloadLivery();
 
-  // QUERIES
-  const { data: garages } = useGetGaragesQuery({});
+  // EFFECTS
 
   useEffect(() => {
     if (selectedGarage === 'NULL' && currentUser.token) onSelectGarage(null)();
@@ -87,7 +94,7 @@ const Garages: NextPage = () => {
 
   useEffect(() => {
     if (currentUser.token) {
-      dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
+      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, lastLiveryId]);

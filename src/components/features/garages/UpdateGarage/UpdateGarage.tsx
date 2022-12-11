@@ -2,8 +2,9 @@ import { Grid, GridItem, Button, useToast } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useUpdateGarageMutation } from '../../../../store/garage/api-slice';
-import { GarageDataType } from '../../../../types';
+import { selectors, thunks } from '../../../../store/garage/slice';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { GarageDataType, RequestStatus } from '../../../../types';
 import {
   commonStrings,
   formStrings,
@@ -36,9 +37,11 @@ const UpdateGarage: React.FC<Props> = ({
       marginTop: '1.25rem'
     }
   });
+  const dispatch = useAppDispatch();
+  const status = useAppSelector(selectors.selectStatus);
+  const isLoading = status === RequestStatus.PENDING;
 
   const { state, setStateImmutably } = useForm<UpdateGarageFormStateType>();
-  const [updateGarage, { isLoading }] = useUpdateGarageMutation();
 
   useEffect(() => {
     setStateImmutably((state) => {
@@ -72,7 +75,7 @@ const UpdateGarage: React.FC<Props> = ({
           id
         };
 
-        await updateGarage(updateGarageInput).unwrap();
+        await dispatch(thunks.updateGarageById(updateGarageInput));
         toast({
           title: intl.formatMessage(formStrings.updateSuccess, {
             item: intl.formatMessage(commonStrings.garage)

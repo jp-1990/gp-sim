@@ -1,5 +1,7 @@
 export const GARAGE_API_ROUTE = '/api/v1/garages';
+export const GARAGE_SLICE_NAME = 'garageSlice';
 export const GARAGE_API_SLICE_NAME = 'garageApiSlice';
+
 export const GET_GARAGES = 'getGarages';
 export const GET_GARAGE_BY_ID = 'getGarageById';
 export const CREATE_GARAGE = 'createGarage';

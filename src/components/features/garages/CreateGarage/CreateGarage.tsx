@@ -2,7 +2,9 @@ import { Grid, GridItem, Divider, Button, useToast } from '@chakra-ui/react';
 import React from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useCreateGarageMutation } from '../../../../store/garage/api-slice';
+import { selectors, thunks } from '../../../../store/garage/slice';
+import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { RequestStatus } from '../../../../types';
 import {
   commonStrings,
   formStrings,
@@ -32,10 +34,12 @@ const CreateGarage = () => {
       marginTop: '1.25rem'
     }
   });
+  const dispatch = useAppDispatch();
+  const status = useAppSelector(selectors.selectStatus);
+  const isLoading = status === RequestStatus.PENDING;
 
   const user = {};
   const { state, resetState } = useForm<CreateGarageFormStateType>();
-  const [createGarage, { isLoading }] = useCreateGarageMutation();
 
   const onClick = async () => {
     try {
@@ -52,7 +56,7 @@ const CreateGarage = () => {
           imageFiles
         };
 
-        await createGarage(createGarageInput).unwrap();
+        await dispatch(thunks.createGarage(createGarageInput));
         resetState(initialState);
         toast({
           title: intl.formatMessage(formStrings.createSuccess, {
