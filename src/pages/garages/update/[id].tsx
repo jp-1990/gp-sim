@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from 'react';
-import { GetStaticPaths, NextPage } from 'next';
+import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FormattedMessage } from 'react-intl';
@@ -32,14 +32,7 @@ import { TableDataTypes } from '../../../components/shared/Table/types';
 
 import UpdateGarage from '../../../components/features/garages/UpdateGarage/UpdateGarage';
 
-import store, {
-  apiSlice,
-  useAppDispatch,
-  useAppSelector,
-  wrapper
-} from '../../../store/store';
-import { getGarageById, getGarages } from '../../../store/garage/api-slice';
-import { useGetUsersQuery } from '../../../store/user/api-slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../../../store/store';
 import {
   activatePage,
   createSelectScrollY,
@@ -55,6 +48,14 @@ import {
   selectSelectedLiveries,
   thunks as liveryScrollThunks
 } from '../../../store/livery/scroll-slice';
+import {
+  thunks as garageThunks,
+  selectors as garageSelectors
+} from '../../../store/garage/slice';
+import {
+  thunks as userThunks,
+  selectors as userSelectors
+} from '../../../store/user/slice';
 
 import {
   GARAGES_URL_ID,
@@ -81,11 +82,6 @@ import {
   useAuthCheck
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
-import {
-  thunks as garageThunks,
-  selectors as garageSelectors,
-  thunks
-} from '../../../store/garage/slice';
 
 interface Props {
   id: string;
@@ -97,9 +93,11 @@ const Update: NextPage<Props> = ({ id }) => {
   useEffect(() => {
     dispatch(activatePage(GARAGES_URL_ID));
     dispatch(garageThunks.getGarageById({ id }));
+    dispatch(userThunks.getUsers(userFilters));
     return () => {
       dispatch(activatePage(null));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
   // AUTH CHECK
@@ -125,17 +123,22 @@ const Update: NextPage<Props> = ({ id }) => {
     entities: useAppSelector(selectLiveryEntities)
   };
 
+  const users = {
+    ids: useAppSelector(userSelectors.selectUserIds),
+    entities: useAppSelector(userSelectors.selectUserEntities)
+  };
+
   const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
 
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
 
-  const { data: userData } = useGetUsersQuery(userFilters);
-
   const deleters = {
     liveries: async (id: string, ids: string[]) =>
-      dispatch(thunks.updateGarageByIdLiveries({ id, liveriesToRemove: ids })),
+      dispatch(
+        garageThunks.updateGarageByIdLiveries({ id, liveriesToRemove: ids })
+      ),
     drivers: async (id: string, ids: string[]) =>
-      dispatch(thunks.updateGarageByIdUsers({ id, usersToRemove: ids }))
+      dispatch(garageThunks.updateGarageByIdUsers({ id, usersToRemove: ids }))
   };
 
   // EFFECTS
@@ -380,9 +383,9 @@ const Update: NextPage<Props> = ({ id }) => {
                   }
                 ]}
                 data={
-                  userData?.ids.reduce((prev, id) => {
+                  users?.ids.reduce((prev, id) => {
                     const output = [...prev];
-                    const user = userData.entities[id];
+                    const user = users.entities[id];
                     if (user) output.push(user);
                     return output;
                   }, [] as PublicUserDataType[]) || []
@@ -407,8 +410,7 @@ export const getStaticProps = wrapper.getStaticProps(
       let id = '';
       if (isString(paramsId)) {
         id = paramsId;
-        store.dispatch(getGarageById.initiate(id));
-        await Promise.all(apiSlice.util.getRunningOperationPromises());
+        await store.dispatch(garageThunks.getGarageById({ id }));
       }
       return {
         props: {
@@ -418,15 +420,14 @@ export const getStaticProps = wrapper.getStaticProps(
     }
 );
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await store.dispatch(getGarages.initiate({}));
-  const ids = data?.ids ?? [];
-  return {
-    paths: ids.map((id) => ({
-      params: {
-        id: `${id.valueOf()}`
-      }
-    })),
-    fallback: 'blocking'
-  };
-};
+// TODO add static paths
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   return {
+//     paths: ids.map((id) => ({
+//       params: {
+//         id: `${id.valueOf()}`
+//       }
+//     })),
+//     fallback: 'blocking'
+//   };
+// };

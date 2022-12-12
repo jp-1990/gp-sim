@@ -1,6 +1,7 @@
 export const USERS_API_ROUTE = '/api/v1/users';
+export const CURRENT = '/current';
 
-export const CURRENT_USER_SLICE_NAME = 'currentUserSlice';
+export const USER_SLICE_NAME = 'userSlice';
 
 export const GET_USERS = 'getUsers';
 export const GET_USER_BY_ID = 'getUserById';

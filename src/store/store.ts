@@ -10,7 +10,7 @@ import { GARAGE_SLICE_NAME } from './garage/constants';
 import { default as garageSlice } from './garage/slice';
 import { GET_LIVERIES, LIVERY_SCROLL_SLICE_NAME } from './livery/constants';
 import { default as liveryScrollSlice } from './livery/scroll-slice';
-import { CURRENT_USER_SLICE_NAME, GET_USERS } from './user/constants';
+import { USER_SLICE_NAME, GET_USERS } from './user/constants';
 import { default as currentUserSlice } from './user/slice';
 
 const axiosBaseQuery =
@@ -67,7 +67,7 @@ export const storeConfig = {
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     [CAR_SLICE_NAME]: carSlice.reducer,
-    [CURRENT_USER_SLICE_NAME]: currentUserSlice.reducer,
+    [USER_SLICE_NAME]: currentUserSlice.reducer,
     [GARAGE_SLICE_NAME]: garageSlice.reducer,
     [LIVERY_SCROLL_SLICE_NAME]: liveryScrollSlice.reducer
   }

@@ -23,7 +23,7 @@ import { navOptions, LOGIN_URL, PROFILE_URL } from '../../../utils/nav/';
 import { messages } from './MainLayout.messages';
 import { profileStrings } from '../../../utils/intl';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
-import { signOut } from '../../../store/user/slice';
+import { thunks } from '../../../store/user/slice';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={10}>
@@ -65,8 +65,10 @@ const MainLayout: React.FC<Props> = ({
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const currentUser = !!useAppSelector((state) => state.currentUserSlice.token);
-  const logout = () => dispatch(signOut());
+  const currentUser = !!useAppSelector(
+    (state) => state.userSlice.currentUser.data
+  );
+  const logout = () => dispatch(thunks.signOut());
 
   const headerChakraHeight = 14;
   const footerChakraHeight = 28;

@@ -23,6 +23,7 @@ import {
   getLiveryById,
   useGetLiveryByIdQuery
 } from '../../store/livery/api-slice';
+import { selectors, thunks } from '../../store/user/slice';
 
 import { MainLayout } from '../../components/layout';
 import { ImageWithFallback, Rating, Tags } from '../../components/core';
@@ -30,8 +31,7 @@ import { ImageWithFallback, Rating, Tags } from '../../components/core';
 import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
 import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
-import { useUpdateUserLiveriesMutation } from '../../store/user/api-slice';
-import { updateLiveries } from '../../store/user/slice';
+import { RequestStatus } from '../../types';
 
 interface Props {
   id: string;
@@ -51,10 +51,11 @@ const Livery: NextPage<Props> = ({ id }) => {
     }
   });
 
-  const currentUser = useAppSelector((state) => state.currentUserSlice);
+  const currentUser = useAppSelector(selectors.selectCurrentUser);
+  const status = useAppSelector(selectors.selectCurrentUserStatus);
+  const isLoading = status === RequestStatus.PENDING;
 
   const { data: livery } = useGetLiveryByIdQuery(id);
-  const [updateUserLiveries, { isLoading }] = useUpdateUserLiveriesMutation();
 
   const isInUserCollection = currentUser.data?.liveries.includes(id);
 
@@ -63,12 +64,7 @@ const Livery: NextPage<Props> = ({ id }) => {
     if (!currentUser.token) return router.push(LOGIN_URL);
 
     try {
-      await updateUserLiveries({
-        liveries: payload,
-        token: currentUser.token
-      }).unwrap();
-
-      dispatch(updateLiveries(payload));
+      dispatch(thunks.updateCurrentUserLiveries({ liveries: payload }));
 
       toast({
         title: intl.formatMessage(formStrings.updateSuccess, {

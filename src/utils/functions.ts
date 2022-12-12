@@ -33,15 +33,29 @@ type MinimalState = {
 export const getTypedThunkPendingAndRejectedCallbacks = <
   T extends MinimalState
 >() => {
+  /**
+   * Accepts a 'state' arg, and mutates state.error to null, state.status to 'pending'
+   */
   const pendingCallback = (state: T) => {
     state.error = null;
     state.status = RequestStatus.PENDING;
   };
 
+  /**
+   * Accepts 'state' and 'action' args. Mutates state.error to action.error.message, state.status to 'rejected'
+   */
   const rejectedCallback = (state: T, action: { error: SerializedError }) => {
     state.error = action.error.message ?? 'something went wrong';
     state.status = RequestStatus.REJECTED;
   };
 
-  return [pendingCallback, rejectedCallback] as const;
+  /**
+   * Accepts a 'state' arg. Mutates state.error to null, state.status to 'fulfilled'
+   */
+  const fulfilledCallback = (state: T) => {
+    state.error = null;
+    state.status = RequestStatus.FULFILLED;
+  };
+
+  return [pendingCallback, rejectedCallback, fulfilledCallback] as const;
 };

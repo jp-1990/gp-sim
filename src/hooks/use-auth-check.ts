@@ -8,7 +8,7 @@ import { LOGIN_URL } from '../utils/nav';
  * Hook to get current user state, and redirect user if they are not logged in
  */
 export const useAuthCheck = () => {
-  const currentUser = useAppSelector((state) => state.currentUserSlice);
+  const currentUser = useAppSelector((state) => state.userSlice.currentUser);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {

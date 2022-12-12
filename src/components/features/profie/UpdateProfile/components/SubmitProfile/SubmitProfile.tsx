@@ -5,11 +5,12 @@ import { useToast } from '@chakra-ui/react';
 import { SubmitButton, useForm } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
 
-import { useUpdateUserProfileMutation } from '../../../../../../store/user/api-slice';
-
 import { initialState } from '../../config';
 import { UpdateProfileFormStateType } from '../../types';
 import { mapUpdateProfileFormStateToRequestInput } from '../../utils';
+import { selectors, thunks } from '../../../../../../store/user/slice';
+import { useAppDispatch, useAppSelector } from '../../../../../../store/store';
+import { RequestStatus } from '../../../../../../types';
 
 /**
  * Submit button for profile page. Uses SubmitButton inside a form provider to submit the state of the form.
@@ -24,9 +25,12 @@ const SubmitProfile = () => {
       marginTop: '1.25rem'
     }
   });
+  const dispatch = useAppDispatch();
+  const status = useAppSelector(selectors.selectCurrentUserStatus);
+  const isLoading = status === RequestStatus.PENDING;
+
   const user = {};
   const { state, resetState } = useForm<UpdateProfileFormStateType>();
-  const [updateProfile, { isLoading }] = useUpdateUserProfileMutation();
 
   const onClick = async () => {
     try {
@@ -43,7 +47,7 @@ const SubmitProfile = () => {
           imageFiles
         };
 
-        await updateProfile(updateProfileInput).unwrap();
+        await dispatch(thunks.updateCurrentUser(updateProfileInput));
         resetState(initialState);
         toast({
           title: intl.formatMessage(formStrings.updateSuccess, {

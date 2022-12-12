@@ -15,6 +15,7 @@ import {
   UpdateGarageDataType
 } from '../../types';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
+import { selectors as currentUserSelectors } from '../user/slice';
 import {
   CREATE_GARAGE,
   DELETE_GARAGE,
@@ -45,9 +46,17 @@ type KnownRootState = { [GARAGE_SLICE_NAME]: GarageSliceStateType };
 // THUNKS
 const getGarages = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${GET_GARAGES}`,
-  async () => {
+  async (_, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const { data } = await axios.get<GaragesDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}`
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}`,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
     );
 
     return data;
@@ -56,13 +65,17 @@ const getGarages = createAsyncThunk(
 
 const createGarage = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${CREATE_GARAGE}`,
-  async (data: CreateGarageDataType) => {
+  async (data: CreateGarageDataType, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.post<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}`,
       data,
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          authorization: token ?? ''
         }
       }
     );
@@ -73,9 +86,17 @@ const createGarage = createAsyncThunk(
 
 const getGarageById = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${GET_GARAGE_BY_ID}`,
-  async ({ id }: { id: string }) => {
+  async ({ id }: { id: string }, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.get<GarageDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
     );
 
     return res.data;
@@ -84,13 +105,17 @@ const getGarageById = createAsyncThunk(
 
 const updateGarageById = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${UPDATE_GARAGE}`,
-  async ({ id, ...data }: UpdateGarageDataType) => {
+  async ({ id, ...data }: UpdateGarageDataType, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`,
       { data },
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          authorization: token ?? ''
         }
       }
     );
@@ -101,9 +126,17 @@ const updateGarageById = createAsyncThunk(
 
 const deleteGarageById = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${DELETE_GARAGE}`,
-  async ({ id }: { id: string }) => {
+  async ({ id }: { id: string }, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.delete<{ id: string }>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
     );
 
     return res.data;
@@ -112,21 +145,28 @@ const deleteGarageById = createAsyncThunk(
 
 const updateGarageByIdLiveries = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${UPDATE_LIVERIES_IN_GARAGE}`,
-  async ({
-    id,
-    liveriesToAdd,
-    liveriesToRemove
-  }: {
-    id: string;
-    liveriesToAdd?: string[];
-    liveriesToRemove?: string[];
-  }) => {
+  async (
+    {
+      id,
+      liveriesToAdd,
+      liveriesToRemove
+    }: {
+      id: string;
+      liveriesToAdd?: string[];
+      liveriesToRemove?: string[];
+    },
+    { getState }
+  ) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/liveries`,
       { liveriesToAdd, liveriesToRemove },
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          authorization: token ?? ''
         }
       }
     );
@@ -137,21 +177,28 @@ const updateGarageByIdLiveries = createAsyncThunk(
 
 const updateGarageByIdUsers = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${UPDATE_USERS_IN_GARAGE}`,
-  async ({
-    id,
-    usersToAdd,
-    usersToRemove
-  }: {
-    id: string;
-    usersToAdd?: string[];
-    usersToRemove?: string[];
-  }) => {
+  async (
+    {
+      id,
+      usersToAdd,
+      usersToRemove
+    }: {
+      id: string;
+      usersToAdd?: string[];
+      usersToRemove?: string[];
+    },
+    { getState }
+  ) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/users`,
       { usersToAdd, usersToRemove },
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          authorization: token ?? ''
         }
       }
     );

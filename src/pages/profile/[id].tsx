@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Grid, Text, GridItem } from '@chakra-ui/react';
-import { GetStaticPaths, NextPage } from 'next';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { ImageWithFallback } from '../../components/core';
@@ -22,17 +22,11 @@ import {
   FilterActionPayload,
   filtersChanged
 } from '../../store/livery/scroll-slice';
-import store, {
-  apiSlice,
-  useAppDispatch,
-  useAppSelector,
-  wrapper
-} from '../../store/store';
 import {
-  getUserById,
-  getUsers,
-  useGetUserByIdQuery
-} from '../../store/user/api-slice';
+  selectors as userSelectors,
+  thunks as userThunks
+} from '../../store/user/slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { LiveryDataType } from '../../types';
 import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
@@ -46,9 +40,11 @@ const Profile: NextPage<Props> = ({ id }) => {
 
   useEffect(() => {
     dispatch(activatePage(PROFILE_URL_ID));
+    dispatch(userThunks.getUserById({ id }));
     return () => {
       dispatch(activatePage(null));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   // HOOKS
@@ -60,12 +56,11 @@ const Profile: NextPage<Props> = ({ id }) => {
     ids: useAppSelector(selectLiveryIds),
     entities: useAppSelector(selectLiveryEntities)
   };
+  const selectedUser = useAppSelector(userSelectors.createSelectUserById(id));
 
   const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
 
-  // QUERIES
-  const { data: selectedUser } = useGetUserByIdQuery(id);
-
+  // EFFECTS
   useEffect(() => {
     if (selectedUser?.liveries.length) {
       setFilters({
@@ -160,14 +155,12 @@ const Profile: NextPage<Props> = ({ id }) => {
 export default Profile;
 
 export const getStaticProps = wrapper.getStaticProps(
-  (store) =>
+  (_store) =>
     async ({ params }) => {
       const paramsId = params?.id;
       let id = '';
       if (isString(paramsId)) {
         id = paramsId;
-        store.dispatch(getUserById.initiate(id));
-        await Promise.all(apiSlice.util.getRunningOperationPromises());
       }
       return {
         props: {
@@ -177,15 +170,16 @@ export const getStaticProps = wrapper.getStaticProps(
     }
 );
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const { data } = await store.dispatch(getUsers.initiate({}));
-  const ids = data?.ids ?? [];
-  return {
-    paths: ids.map((id) => ({
-      params: {
-        id: `${id.valueOf()}`
-      }
-    })),
-    fallback: 'blocking'
-  };
-};
+// TODO fix get static paths
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const { data } = await store.dispatch(getUsers.initiate({}));
+//   const ids = data?.ids ?? [];
+//   return {
+//     paths: ids.map((id) => ({
+//       params: {
+//         id: `${id.valueOf()}`
+//       }
+//     })),
+//     fallback: 'blocking'
+//   };
+// };
