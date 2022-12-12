@@ -259,9 +259,10 @@ const userSlice = createSlice({
       // HYDRATE
       .addCase(HYDRATE, (state, _action) => {
         const action = _action as unknown as { payload: KnownRootState };
+        const users = { users: action.payload[USER_SLICE_NAME].users };
         return {
           ...state,
-          ...action.payload[USER_SLICE_NAME]
+          ...users
         };
       })
 
