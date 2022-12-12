@@ -14,7 +14,7 @@ import English from '../../lang/en.json';
 import French from '../../lang/fr.json';
 
 import { auth } from '../utils/firebase/client';
-import { getCurrentUser } from '../store/user/slice';
+import { actions, thunks } from '../store/user/slice';
 
 if (process.env.NODE_ENV === 'development') {
   require('../msw');
@@ -40,7 +40,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (user) {
         const token = await user.getIdToken();
-        dispatch(getCurrentUser(token));
+        dispatch(actions.setToken(token));
+        await dispatch(thunks.getCurrentUser());
       }
     });
     return () => unsub();
