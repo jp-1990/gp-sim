@@ -18,23 +18,23 @@ import { LOGIN_URL, RESET_PASSWORD } from '../utils/nav';
 import { Form, Input, SubmitButton } from '../components/shared';
 import { commonStrings, formStrings } from '../utils/intl';
 import { RequestStatus } from '../types';
-import { resetPassword, resetStatus } from '../store/user/slice';
+import { actions, selectors, thunks } from '../store/user/slice';
 import Link from 'next/link';
 
 const Login: NextPage = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { status } = useAppSelector((state) => state.currentUserSlice);
+  const status = useAppSelector(selectors.selectCurrentUserStatus);
 
   useEffect(() => {
     return () => {
-      dispatch(resetStatus());
+      dispatch(actions.resetStatus());
     };
   }, [dispatch]);
 
   const onSubmit = async (state: { email: string }) => {
     if (!state.email) return;
-    dispatch(resetPassword(state.email));
+    dispatch(thunks.resetPassword(state.email));
   };
 
   return (

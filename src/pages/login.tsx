@@ -18,23 +18,24 @@ import { useAppDispatch, useAppSelector, wrapper } from '../store/store';
 import { LOGIN_URL, RESET_PASSWORD, SIGNUP_URL } from '../utils/nav';
 import { Form, Input, SubmitButton } from '../components/shared';
 import { commonStrings, formStrings } from '../utils/intl';
-import { resetStatus, signIn } from '../store/user/slice';
+import { actions, selectors, thunks } from '../store/user/slice';
 import Link from 'next/link';
 import { RequestStatus } from '../types';
 
 const Login: NextPage = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.currentUserSlice);
+  const error = useAppSelector(selectors.selectCurrentUserError);
+  const status = useAppSelector(selectors.selectCurrentUserStatus);
 
   useEffect(() => {
     return () => {
-      dispatch(resetStatus());
+      dispatch(actions.resetStatus());
     };
   }, [dispatch]);
 
   const onSubmit = async (state: { email: string; password: string }) => {
-    dispatch(signIn(state));
+    dispatch(thunks.signIn(state));
   };
 
   return (

@@ -23,7 +23,7 @@ import {
   validatorOptions
 } from '../components/shared/Form/utils';
 import { commonStrings, formStrings } from '../utils/intl';
-import { resetStatus, signUp } from '../store/user/slice';
+import { actions, selectors, thunks } from '../store/user/slice';
 import ControlWrapper from '../components/shared/Form/components/ControlWrapper/ControlWrapper';
 import { RequestStatus } from '../types';
 
@@ -50,11 +50,11 @@ type FormState = {
 const SignupForm = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const { status } = useAppSelector((state) => state.currentUserSlice);
+  const status = useAppSelector(selectors.selectCurrentUserStatus);
 
   useEffect(() => {
     return () => {
-      dispatch(resetStatus());
+      dispatch(actions.resetStatus());
     };
   }, [dispatch]);
 
@@ -78,7 +78,9 @@ const SignupForm = () => {
     email,
     password
   }: FormState) => {
-    dispatch(signUp({ forename, surname, displayName, email, password }));
+    dispatch(
+      thunks.signUp({ forename, surname, displayName, email, password })
+    );
   };
 
   return (
