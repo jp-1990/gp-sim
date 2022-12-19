@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from 'react';
-import { NextPage } from 'next';
+import { GetStaticPaths, NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FormattedMessage } from 'react-intl';
@@ -418,14 +418,10 @@ export const getStaticProps = wrapper.getStaticProps(
     }
 );
 
-// TODO add static paths
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   return {
-//     paths: ids.map((id) => ({
-//       params: {
-//         id: `${id.valueOf()}`
-//       }
-//     })),
-//     fallback: 'blocking'
-//   };
-// };
+// TODO fix get static paths
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+};

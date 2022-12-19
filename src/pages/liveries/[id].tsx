@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NextPage } from 'next';
+import { GetStaticPaths, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -195,14 +195,9 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 // TODO fix get static paths
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   const ids = (data as any)?.ids ?? [];
-//   return {
-//     paths: ids.map((id: any) => ({
-//       params: {
-//         id: `${id.valueOf()}`
-//       }
-//     })),
-//     fallback: 'blocking'
-//   };
-// };
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
+  };
+};

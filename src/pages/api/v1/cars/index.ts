@@ -1,4 +1,4 @@
-import { getCars } from '../../../../lib/getCars';
+import { getCars } from '../../../../lib/car';
 import { CarsDataType, Method } from '../../../../types';
 import {
   NextApiRequestWithAuth,

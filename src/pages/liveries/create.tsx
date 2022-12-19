@@ -11,7 +11,7 @@ import { wrapper } from '../../store/store';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { useAuthCheck } from '../../hooks/use-auth-check';
-import { getCars } from '../../lib/getCars';
+import { getCars } from '../../lib/car';
 import { actions } from '../../store/car/slice';
 
 const Create: NextPage = () => {

@@ -37,7 +37,7 @@ import {
   useDownloadLivery,
   useInfiniteScroll
 } from '../../hooks';
-import { getCars } from '../../lib/getCars';
+import { getCars } from '../../lib/car';
 
 const Garages: NextPage = () => {
   const router = useRouter();

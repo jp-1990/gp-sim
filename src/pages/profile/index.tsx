@@ -34,7 +34,7 @@ import {
 } from '../../components/shared';
 
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
-import { getCars } from '../../lib/getCars';
+import { getCars } from '../../lib/car';
 import { actions as carActions } from '../../store/car/slice';
 import {
   selectors as garageSelectors,

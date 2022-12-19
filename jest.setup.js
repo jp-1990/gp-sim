@@ -25,7 +25,8 @@ jest.mock('firebase/auth', () => {
   };
 });
 
-jest.mock('src/lib/getCars.ts');
+jest.mock('src/lib/car.ts');
+jest.mock('src/lib/user.ts');
 
 next({});
 
