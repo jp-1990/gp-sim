@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Button, Flex } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { FormattedMessage } from 'react-intl';
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
@@ -18,15 +17,12 @@ import { LiveryList, LiveryFilter, Mode } from '../../components/features';
 import { MainLayout } from '../../components/layout';
 import { PageHeading } from '../../components/shared';
 
-import { LIVERIES_URL, LIVERY_CREATE_URL, LIVERY_URL } from '../../utils/nav';
+import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
-import { LiveryDataType } from '../../types';
 import { useInfiniteScroll } from '../../hooks';
 import { getCars } from '../../lib/car';
 
 const Liveries: NextPage = () => {
-  const router = useRouter();
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -60,9 +56,8 @@ const Liveries: NextPage = () => {
       });
   }, [scrollY]);
 
-  const onClickLivery = (livery: LiveryDataType) => {
+  const onClickLivery = () => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
-    router.push(LIVERY_URL(livery.id));
   };
 
   const setFilters = (payload: FilterActionPayload) =>
@@ -104,7 +99,6 @@ export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   const cars = await getCars();
   store.dispatch(carActions.setCars(cars));
 
-  store.dispatch(liveryThunks.getLiveries({}));
   return {
     props: {}
   };

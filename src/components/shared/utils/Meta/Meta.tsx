@@ -1,8 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
 
-const SITE_TITLE = 'Sim Paddock';
-const BASE_URL = '';
+const SITE_TITLE = process.env.NEXT_PUBLIC_SITE_TITLE;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 /*
 // TODO:

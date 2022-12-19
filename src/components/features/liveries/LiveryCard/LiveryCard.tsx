@@ -1,10 +1,10 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import { LinkBox, Flex, Text } from '@chakra-ui/react';
 
 import { ImageWithFallback, Rating } from '../../../core';
 import { LiveryDataType } from '../../../../types';
 import { LIVERY_URL } from '../../../../utils/nav';
+import Link from 'next/link';
 // import { numberToPrice } from '../../../../utils/functions';
 
 type Props = Pick<
@@ -36,13 +36,12 @@ const LiveryCard: React.FC<Props> = ({
   title,
   onClick
 }) => {
-  const router = useRouter();
-  const onClick_ = onClick ?? (() => router.push(LIVERY_URL(id)));
+  const onClick_ = onClick ?? (() => null);
 
   const mainColor = 'red';
   return (
-    <LinkBox as="button">
-      <a onClick={onClick_}>
+    <LinkBox as="button" onClick={onClick_}>
+      <Link href={`${LIVERY_URL(id)}`} passHref>
         <Flex
           direction={'column'}
           position="relative"
@@ -129,7 +128,7 @@ const LiveryCard: React.FC<Props> = ({
             w="full"
           />
         </Flex>
-      </a>
+      </Link>
     </LinkBox>
   );
 };
