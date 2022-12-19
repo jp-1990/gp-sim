@@ -6,7 +6,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { configureStore, Store } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
-import { apiSlice, storeConfig } from '../../store/store';
+import { storeConfig } from '../../store/store';
 import theme from '../../styles/chakra-theme';
 
 import English from '../../../lang/en.json';
@@ -81,22 +81,6 @@ const carData = fs.readFileSync('src/utils/dev-data/cars.json', 'utf-8');
 const cars = JSON.parse(carData) as CarsDataType;
 
 const defaultPreloadedState = {
-  api: {
-    queries: {},
-    mutations: {},
-    provided: {},
-    subscriptions: {},
-    config: {
-      online: true,
-      focused: true,
-      middlewareRegistered: true,
-      refetchOnFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMountOrArgChange: false,
-      keepUnusedDataFor: 60,
-      reducerPath: 'api'
-    }
-  },
   userSlice: {
     currentUser: defaultCurrentUserState,
     users: {
@@ -182,9 +166,7 @@ const TestProviders: React.FC<Props> = ({
   preloadedState = defaultPreloadedState,
   testStore = configureStore({
     ...storeConfig,
-    preloadedState,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(apiSlice.middleware)
+    preloadedState
   }),
   children
 }) => {
