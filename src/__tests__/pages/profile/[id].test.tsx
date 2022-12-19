@@ -8,7 +8,7 @@ const userData = usersData.find((user) => user.id === '0');
 describe('Profile', () => {
   it('renders with the user display name based on data', async () => {
     if (!userData) return false;
-    render(<Profile id="0" />);
+    render(<Profile id={userData.id} user={userData} />);
     await waitFor(() => {
       expect(
         screen.queryAllByText(userData.displayName).length

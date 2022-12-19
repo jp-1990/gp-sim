@@ -247,6 +247,9 @@ const userSlice = createSlice({
     setToken(state, action: PayloadAction<string | null>) {
       state.currentUser.token = action.payload;
     },
+    setUser(state, action) {
+      usersAdapter.setOne(state.users, action.payload);
+    },
     updateLiveries(state, action: PayloadAction<string[]>) {
       const newState = { ...state };
       for (const livery of action.payload)

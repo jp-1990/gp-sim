@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Grid, Text, GridItem } from '@chakra-ui/react';
-import { NextPage } from 'next';
+import { GetStaticPaths, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { ImageWithFallback } from '../../components/core';
@@ -8,69 +8,72 @@ import LiveryFilter, {
   Mode
 } from '../../components/features/liveries/LiveryFilter/LiveryFilter';
 import { MainLayout } from '../../components/layout';
-import { useInfiniteScroll } from '../../hooks';
+
 import {
   FilterActionPayload,
-  actions,
-  selectors,
-  thunks
+  actions as liveryActions,
+  selectors as liverySelectors,
+  thunks as liveryThunks
 } from '../../store/livery/slice';
-import {
-  selectors as userSelectors,
-  thunks as userThunks
-} from '../../store/user/slice';
+import { actions as userActions } from '../../store/user/slice';
+import { actions as carActions } from '../../store/car/slice';
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
-import { LiveryDataType } from '../../types';
+
+import { useInfiniteScroll } from '../../hooks';
+import { LiveryDataType, UserDataType } from '../../types';
 import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
+import { getUserById, getUsers } from '../../lib/user';
+import { getCars } from '../../lib/car';
 
 interface Props {
   id: string;
+  user: UserDataType;
 }
-const Profile: NextPage<Props> = ({ id }) => {
+const Profile: NextPage<Props> = ({ id, user }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(actions.activatePage(PROFILE_URL_ID));
-    dispatch(userThunks.getUserById({ id }));
+    dispatch(liveryActions.activatePage(PROFILE_URL_ID));
     return () => {
-      dispatch(actions.activatePage(null));
+      dispatch(liveryActions.activatePage(null));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   // HOOKS
-  const filters = useAppSelector(selectors.selectFilters);
-  const lastLiveryId = useAppSelector(selectors.selectLastLiveryId);
-  const scrollY = useAppSelector(selectors.createSelectScrollY(PROFILE_URL_ID));
+  const filters = useAppSelector(liverySelectors.selectFilters);
+  const lastLiveryId = useAppSelector(liverySelectors.selectLastLiveryId);
+  const scrollY = useAppSelector(
+    liverySelectors.createSelectScrollY(PROFILE_URL_ID)
+  );
 
   const liveries = {
-    ids: useAppSelector(selectors.selectLiveryIds),
-    entities: useAppSelector(selectors.selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.selectLiveryIds),
+    entities: useAppSelector(liverySelectors.selectLiveryEntities)
   };
-  const selectedUser = useAppSelector(userSelectors.createSelectUserById(id));
 
   const { Loader } = useInfiniteScroll(
-    () => dispatch(thunks.getLiveries({ ...filters, lastLiveryId })),
+    () => dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId })),
     liveries
   );
 
   // EFFECTS
   useEffect(() => {
-    if (selectedUser?.liveries.length) {
+    if (user.liveries.length) {
       setFilters({
         key: 'ids',
-        value: selectedUser?.liveries.join('&') ?? ''
+        value: user.liveries.join('&') ?? ''
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedUser?.liveries]);
+  }, [user.liveries]);
 
   useEffect(() => {
-    if (selectedUser?.liveries.length) {
+    if (user.liveries.length) {
       dispatch(
-        thunks.getLiveries({
+        liveryThunks.getLiveries({
           ...filters,
           lastLiveryId
         })
@@ -89,12 +92,12 @@ const Profile: NextPage<Props> = ({ id }) => {
 
   // HANDLERS
   const onClickLivery = (livery: LiveryDataType) => {
-    dispatch(actions.scrollYChanged(window.scrollY));
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(livery.id));
   };
 
   const setFilters = (payload: FilterActionPayload) =>
-    dispatch(actions.filtersChanged(payload));
+    dispatch(liveryActions.filtersChanged(payload));
 
   return (
     <MainLayout
@@ -112,10 +115,10 @@ const Profile: NextPage<Props> = ({ id }) => {
         <GridItem>
           <Flex direction="column" maxW="5xl">
             <Heading size="2xl" pb={4}>
-              {selectedUser?.displayName}
+              {user.displayName}
             </Heading>
             <Text fontSize="lg" pt={2}>
-              {selectedUser?.about}
+              {user.about}
             </Text>
           </Flex>
         </GridItem>
@@ -130,8 +133,8 @@ const Profile: NextPage<Props> = ({ id }) => {
             w={200}
           >
             <ImageWithFallback
-              imgAlt={selectedUser?.displayName}
-              imgUrl={selectedUser?.image ?? undefined}
+              imgAlt={user.displayName}
+              imgUrl={user.image ?? undefined}
             />
           </Box>
         </GridItem>
@@ -151,31 +154,39 @@ const Profile: NextPage<Props> = ({ id }) => {
 export default Profile;
 
 export const getStaticProps = wrapper.getStaticProps(
-  (_store) =>
+  (store) =>
     async ({ params }) => {
       const paramsId = params?.id;
       let id = '';
       if (isString(paramsId)) {
         id = paramsId;
       }
+
+      // get user by id and cars
+      const [user, cars] = await Promise.all([getUserById(id), getCars()]);
+
+      if (!user || !cars) {
+        return { notFound: true };
+      }
+
+      // set user and cars to store
+      store.dispatch(userActions.setUser(user));
+      store.dispatch(carActions.setCars(cars));
+
       return {
         props: {
-          id
+          id,
+          user
         }
       };
     }
 );
 
-// TODO fix get static paths
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   const { data } = await store.dispatch(getUsers.initiate({}));
-//   const ids = data?.ids ?? [];
-//   return {
-//     paths: ids.map((id) => ({
-//       params: {
-//         id: `${id.valueOf()}`
-//       }
-//     })),
-//     fallback: 'blocking'
-//   };
-// };
+export const getStaticPaths: GetStaticPaths = async () => {
+  const users = await getUsers();
+
+  return {
+    paths: users.map(({ id }) => ({ params: { id } })),
+    fallback: 'blocking'
+  };
+};

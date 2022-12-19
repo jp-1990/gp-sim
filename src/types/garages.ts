@@ -17,7 +17,7 @@ export type GaragesResponseType = GaragesDataType;
 
 export interface CreateGarageDataType
   extends Pick<GarageDataType, 'title' | 'description'> {
-  imageFile: File;
+  imageFile?: File;
 }
 
 export type UpdateGarageDataType = Pick<GarageDataType, 'id'> &
