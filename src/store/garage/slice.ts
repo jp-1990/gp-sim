@@ -5,7 +5,6 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { HYDRATE } from 'next-redux-wrapper';
 
 import {
   CreateGarageDataType,
@@ -222,14 +221,6 @@ const garageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // HYDRATE
-      .addCase(HYDRATE, (state, _action) => {
-        const action = _action as unknown as { payload: KnownRootState };
-        return {
-          ...state,
-          ...action.payload[GARAGE_SLICE_NAME]
-        };
-      })
       // GET GARAGES
       .addCase(getGarages.pending, thunkPending)
       .addCase(getGarages.rejected, thunkRejected)
