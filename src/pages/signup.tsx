@@ -15,7 +15,7 @@ import {
 
 import { MainLayout } from '../components/layout';
 
-import { useAppDispatch, useAppSelector, wrapper } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { SIGNUP_URL } from '../utils/nav';
 import { Form, Input, SubmitButton, useForm } from '../components/shared';
 import {
@@ -212,9 +212,3 @@ const Signup: NextPage = () => {
 };
 
 export default Signup;
-
-export const getStaticProps = wrapper.getStaticProps(() => async () => {
-  return {
-    props: {}
-  };
-});

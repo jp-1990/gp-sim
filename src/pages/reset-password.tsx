@@ -13,7 +13,7 @@ import {
 
 import { MainLayout } from '../components/layout';
 
-import { useAppDispatch, useAppSelector, wrapper } from '../store/store';
+import { useAppDispatch, useAppSelector } from '../store/store';
 import { LOGIN_URL, RESET_PASSWORD } from '../utils/nav';
 import { Form, Input, SubmitButton } from '../components/shared';
 import { commonStrings, formStrings } from '../utils/intl';
@@ -116,9 +116,3 @@ const Login: NextPage = () => {
 };
 
 export default Login;
-
-export const getStaticProps = wrapper.getStaticProps(() => async () => {
-  return {
-    props: {}
-  };
-});
