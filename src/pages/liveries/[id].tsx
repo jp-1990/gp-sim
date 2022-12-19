@@ -14,7 +14,12 @@ import {
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 
-import { selectors, thunks } from '../../store/user/slice';
+import {
+  selectors as userSelectors,
+  thunks as userThunks
+} from '../../store/user/slice';
+import { actions as carActions } from '../../store/car/slice';
+import { actions as liveryActions } from '../../store/livery/slice';
 
 import { MainLayout } from '../../components/layout';
 import { ImageWithFallback, Rating, Tags } from '../../components/core';
@@ -23,6 +28,8 @@ import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
 import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
 import { LiveryDataType, RequestStatus } from '../../types';
+import { getLiveries, getLiveryById } from '../../lib/livery';
+import { getCars } from '../../lib/car';
 
 interface Props {
   id: string;
@@ -43,8 +50,8 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
     }
   });
 
-  const currentUser = useAppSelector(selectors.selectCurrentUser);
-  const status = useAppSelector(selectors.selectCurrentUserStatus);
+  const currentUser = useAppSelector(userSelectors.selectCurrentUser);
+  const status = useAppSelector(userSelectors.selectCurrentUserStatus);
   const isLoading = status === RequestStatus.PENDING;
 
   const isInUserCollection = currentUser.data?.liveries.includes(id);
@@ -54,7 +61,7 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
     if (!currentUser.token) return router.push(LOGIN_URL);
 
     try {
-      dispatch(thunks.updateCurrentUserLiveries({ liveries: payload }));
+      dispatch(userThunks.updateCurrentUserLiveries({ liveries: payload }));
 
       toast({
         title: intl.formatMessage(formStrings.updateSuccess, {
@@ -174,7 +181,6 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
 
 export default Livery;
 
-// TODO fix get static props
 export const getStaticProps = wrapper.getStaticProps(
   (store) =>
     async ({ params }) => {
@@ -182,22 +188,31 @@ export const getStaticProps = wrapper.getStaticProps(
       let id = '';
       if (isString(paramsId)) id = paramsId;
 
-      // get livery by id
+      // get user by id and cars
+      const [livery, cars] = await Promise.all([getLiveryById(id), getCars()]);
 
-      // set to store
+      if (!livery || !cars) {
+        return { notFound: true };
+      }
+
+      // set user and cars to store
+      store.dispatch(liveryActions.setLivery(livery));
+      store.dispatch(carActions.setCars(cars));
 
       return {
         props: {
-          id
+          id,
+          livery
         }
       };
     }
 );
 
-// TODO fix get static paths
 export const getStaticPaths: GetStaticPaths = async () => {
+  const liveries = await getLiveries();
+
   return {
-    paths: [],
+    paths: liveries.map(({ id }) => ({ params: { id } })),
     fallback: 'blocking'
   };
 };

@@ -5,7 +5,6 @@ import { Box, chakra, Flex, Heading, Text } from '@chakra-ui/react';
 
 import { MainLayout } from '../../components/layout';
 
-import { wrapper } from '../../store/store';
 import { garageStrings } from '../../utils/intl';
 import { GARAGE_CREATE_URL } from '../../utils/nav';
 
@@ -42,9 +41,3 @@ const Create: NextPage = () => {
 };
 
 export default Create;
-
-export const getStaticProps = wrapper.getStaticProps(() => async () => {
-  return {
-    props: {}
-  };
-});

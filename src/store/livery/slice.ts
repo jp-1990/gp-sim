@@ -239,6 +239,9 @@ const liverySlice = createSlice({
 
         state[activePage].selectedLiveries = newState;
       }
+    },
+    setLivery(state, action: PayloadAction<LiveryDataType>) {
+      liveriesAdapter.setOne(state.liveries, action.payload);
     }
   },
   extraReducers(builder) {

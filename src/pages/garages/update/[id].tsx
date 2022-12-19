@@ -47,6 +47,7 @@ import {
   thunks as userThunks,
   selectors as userSelectors
 } from '../../../store/user/slice';
+import { actions as carActions } from '../../../store/car/slice';
 
 import {
   GARAGES_URL_ID,
@@ -73,6 +74,8 @@ import {
   useAuthCheck
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
+import { getGarages } from '../../../lib/garage';
+import { getCars } from '../../../lib/car';
 
 interface Props {
   id: string;
@@ -408,8 +411,14 @@ export const getStaticProps = wrapper.getStaticProps(
       let id = '';
       if (isString(paramsId)) {
         id = paramsId;
-        await store.dispatch(garageThunks.getGarageById({ id }));
       }
+
+      // get cars
+      const cars = await getCars();
+
+      // set cars to store
+      store.dispatch(carActions.setCars(cars));
+
       return {
         props: {
           id
@@ -418,10 +427,11 @@ export const getStaticProps = wrapper.getStaticProps(
     }
 );
 
-// TODO fix get static paths
 export const getStaticPaths: GetStaticPaths = async () => {
+  const garages = await getGarages();
+
   return {
-    paths: [],
+    paths: garages.map(({ id }) => ({ params: { id } })),
     fallback: 'blocking'
   };
 };
