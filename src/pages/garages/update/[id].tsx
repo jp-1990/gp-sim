@@ -34,20 +34,11 @@ import UpdateGarage from '../../../components/features/garages/UpdateGarage/Upda
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../../store/store';
 import {
-  activatePage,
-  createSelectScrollY,
   FilterActionPayload,
-  filtersChanged,
-  lastLiveryChanged,
-  scrollYChanged,
-  selectedLiveriesChanged,
-  selectFilters,
-  selectLastLiveryId,
-  selectLiveryEntities,
-  selectLiveryIds,
-  selectSelectedLiveries,
-  thunks as liveryScrollThunks
-} from '../../../store/livery/scroll-slice';
+  actions as liveryActions,
+  selectors as liverySelectors,
+  thunks as liveryThunks
+} from '../../../store/livery/slice';
 import {
   thunks as garageThunks,
   selectors as garageSelectors
@@ -91,11 +82,11 @@ const Update: NextPage<Props> = ({ id }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(activatePage(GARAGES_URL_ID));
+    dispatch(liveryActions.activatePage(GARAGES_URL_ID));
     dispatch(garageThunks.getGarageById({ id }));
     dispatch(userThunks.getUsers(userFilters));
     return () => {
-      dispatch(activatePage(null));
+      dispatch(liveryActions.activatePage(null));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
@@ -112,15 +103,19 @@ const Update: NextPage<Props> = ({ id }) => {
   });
 
   // HOOKS
-  const filters = useAppSelector(selectFilters);
-  const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(createSelectScrollY(GARAGES_URL_ID));
-  const selectedLiveries = useAppSelector(selectSelectedLiveries);
+  const filters = useAppSelector(liverySelectors.selectFilters);
+  const lastLiveryId = useAppSelector(liverySelectors.selectLastLiveryId);
+  const scrollY = useAppSelector(
+    liverySelectors.createSelectScrollY(GARAGES_URL_ID)
+  );
+  const selectedLiveries = useAppSelector(
+    liverySelectors.selectSelectedLiveries
+  );
   const garageData = useAppSelector(garageSelectors.createSelectGarageById(id));
 
   const liveries = {
-    ids: useAppSelector(selectLiveryIds),
-    entities: useAppSelector(selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.selectLiveryIds),
+    entities: useAppSelector(liverySelectors.selectLiveryEntities)
   };
 
   const users = {
@@ -128,7 +123,10 @@ const Update: NextPage<Props> = ({ id }) => {
     entities: useAppSelector(userSelectors.selectUserEntities)
   };
 
-  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+  const { Loader } = useInfiniteScroll(
+    () => dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId })),
+    liveries
+  );
 
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
 
@@ -154,7 +152,7 @@ const Update: NextPage<Props> = ({ id }) => {
 
   useEffect(() => {
     if (currentUser.token) {
-      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
+      dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, filters, lastLiveryId]);
@@ -187,13 +185,13 @@ const Update: NextPage<Props> = ({ id }) => {
   };
 
   const setLiveryFilters = (payload: FilterActionPayload) =>
-    dispatch(filtersChanged(payload));
+    dispatch(liveryActions.filtersChanged(payload));
 
   const toggleSelectedLiveries = (payload: string | string[]) =>
-    dispatch(selectedLiveriesChanged(payload));
+    dispatch(liveryActions.selectedLiveriesChanged(payload));
 
   const onClickLivery = (id: string) => {
-    dispatch(scrollYChanged(window.scrollY));
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(id));
   };
 
