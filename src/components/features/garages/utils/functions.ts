@@ -23,11 +23,6 @@ export const mapCreateGarageFormStateToRequestInput = ({
   if (!user?.sub) throw new Error('No user found');
   return {
     title: formState.title,
-    description: formState.description,
-    creator: {
-      id: user.sub,
-      displayName: user.nickname || '',
-      image: user.picture
-    }
+    description: formState.description
   };
 };

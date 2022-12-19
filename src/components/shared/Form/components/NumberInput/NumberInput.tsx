@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect } from 'react';
 import {
   ComponentWithAs,
@@ -35,6 +36,8 @@ const NumberInput: ComponentWithAs<
 
   const setDefaultValueToState = () => {
     !state[stateKey] &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Next cannot read type of 'prev' on build
       setState((prev) => {
         const prevState = { ...prev };
         prevState[stateKey] = chakraProps.defaultValue;

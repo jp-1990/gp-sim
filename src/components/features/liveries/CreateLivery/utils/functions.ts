@@ -27,14 +27,9 @@ export const mapCreateLiveryFormStateToRequestInput = ({
   return {
     title: formState.title,
     car: formState.car,
-    description: formState.description,
-    price: typeof formState.price === 'string' ? 0 : formState.price,
-    creator: {
-      id: user.sub,
-      displayName: user.nickname || '',
-      image: user.picture
-    },
-    tags: formState.searchTags,
+    description: formState.description ?? '',
+    price: typeof formState.price === 'string' ? 0 : formState.price ?? 0,
+    tags: formState.searchTags ?? '',
     isPublic: formState.publicLivery,
     garage: formState.privateGarage ? formState.garage : undefined,
     garageKey: formState.privateGarage ? formState.garageKey : undefined

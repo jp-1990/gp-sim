@@ -22,7 +22,6 @@ export const mapUpdateProfileFormStateToRequestInput = ({
   }
   if (!user?.sub) throw new Error('No user found');
   return {
-    id: user.sub,
     about: formState.about || '',
     forename: formState.forename || '',
     surname: formState.surname || '',

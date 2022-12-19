@@ -47,6 +47,8 @@ const SelectFiles = <T extends string>({
   const fieldId = `${stateKey}-selectFiles`;
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Next cannot read type of 'prev' on build
     setState((prev) => {
       const prevState = { ...prev };
       prevState[stateKey] = [] as File[];

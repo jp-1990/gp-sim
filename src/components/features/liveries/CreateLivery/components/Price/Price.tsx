@@ -30,6 +30,7 @@ const Price = () => {
       step={0.01}
       min={0}
       allowMouseWheel
+      // eslint-disable-next-line no-useless-escape
       isValidCharacter={(str) => !!str.match(/^[0-9\.]*$/g)}
     >
       <NumberInputField />

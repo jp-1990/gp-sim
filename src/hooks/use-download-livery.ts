@@ -1,5 +1,5 @@
-import { LiverySliceStateType } from '../store/livery/api-slice';
-import { CurrentUserStateType } from '../store/user/slice';
+import { UserSliceStateType } from '../store/user/slice';
+import { LiveryDataType } from '../types';
 
 export const useDownloadLivery = () => {
   const onDownload =
@@ -11,8 +11,13 @@ export const useDownloadLivery = () => {
     }: {
       targetLiveryId: string;
       selectedLiveries: string[];
-      currentUser: CurrentUserStateType;
-      liveries: LiverySliceStateType | undefined;
+      currentUser: UserSliceStateType['currentUser'];
+      liveries:
+        | {
+            ids: string[];
+            entities: Record<string, LiveryDataType | undefined>;
+          }
+        | undefined;
     }) =>
     () => {
       const liveriesToDownload = [

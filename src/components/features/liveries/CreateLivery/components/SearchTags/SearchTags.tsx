@@ -12,6 +12,7 @@ import { Tag } from '../../../../../core';
  */
 const SearchTags = () => {
   const intl = useIntl();
+
   return (
     <Tags<typeof stateKeys.SEARCH_TAGS>
       validators={validators.searchTags}
@@ -23,18 +24,21 @@ const SearchTags = () => {
       })}
       w={48}
     >
-      {(state) => {
-        if (!state) return null;
-        const { [stateKeys.SEARCH_TAGS]: tags } = state;
-        const tagsArray = tags.split(',').filter((e) => e.trim());
-        return (
-          <Flex role="list" mt={2}>
-            {tagsArray.map((tag, i) => {
-              return <Tag key={tag + i} tag={tag} />;
-            })}
-          </Flex>
-        );
-      }}
+      {
+        // @ts-expect-error type mismatch
+        (state) => {
+          if (!state) return null;
+          const { [stateKeys.SEARCH_TAGS]: tags } = state;
+          const tagsArray = tags.split(',').filter((e) => e.trim());
+          return (
+            <Flex role="list" mt={2}>
+              {tagsArray.map((tag, i) => {
+                return <Tag key={tag + i} tag={tag} />;
+              })}
+            </Flex>
+          );
+        }
+      }
     </Tags>
   );
 };

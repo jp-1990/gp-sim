@@ -26,7 +26,7 @@ type TagsProps<T extends string> = DefaultInputProps &
   ChakraInputProps & {
     helperText?: React.ReactNode;
     children?:
-      | ((state: StateWithStateKey<T, string> | undefined) => React.ReactNode)
+      | ((state: StateWithStateKey<T, string> | undefined) => ReactNode)
       | ReactNode;
   };
 
@@ -46,6 +46,8 @@ const Tags = <T extends string>({
   const fieldId = `${stateKey}-tags`;
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Next cannot read type of 'prev' on build
     setState((prev) => {
       const prevState = { ...prev };
       prevState[stateKey] = '';
