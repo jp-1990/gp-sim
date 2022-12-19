@@ -27,6 +27,8 @@ jest.mock('firebase/auth', () => {
 
 jest.mock('src/lib/car.ts');
 jest.mock('src/lib/user.ts');
+jest.mock('src/lib/livery.ts');
+jest.mock('src/lib/garage.ts');
 
 next({});
 
