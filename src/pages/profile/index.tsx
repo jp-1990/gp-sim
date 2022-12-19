@@ -34,25 +34,19 @@ import {
 } from '../../components/shared';
 
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
+import { getCars } from '../../lib/getCars';
+import { actions as carActions } from '../../store/car/slice';
 import {
   selectors as garageSelectors,
   thunks as garageThunks
 } from '../../store/garage/slice';
-import { useDeleteLiveryMutation } from '../../store/livery/api-slice';
 import {
-  activatePage,
   FilterActionPayload,
-  filtersChanged,
-  lastLiveryChanged,
-  scrollYChanged,
-  selectFilters,
-  selectLastLiveryId,
-  selectLiveryEntities,
-  selectLiveryIds,
-  createSelectScrollY,
-  thunks as liveryScrollThunks
-} from '../../store/livery/scroll-slice';
-import { useAppDispatch, useAppSelector } from '../../store/store';
+  actions as liveryActions,
+  selectors as liverySelectors,
+  thunks as liveryThunks
+} from '../../store/livery/slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 
 import { GaragesDataType, LiveriesDataType } from '../../types';
 import {
@@ -68,10 +62,10 @@ const Profile: NextPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(activatePage(PROFILE_URL));
+    dispatch(liveryActions.activatePage(PROFILE_URL));
     dispatch(garageThunks.getGarages());
     return () => {
-      dispatch(activatePage(null));
+      dispatch(liveryActions.activatePage(null));
     };
   }, [dispatch]);
 
@@ -87,32 +81,30 @@ const Profile: NextPage = () => {
   });
 
   // HOOKS
-  const filters = useAppSelector(selectFilters);
-  const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(createSelectScrollY(PROFILE_URL));
+  const filters = useAppSelector(liverySelectors.selectFilters);
+  const lastLiveryId = useAppSelector(liverySelectors.selectLastLiveryId);
+  const scrollY = useAppSelector(
+    liverySelectors.createSelectScrollY(PROFILE_URL)
+  );
 
   const liveries = {
-    ids: useAppSelector(selectLiveryIds),
-    entities: useAppSelector(selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.selectLiveryIds),
+    entities: useAppSelector(liverySelectors.selectLiveryEntities)
   };
 
-  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
-
-  // QUERIES
-  useEffect(() => {
-    if (currentUser.token) {
-      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, filters, lastLiveryId]);
+  const { Loader } = useInfiniteScroll(() => {
+    if (!currentUser.token) return;
+    dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId }));
+  }, liveries);
 
   const garages = {
     ids: useAppSelector(garageSelectors.selectGarageIds),
     entities: useAppSelector(garageSelectors.selectGarageEntities)
   };
+
   const deletions = {
     garage: (id: string) => dispatch(garageThunks.deleteGarageById({ id })),
-    livery: useDeleteLiveryMutation()[0]
+    livery: (id: string) => dispatch(liveryThunks.deleteLiveryById({ id }))
   };
 
   useEffect(() => {
@@ -135,10 +127,10 @@ const Profile: NextPage = () => {
 
   // HANDLERS
   const setFilters = (payload: FilterActionPayload) =>
-    dispatch(filtersChanged(payload));
+    dispatch(liveryActions.filtersChanged(payload));
 
   const onClickLivery = (id: string) => {
-    dispatch(scrollYChanged(window.scrollY));
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(id));
   };
 
@@ -361,3 +353,12 @@ const Profile: NextPage = () => {
 };
 
 export default Profile;
+
+export const getStaticProps = wrapper.getStaticProps((store) => async () => {
+  const cars = await getCars();
+  store.dispatch(carActions.setCars(cars));
+
+  return {
+    props: {}
+  };
+});

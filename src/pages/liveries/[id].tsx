@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { GetStaticPaths, NextPage } from 'next';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -12,17 +12,8 @@ import {
   useToast
 } from '@chakra-ui/react';
 
-import store, {
-  apiSlice,
-  useAppDispatch,
-  useAppSelector,
-  wrapper
-} from '../../store/store';
-import {
-  getLiveries,
-  getLiveryById,
-  useGetLiveryByIdQuery
-} from '../../store/livery/api-slice';
+import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
+
 import { selectors, thunks } from '../../store/user/slice';
 
 import { MainLayout } from '../../components/layout';
@@ -31,12 +22,13 @@ import { ImageWithFallback, Rating, Tags } from '../../components/core';
 import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
 import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
-import { RequestStatus } from '../../types';
+import { LiveryDataType, RequestStatus } from '../../types';
 
 interface Props {
   id: string;
+  livery: LiveryDataType;
 }
-const Livery: NextPage<Props> = ({ id }) => {
+const Livery: NextPage<Props> = ({ id, livery }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
   const router = useRouter();
@@ -54,8 +46,6 @@ const Livery: NextPage<Props> = ({ id }) => {
   const currentUser = useAppSelector(selectors.selectCurrentUser);
   const status = useAppSelector(selectors.selectCurrentUserStatus);
   const isLoading = status === RequestStatus.PENDING;
-
-  const { data: livery } = useGetLiveryByIdQuery(id);
 
   const isInUserCollection = currentUser.data?.liveries.includes(id);
 
@@ -184,14 +174,18 @@ const Livery: NextPage<Props> = ({ id }) => {
 
 export default Livery;
 
+// TODO fix get static props
 export const getStaticProps = wrapper.getStaticProps(
   (store) =>
     async ({ params }) => {
       const paramsId = params?.id;
       let id = '';
       if (isString(paramsId)) id = paramsId;
-      store.dispatch(getLiveryById.initiate(id));
-      await Promise.all(apiSlice.util.getRunningOperationPromises());
+
+      // get livery by id
+
+      // set to store
+
       return {
         props: {
           id
@@ -200,16 +194,15 @@ export const getStaticProps = wrapper.getStaticProps(
     }
 );
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  // @ts-expect-error no idea
-  const { data } = await store.dispatch(getLiveries.initiate({}));
-  const ids = (data as any)?.ids ?? [];
-  return {
-    paths: ids.map((id: any) => ({
-      params: {
-        id: `${id.valueOf()}`
-      }
-    })),
-    fallback: 'blocking'
-  };
-};
+// TODO fix get static paths
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const ids = (data as any)?.ids ?? [];
+//   return {
+//     paths: ids.map((id: any) => ({
+//       params: {
+//         id: `${id.valueOf()}`
+//       }
+//     })),
+//     fallback: 'blocking'
+//   };
+// };

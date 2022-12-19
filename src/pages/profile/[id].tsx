@@ -10,18 +10,11 @@ import LiveryFilter, {
 import { MainLayout } from '../../components/layout';
 import { useInfiniteScroll } from '../../hooks';
 import {
-  activatePage,
-  selectFilters,
-  selectLastLiveryId,
-  createSelectScrollY,
-  selectLiveryEntities,
-  selectLiveryIds,
-  lastLiveryChanged,
-  thunks,
-  scrollYChanged,
   FilterActionPayload,
-  filtersChanged
-} from '../../store/livery/scroll-slice';
+  actions,
+  selectors,
+  thunks
+} from '../../store/livery/slice';
 import {
   selectors as userSelectors,
   thunks as userThunks
@@ -39,26 +32,29 @@ const Profile: NextPage<Props> = ({ id }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(activatePage(PROFILE_URL_ID));
+    dispatch(actions.activatePage(PROFILE_URL_ID));
     dispatch(userThunks.getUserById({ id }));
     return () => {
-      dispatch(activatePage(null));
+      dispatch(actions.activatePage(null));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   // HOOKS
-  const filters = useAppSelector(selectFilters);
-  const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(createSelectScrollY(PROFILE_URL_ID));
+  const filters = useAppSelector(selectors.selectFilters);
+  const lastLiveryId = useAppSelector(selectors.selectLastLiveryId);
+  const scrollY = useAppSelector(selectors.createSelectScrollY(PROFILE_URL_ID));
 
   const liveries = {
-    ids: useAppSelector(selectLiveryIds),
-    entities: useAppSelector(selectLiveryEntities)
+    ids: useAppSelector(selectors.selectLiveryIds),
+    entities: useAppSelector(selectors.selectLiveryEntities)
   };
   const selectedUser = useAppSelector(userSelectors.createSelectUserById(id));
 
-  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+  const { Loader } = useInfiniteScroll(
+    () => dispatch(thunks.getLiveries({ ...filters, lastLiveryId })),
+    liveries
+  );
 
   // EFFECTS
   useEffect(() => {
@@ -93,12 +89,12 @@ const Profile: NextPage<Props> = ({ id }) => {
 
   // HANDLERS
   const onClickLivery = (livery: LiveryDataType) => {
-    dispatch(scrollYChanged(window.scrollY));
+    dispatch(actions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(livery.id));
   };
 
   const setFilters = (payload: FilterActionPayload) =>
-    dispatch(filtersChanged(payload));
+    dispatch(actions.filtersChanged(payload));
 
   return (
     <MainLayout

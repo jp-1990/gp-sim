@@ -9,3 +9,7 @@ export enum Method {
 export type Token = {
   token: string;
 };
+
+export enum Limits {
+  LIVERIES = 12
+}

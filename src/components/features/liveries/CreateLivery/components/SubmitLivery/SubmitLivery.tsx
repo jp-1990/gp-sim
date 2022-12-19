@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useToast } from '@chakra-ui/react';
 
@@ -8,18 +8,22 @@ import {
   formStrings,
   commonStrings
 } from '../../../../../../utils/intl';
-import { useCreateLiveryMutation } from '../../../../../../store/livery/api-slice';
+import { thunks } from '../../../../../../store/livery/slice';
 import {
   mapCreateLiveryFormStateToRequestInput,
   zipLiveryFiles
 } from '../../utils';
 import { CreateLiveryFormStateType } from '../../types';
 import { initialState } from '../../config';
+import { useAppDispatch } from '../../../../../../store/store';
 
 /**
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to submit the state of the form.
  */
 const SubmitLivery = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useAppDispatch();
   const intl = useIntl();
   const toast = useToast({
     duration: 8000,
@@ -31,40 +35,40 @@ const SubmitLivery = () => {
   });
   const user = {};
   const { state, resetState } = useForm<CreateLiveryFormStateType>();
-  const [createLivery, { isLoading }] = useCreateLiveryMutation();
 
   const onClick = async () => {
+    setIsLoading(true);
     try {
-      if (!isLoading) {
-        // prepare livery files
-        const liveryZip = await zipLiveryFiles({
-          folderName: state.title,
-          liveryFiles: state.liveryFiles
-        });
+      // prepare livery files
+      const liveryZip = await zipLiveryFiles({
+        folderName: state.title,
+        liveryFiles: state.liveryFiles
+      });
 
-        // prepare image files?
-        const imageFiles = state.imageFiles || [];
+      // prepare image files?
+      const imageFiles = state.imageFiles || [];
 
-        const createLiveryInput = {
-          // map state into upload format
-          ...mapCreateLiveryFormStateToRequestInput({
-            formState: state,
-            user
-          }),
-          liveryZip,
-          imageFiles
-        };
+      const createLiveryInput = {
+        // map state into upload format
+        ...mapCreateLiveryFormStateToRequestInput({
+          formState: state,
+          user
+        }),
+        liveryZip,
+        imageFiles
+      };
 
-        await createLivery(createLiveryInput).unwrap();
-        resetState(initialState);
-        toast({
-          title: intl.formatMessage(formStrings.createSuccess, {
-            item: intl.formatMessage(commonStrings.livery)
-          }),
-          description: `${state.title}`,
-          status: 'success'
-        });
-      }
+      await dispatch(thunks.createLivery(createLiveryInput));
+      resetState(initialState);
+      toast({
+        title: intl.formatMessage(formStrings.createSuccess, {
+          item: intl.formatMessage(commonStrings.livery)
+        }),
+        description: `${state.title}`,
+        status: 'success'
+      });
+
+      setIsLoading(false);
     } catch (_) {
       toast({
         title: intl.formatMessage(commonStrings.error),

@@ -23,7 +23,8 @@ describe('Livery', () => {
     images: ['/car2.png', '/car5.png', '/car3.png', '/car6.png'],
     liveryFiles: '/test-livery-title.zip',
     rating: 3,
-    downloads: 1965
+    downloads: 1965,
+    deleted: false
   };
 
   const liveryNotInCurrentUserCollection = {
@@ -51,11 +52,17 @@ describe('Livery', () => {
     images: ['/car1.png', '/car6.png', '/car5.png', '/car4.png'],
     liveryFiles: '/test-livery-title.zip',
     rating: 5,
-    downloads: 1306
+    downloads: 1306,
+    deleted: false
   };
 
   it('renders the expected items based on props when a user can add to their collection', async () => {
-    render(<Livery id="101031e2-5973-48ac-8a85-8990e91c534b" />);
+    render(
+      <Livery
+        id={liveryNotInCurrentUserCollection.id}
+        livery={liveryNotInCurrentUserCollection}
+      />
+    );
     const { downloads, car, title, creator, tags } =
       liveryNotInCurrentUserCollection;
     const downloadNum = `${downloads} Downloads`;
@@ -72,7 +79,12 @@ describe('Livery', () => {
   });
 
   it('renders the expected items based on props when a user cannot add to their collection', async () => {
-    render(<Livery id="d03bfb4f-3b88-41ec-92bb-14b3438696ec" />);
+    render(
+      <Livery
+        id={liveryInCurrentUserCollection.id}
+        livery={liveryInCurrentUserCollection}
+      />
+    );
     const { downloads, car, title, creator, tags } =
       liveryInCurrentUserCollection;
     const downloadNum = `${downloads} Downloads`;

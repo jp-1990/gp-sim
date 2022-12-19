@@ -13,18 +13,11 @@ import {
 } from '../../store/store';
 import {
   FilterActionPayload,
-  activatePage,
-  filtersChanged,
-  lastLiveryChanged,
-  scrollYChanged,
-  selectLiveryEntities,
-  selectLiveryIds,
-  selectFilters,
-  selectLastLiveryId,
-  createSelectScrollY,
-  thunks
-} from '../../store/livery/scroll-slice';
-import { actions } from '../../store/car/slice';
+  actions as liveryActions,
+  selectors as liverySelectors,
+  thunks as liveryThunks
+} from '../../store/livery/slice';
+import { actions as carActions } from '../../store/car/slice';
 
 import { LiveryList, LiveryFilter, Mode } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -42,26 +35,27 @@ const Liveries: NextPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(activatePage(LIVERIES_URL));
+    dispatch(liveryActions.activatePage(LIVERIES_URL));
     return () => {
-      dispatch(activatePage(null));
+      dispatch(liveryActions.activatePage(null));
     };
   }, [dispatch]);
 
-  const filters = useAppSelector(selectFilters);
-  const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(createSelectScrollY(LIVERIES_URL));
+  const filters = useAppSelector(liverySelectors.selectFilters);
+  const lastLiveryId = useAppSelector(liverySelectors.selectLastLiveryId);
+  const scrollY = useAppSelector(
+    liverySelectors.createSelectScrollY(LIVERIES_URL)
+  );
 
   const liveries = {
-    ids: useAppSelector(selectLiveryIds),
-    entities: useAppSelector(selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.selectLiveryIds),
+    entities: useAppSelector(liverySelectors.selectLiveryEntities)
   };
 
-  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
-
-  useEffect(() => {
-    dispatch(thunks.getLiveries({ ...filters, lastLiveryId }));
-  }, [dispatch, filters, lastLiveryId]);
+  const { Loader } = useInfiniteScroll(
+    () => dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId })),
+    liveries
+  );
 
   useEffect(() => {
     if (scrollY)
@@ -72,12 +66,12 @@ const Liveries: NextPage = () => {
   }, [scrollY]);
 
   const onClickLivery = (livery: LiveryDataType) => {
-    dispatch(scrollYChanged(window.scrollY));
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(livery.id));
   };
 
   const setFilters = (payload: FilterActionPayload) =>
-    dispatch(filtersChanged(payload));
+    dispatch(liveryActions.filtersChanged(payload));
 
   return (
     <MainLayout
@@ -113,9 +107,9 @@ export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   const cars = await getCars();
-  store.dispatch(actions.setCars(cars));
+  store.dispatch(carActions.setCars(cars));
 
-  store.dispatch(thunks.getLiveries({}));
+  store.dispatch(liveryThunks.getLiveries({}));
   await Promise.all(apiSlice.util.getRunningOperationPromises());
   return {
     props: {}

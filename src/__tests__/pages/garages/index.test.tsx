@@ -22,12 +22,12 @@ describe('Garages', () => {
 
     await waitFor(() => {
       userGaragesData.forEach((garage) => {
-        expect(screen.getAllByText(garage.creator.displayName)).toBeTruthy();
-        expect(screen.getAllByText(garage.title)).toBeTruthy();
+        expect(screen.findAllByText(garage.creator.displayName)).toBeTruthy();
+        expect(screen.findAllByText(garage.title)).toBeTruthy();
       });
       userLiveriesData.forEach((livery) => {
-        expect(screen.getAllByText(livery.creator.displayName)).toBeTruthy();
-        expect(screen.getAllByText(livery.title)).toBeTruthy();
+        expect(screen.findAllByText(livery.creator.displayName)).toBeTruthy();
+        expect(screen.findAllByText(livery.title)).toBeTruthy();
       });
     });
   });

@@ -8,22 +8,11 @@ import { FormattedMessage } from 'react-intl';
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { actions } from '../../store/car/slice';
 import {
-  activatePage,
   FilterActionPayload,
-  filtersChanged,
-  lastLiveryChanged,
-  scrollYChanged,
-  selectedGarageChanged,
-  selectedLiveriesChanged,
-  selectFilters,
-  selectLastLiveryId,
-  selectLiveryEntities,
-  selectLiveryIds,
-  createSelectScrollY,
-  selectSelectedGarage,
-  selectSelectedLiveries,
-  thunks as liveryScrollThunks
-} from '../../store/livery/scroll-slice';
+  actions as liveryActions,
+  selectors as liverySelectors,
+  thunks as liveryThunks
+} from '../../store/livery/slice';
 import {
   selectors as garageSelectors,
   thunks as garageThunks
@@ -55,10 +44,10 @@ const Garages: NextPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(activatePage(GARAGES_URL));
+    dispatch(liveryActions.activatePage(GARAGES_URL));
     dispatch(garageThunks.getGarages());
     return () => {
-      dispatch(activatePage(null));
+      dispatch(liveryActions.activatePage(null));
     };
   }, [dispatch]);
 
@@ -66,38 +55,42 @@ const Garages: NextPage = () => {
   const { currentUser } = useAuthCheck();
 
   // HOOKS
-  const filters = useAppSelector(selectFilters);
-  const lastLiveryId = useAppSelector(selectLastLiveryId);
-  const scrollY = useAppSelector(createSelectScrollY(GARAGES_URL));
-  const selectedGarage = useAppSelector(selectSelectedGarage);
-  const selectedLiveries = useAppSelector(selectSelectedLiveries);
+  const filters = useAppSelector(liverySelectors.selectFilters);
+  const lastLiveryId = useAppSelector(liverySelectors.selectLastLiveryId);
+  const scrollY = useAppSelector(
+    liverySelectors.createSelectScrollY(GARAGES_URL)
+  );
+  const selectedGarage = useAppSelector(liverySelectors.selectSelectedGarage);
+  const selectedLiveries = useAppSelector(
+    liverySelectors.selectSelectedLiveries
+  );
 
   const garages = {
     ids: useAppSelector(garageSelectors.selectGarageIds),
     entities: useAppSelector(garageSelectors.selectGarageEntities)
   };
   const liveries = {
-    ids: useAppSelector(selectLiveryIds),
-    entities: useAppSelector(selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.selectLiveryIds),
+    entities: useAppSelector(liverySelectors.selectLiveryEntities)
   };
 
-  const { Loader } = useInfiniteScroll(lastLiveryChanged, liveries);
+  const { Loader } = useInfiniteScroll(() => {
+    if (!currentUser.token || !currentUser.data?.liveries) return;
+    dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId }));
+  }, liveries);
 
   const { onDownload } = useDownloadLivery();
 
   // EFFECTS
-
   useEffect(() => {
-    if (selectedGarage === 'NULL' && currentUser.token) onSelectGarage(null)();
+    if (
+      selectedGarage === 'NULL' &&
+      currentUser.token &&
+      currentUser.data?.liveries
+    )
+      onSelectGarage(null)();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (currentUser.token) {
-      dispatch(liveryScrollThunks.getLiveries({ ...filters, lastLiveryId }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, lastLiveryId]);
+  }, [currentUser.status]);
 
   useEffect(() => {
     if (scrollY && currentUser.token)
@@ -110,19 +103,19 @@ const Garages: NextPage = () => {
 
   // HANDLERS
   const setFilters = (payload: FilterActionPayload) =>
-    dispatch(filtersChanged(payload));
+    dispatch(liveryActions.filtersChanged(payload));
 
   const toggleSelectedLiveries = (payload: string | string[]) =>
-    dispatch(selectedLiveriesChanged(payload));
+    dispatch(liveryActions.selectedLiveriesChanged(payload));
 
   const onClickLivery = (id: string) => {
-    dispatch(scrollYChanged(window.scrollY));
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(id));
   };
 
   const onSelectGarage = (id: string | null | undefined) => () => {
     if (id !== selectedGarage) {
-      dispatch(selectedGarageChanged(id ?? null));
+      dispatch(liveryActions.selectedGarageChanged(id ?? null));
       if (id === null) {
         setFilters({
           key: 'ids',
