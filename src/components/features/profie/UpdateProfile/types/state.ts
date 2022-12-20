@@ -9,4 +9,5 @@ export interface UpdateProfileFormStateType {
   [stateKeys.EMAIL]: string;
   [stateKeys.DISPLAY_NAME]: string;
   [stateKeys.IMAGE_FILES]?: UpdateProfileFormImageFiles;
+  [stateKeys.CURRENT_IMAGE]?: string | null;
 }

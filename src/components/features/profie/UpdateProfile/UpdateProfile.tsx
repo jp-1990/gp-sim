@@ -14,7 +14,7 @@ import { UpdateProfileFormStateType } from './types';
 
 type Props = Pick<
   UserDataType,
-  'about' | 'displayName' | 'email' | 'forename' | 'surname'
+  'about' | 'displayName' | 'email' | 'forename' | 'image' | 'surname'
 >;
 /**
  * @description Values for props should be existing values for the current user. value: string | null | undefined
@@ -22,6 +22,7 @@ type Props = Pick<
  * @param {Props['displayName']} props.displayName
  * @param {Props['email']} props.email
  * @param {Props['forename']} props.forename
+ * @param {Props['image']} props.image
  * @param {Props['surname']} props.surname
  */
 const UpdateProfile: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const UpdateProfile: React.FC<Props> = ({
   displayName,
   email,
   forename,
+  image,
   surname
 }) => {
   const { setStateImmutably } = useForm<UpdateProfileFormStateType>();
@@ -36,6 +38,7 @@ const UpdateProfile: React.FC<Props> = ({
   useEffect(() => {
     setStateImmutably((state) => {
       state.about = about;
+      state.image = image;
       state.displayName = displayName;
       state.email = email;
       state.forename = forename;

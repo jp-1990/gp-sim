@@ -186,13 +186,13 @@ const getCurrentUser = createAsyncThunk(
 
 const updateCurrentUser = createAsyncThunk(
   `${USER_SLICE_NAME}/updateCurrentUser`,
-  async (data: UpdateUserProfileDataType, { getState }) => {
+  async (data: FormData, { getState }) => {
     const state = getState() as any;
     const token = selectors.selectCurrentUserToken(state);
 
     const res = await axios.patch<UserDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}${CURRENT}`,
-      { data },
+      data,
       {
         headers: {
           'Content-Type': 'application/json',

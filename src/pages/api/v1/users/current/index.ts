@@ -151,44 +151,47 @@ async function handler(
 
             if (!user) throw new Error('not found');
 
-            const garagesSnapshot = await t.get(
-              garagesRef.where('id', 'in', user.garages)
-            );
-            const liveriesSnapshot = await t.get(
-              liveriesRef.where('id', 'in', user.liveries)
-            );
-
-            // update garages where user is the creator
-            garagesSnapshot.forEach((garage) => {
-              const data = garage.data();
-              if (data.creator.id === user.id) {
-                const creatorUpdateData: Record<string, any> = {};
-                let shouldUpdate = false;
-                for (const field of creatorUpdateFields) {
-                  if (data.creator[field] !== parsedData[field]) {
-                    shouldUpdate = true;
-                    creatorUpdateData[`creator.${field}`] = parsedData[field];
+            if (user.garages.length) {
+              const garagesSnapshot = await t.get(
+                garagesRef.where('id', 'in', user.garages)
+              );
+              // update garages where user is the creator
+              garagesSnapshot.forEach((garage) => {
+                const data = garage.data();
+                if (data.creator.id === user.id) {
+                  const creatorUpdateData: Record<string, any> = {};
+                  let shouldUpdate = false;
+                  for (const field of creatorUpdateFields) {
+                    if (data.creator[field] !== parsedData[field]) {
+                      shouldUpdate = true;
+                      creatorUpdateData[`creator.${field}`] = parsedData[field];
+                    }
                   }
+                  if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
                 }
-                if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
-              }
-            });
+              });
+            }
 
-            // update liveries where user is the creator
-            liveriesSnapshot.forEach((livery) => {
-              const data = livery.data();
-              if (data.creator.id === user.id) {
-                const creatorUpdateData: Record<string, any> = {};
-                let shouldUpdate = false;
-                for (const field of creatorUpdateFields) {
-                  if (data.creator[field] !== parsedData[field]) {
-                    shouldUpdate = true;
-                    creatorUpdateData[`creator.${field}`] = parsedData[field];
+            if (user.liveries.length) {
+              const liveriesSnapshot = await t.get(
+                liveriesRef.where('id', 'in', user.liveries)
+              );
+              // update liveries where user is the creator
+              liveriesSnapshot.forEach((livery) => {
+                const data = livery.data();
+                if (data.creator.id === user.id) {
+                  const creatorUpdateData: Record<string, any> = {};
+                  let shouldUpdate = false;
+                  for (const field of creatorUpdateFields) {
+                    if (data.creator[field] !== parsedData[field]) {
+                      shouldUpdate = true;
+                      creatorUpdateData[`creator.${field}`] = parsedData[field];
+                    }
                   }
+                  if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
                 }
-                if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
-              }
-            });
+              });
+            }
 
             // update user
             t.update(currentUserRef, parsedData);
@@ -200,6 +203,8 @@ async function handler(
 
         return res.status(200).json({ id: req.uid });
       } catch (err) {
+        console.log(err);
+
         return res.status(500).json({ error: 'internal error' });
       }
     }

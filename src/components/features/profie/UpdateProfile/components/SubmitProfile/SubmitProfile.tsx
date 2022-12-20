@@ -1,21 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useToast } from '@chakra-ui/react';
 
 import { SubmitButton, useForm } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
 
-import { initialState } from '../../config';
 import { UpdateProfileFormStateType } from '../../types';
 import { mapUpdateProfileFormStateToRequestInput } from '../../utils';
-import { selectors, thunks } from '../../../../../../store/user/slice';
-import { useAppDispatch, useAppSelector } from '../../../../../../store/store';
+import { thunks } from '../../../../../../store/user/slice';
+import { useAppDispatch } from '../../../../../../store/store';
 import { RequestStatus } from '../../../../../../types';
 
 /**
  * Submit button for profile page. Uses SubmitButton inside a form provider to submit the state of the form.
  */
 const SubmitProfile = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const intl = useIntl();
   const toast = useToast({
     duration: 8000,
@@ -26,35 +27,50 @@ const SubmitProfile = () => {
     }
   });
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectors.selectCurrentUserStatus);
-  const isLoading = status === RequestStatus.PENDING;
 
   const user = {};
-  const { state, resetState } = useForm<UpdateProfileFormStateType>();
+  const { state } = useForm<UpdateProfileFormStateType>();
 
   const onClick = async () => {
+    setIsLoading(true);
     try {
       if (!isLoading) {
-        // prepare image files?
-        const imageFiles = state.imageFiles || [];
-
         const updateProfileInput = {
           // map state into upload format
           ...mapUpdateProfileFormStateToRequestInput({
             formState: state,
             user
-          }),
-          imageFiles
+          })
         };
 
-        await dispatch(thunks.updateCurrentUser(updateProfileInput));
-        resetState(initialState);
+        // append values to form data
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(updateProfileInput)) {
+          formData.append(key, `${value}`);
+        }
+        for (const image of state.imageFiles || []) {
+          if (image) {
+            const buffer = await image.arrayBuffer();
+            const blob = new Blob([new Uint8Array(buffer)], {
+              type: image.type
+            });
+            formData.append('imageFile', blob, image.name);
+          }
+        }
+
+        const {
+          meta: { requestStatus }
+        } = await dispatch(thunks.updateCurrentUser(formData));
+
+        if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
         toast({
           title: intl.formatMessage(formStrings.updateSuccess, {
             item: intl.formatMessage(commonStrings.profile)
           }),
           status: 'success'
         });
+        setIsLoading(false);
       }
     } catch (_) {
       toast({
@@ -64,6 +80,7 @@ const SubmitProfile = () => {
         }),
         status: 'error'
       });
+      setIsLoading(false);
     }
   };
 

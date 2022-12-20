@@ -228,6 +228,7 @@ const Profile: NextPage = () => {
               <Form>
                 <UpdateProfile
                   about={currentUser?.data?.about}
+                  image={currentUser?.data?.image}
                   displayName={currentUser?.data?.displayName || ''}
                   email={currentUser?.data?.email || ''}
                   forename={currentUser?.data?.forename || ''}
