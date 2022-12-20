@@ -114,6 +114,7 @@ async function handler(
             liveriesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
           for (const param of definedParams) {
             if (filters[param]) query = query.where(...filters[param]);
+            query.where('deleted', '==', false);
             if (orders[param]) query = query.orderBy(...orders[param]);
           }
 
@@ -250,7 +251,7 @@ async function handler(
           liveryFiles: '',
           rating: 0,
           searchHelpers: [
-            ...data.tags.split(','),
+            ...data.tags.split(',').filter((tag) => tag),
             ...data.title.split(' ')
           ].map((e) => e.toLowerCase()),
           updatedAt: timestamp,

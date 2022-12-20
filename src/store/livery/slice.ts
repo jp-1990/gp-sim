@@ -8,7 +8,6 @@ import {
 import axios from 'axios';
 
 import {
-  CreateLiveryDataType,
   KeyValueUnionOf,
   Limits,
   LiveriesDataType,
@@ -123,16 +122,15 @@ const getLiveries = createAsyncThunk(
 
 const createLivery = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/createLivery`,
-  async (data: CreateLiveryDataType, { getState }) => {
+  async (data: FormData, { getState }) => {
     const state = getState() as any;
     const token = currentUserSelectors.selectCurrentUserToken(state);
 
     const res = await axios.post<LiveryDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
-      { data },
+      data,
       {
         headers: {
-          'Content-Type': 'application/json',
           authorization: token ?? ''
         }
       }
@@ -348,6 +346,8 @@ const selectSelectedLiveries = createSelector(
   }
 );
 
+const selectStatus = (state: KnownRootState) => state[LIVERY_SLICE_NAME].status;
+
 // EXPORTS
 export const actions = liverySlice.actions;
 export const selectors = {
@@ -357,7 +357,8 @@ export const selectors = {
   selectLiveryIds,
   selectLiveryEntities,
   selectSelectedGarage,
-  selectSelectedLiveries
+  selectSelectedLiveries,
+  selectStatus
 };
 export const thunks = {
   createLivery,

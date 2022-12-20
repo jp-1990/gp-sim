@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button, Divider, Grid, GridItem } from '@chakra-ui/react';
 import { FormattedMessage } from 'react-intl';
+import { useRouter } from 'next/router';
 
 import { commonStrings } from '../../../../utils/intl';
 import { Form } from '../../../shared';
 
 import Description from './components/Description/Description';
 import GarageKey from './components/GarageKey/GarageKey';
-import Price from './components/Price/Price';
 import PrivateLivery from './components/PrivateLivery/PrivateLivery';
 import PublicLivery from './components/PublicLivery/PublicLivery';
 import SearchTags from './components/SearchTags/SearchTags';
@@ -19,6 +19,8 @@ import SubmitLivery from './components/SubmitLivery/SubmitLivery';
 import Title from './components/Title/Title';
 
 const CreateLivery: React.FC = () => {
+  const router = useRouter();
+
   return (
     <Form>
       <Grid
@@ -50,9 +52,9 @@ const CreateLivery: React.FC = () => {
         <GridItem rowSpan={1} colSpan={4}>
           <GarageKey />
         </GridItem>
-        <GridItem rowSpan={1} colSpan={12}>
+        {/* <GridItem rowSpan={1} colSpan={12}>
           <Price />
-        </GridItem>
+        </GridItem> */}
         <GridItem rowSpan={1} colSpan={12}>
           <SearchTags />
         </GridItem>
@@ -70,6 +72,7 @@ const CreateLivery: React.FC = () => {
             variant="outline"
             w="3xs"
             lineHeight={1}
+            onClick={() => router.back()}
           >
             {<FormattedMessage {...commonStrings.cancel} />}
           </Button>

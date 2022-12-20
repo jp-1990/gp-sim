@@ -16,6 +16,7 @@ import {
 import { CreateLiveryFormStateType } from '../../types';
 import { initialState } from '../../config';
 import { useAppDispatch } from '../../../../../../store/store';
+import { RequestStatus } from '../../../../../../types';
 
 /**
  * Submit button for liveries/create page. Uses SubmitButton inside a form provider to submit the state of the form.
@@ -45,20 +46,35 @@ const SubmitLivery = () => {
         liveryFiles: state.liveryFiles
       });
 
-      // prepare image files?
-      const imageFiles = state.imageFiles || [];
-
       const createLiveryInput = {
         // map state into upload format
         ...mapCreateLiveryFormStateToRequestInput({
           formState: state,
           user
-        }),
-        liveryZip,
-        imageFiles
+        })
       };
 
-      await dispatch(thunks.createLivery(createLiveryInput));
+      // append values to form data
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(createLiveryInput)) {
+        formData.append(key, `${value}`);
+      }
+      for (const image of state.imageFiles || []) {
+        if (image) {
+          const buffer = await image.arrayBuffer();
+          const blob = new Blob([new Uint8Array(buffer)], { type: image.type });
+          formData.append('imageFiles', blob, image.name);
+        }
+      }
+      formData.append('liveryZip', liveryZip, 'liveryZip.zip');
+
+      // make request
+      const {
+        meta: { requestStatus }
+      } = await dispatch(thunks.createLivery(formData));
+
+      if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
       resetState(initialState);
       toast({
         title: intl.formatMessage(formStrings.createSuccess, {
@@ -77,6 +93,7 @@ const SubmitLivery = () => {
         }),
         status: 'error'
       });
+      setIsLoading(false);
     }
   };
 

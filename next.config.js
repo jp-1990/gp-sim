@@ -4,6 +4,15 @@ const nextConfig = {
   i18n: {
     locales: ['en', 'fr'],
     defaultLocale: 'en'
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: '/project-gp-sim.appspot.com/**'
+      }
+    ]
   }
 };
 
