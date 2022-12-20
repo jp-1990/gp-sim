@@ -21,7 +21,7 @@ const formLabels: Record<string, string> = {
   description: formStrings.description.defaultMessage,
   car: formStrings.car.defaultMessage + '*',
   liveryFiles: formStrings.selectLiveryFiles.defaultMessage,
-  price: formStrings.price.defaultMessage,
+  // price: formStrings.price.defaultMessage,
   searchTags: formStrings.searchTags.defaultMessage,
   images: commonStrings.selectImages.defaultMessage
 };
@@ -371,7 +371,7 @@ describe('CreateLivery', () => {
     });
   });
 
-  describe('price field', () => {
+  describe.skip('price field', () => {
     it('correctly renders the price input', async () => {
       render(<CreateLivery />);
       const user = userEvent.setup();
