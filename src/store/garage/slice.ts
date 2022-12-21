@@ -6,13 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import {
-  CreateGarageDataType,
-  GarageDataType,
-  GaragesDataType,
-  RequestStatus,
-  UpdateGarageDataType
-} from '../../types';
+import { GarageDataType, GaragesDataType, RequestStatus } from '../../types';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
 import { selectors as currentUserSelectors } from '../user/slice';
 import {
@@ -59,6 +53,14 @@ const getGarages = createAsyncThunk(
     );
 
     return data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -80,6 +82,14 @@ const createGarage = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -99,6 +109,14 @@ const getGarageById = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -120,6 +138,14 @@ const updateGarageById = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -139,6 +165,14 @@ const deleteGarageById = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -168,6 +202,14 @@ const updateGarageByIdLiveries = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -197,6 +239,14 @@ const updateGarageByIdUsers = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 

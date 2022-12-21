@@ -18,7 +18,6 @@ import {
 import {
   CreateUserProfileDataType,
   RequestStatus,
-  UpdateUserProfileDataType,
   UserDataType,
   UserFilters,
   UsersDataType
@@ -70,6 +69,14 @@ const getUsers = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.users.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -89,6 +96,14 @@ const getUserById = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.users.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -113,6 +128,14 @@ const signIn = createAsyncThunk(
 
     Router.back();
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -150,13 +173,32 @@ const signUp = createAsyncThunk(
     Router.push('/');
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
-const signOut = createAsyncThunk(`${USER_SLICE_NAME}/signOut`, async () => {
-  await Router.push('/');
-  await auth.signOut();
-});
+const signOut = createAsyncThunk(
+  `${USER_SLICE_NAME}/signOut`,
+  async () => {
+    await Router.push('/');
+    await auth.signOut();
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
+  }
+);
 
 const resetPassword = createAsyncThunk(
   `${USER_SLICE_NAME}/resetPassword`,
@@ -181,6 +223,14 @@ const getCurrentUser = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -202,6 +252,14 @@ const updateCurrentUser = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 
@@ -223,6 +281,14 @@ const updateCurrentUserLiveries = createAsyncThunk(
     );
 
     return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [USER_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.currentUser.status === RequestStatus.PENDING) return false;
+      return true;
+    }
   }
 );
 

@@ -40,19 +40,21 @@ import {
 import { getCars } from '../../lib/car';
 
 const Garages: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(liveryActions.activatePage(GARAGES_URL));
-    dispatch(garageThunks.getGarages());
+    if (currentUser.token) {
+      dispatch(liveryActions.activatePage(GARAGES_URL));
+      dispatch(garageThunks.getGarages());
+    }
     return () => {
       dispatch(liveryActions.activatePage(null));
     };
-  }, [dispatch]);
-
-  // AUTH CHECK
-  const { currentUser } = useAuthCheck();
+  }, [currentUser.token, dispatch]);
 
   // HOOKS
   const filters = useAppSelector(liverySelectors.selectFilters);
@@ -90,7 +92,7 @@ const Garages: NextPage = () => {
     )
       onSelectGarage(null)();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser.status]);
+  }, [currentUser.data?.liveries]);
 
   useEffect(() => {
     if (scrollY && currentUser.token)
