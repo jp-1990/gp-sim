@@ -16,7 +16,7 @@ import French from '../../lang/fr.json';
 import { auth } from '../utils/firebase/client';
 import { actions, thunks } from '../store/user/slice';
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
   require('../msw');
 }
 
