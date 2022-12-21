@@ -147,12 +147,10 @@ const updateGarageByIdLiveries = createAsyncThunk(
   async (
     {
       id,
-      liveriesToAdd,
-      liveriesToRemove
+      formData
     }: {
       id: string;
-      liveriesToAdd?: string[];
-      liveriesToRemove?: string[];
+      formData: FormData;
     },
     { getState }
   ) => {
@@ -161,10 +159,9 @@ const updateGarageByIdLiveries = createAsyncThunk(
 
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/liveries`,
-      { liveriesToAdd, liveriesToRemove },
+      formData,
       {
         headers: {
-          'Content-Type': 'application/json',
           authorization: token ?? ''
         }
       }
@@ -179,12 +176,10 @@ const updateGarageByIdUsers = createAsyncThunk(
   async (
     {
       id,
-      usersToAdd,
-      usersToRemove
+      formData
     }: {
       id: string;
-      usersToAdd?: string[];
-      usersToRemove?: string[];
+      formData: FormData;
     },
     { getState }
   ) => {
@@ -193,10 +188,9 @@ const updateGarageByIdUsers = createAsyncThunk(
 
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/users`,
-      { usersToAdd, usersToRemove },
+      formData,
       {
         headers: {
-          'Content-Type': 'application/json',
           authorization: token ?? ''
         }
       }

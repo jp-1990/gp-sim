@@ -31,8 +31,8 @@ export const mapCreateLiveryFormStateToRequestInput = ({
     price: typeof formState.price === 'string' ? 0 : formState.price ?? 0,
     tags: formState.searchTags ?? '',
     isPublic: formState.publicLivery,
-    garage: formState.privateGarage ? formState.garage : undefined,
-    garageKey: formState.privateGarage ? formState.garageKey : undefined
+    garage: formState.privateGarage ? formState.garage ?? '' : '',
+    garageKey: formState.privateGarage ? formState.garageKey ?? '' : ''
   };
 };
 

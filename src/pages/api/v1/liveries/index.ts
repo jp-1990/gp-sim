@@ -315,8 +315,9 @@ async function handler(
             newLiveryData.searchHelpers.push(creator.displayName.toLowerCase());
 
             // attempt garage update
-            if (garage && garageKey) {
-              const garageDoc = await t.get(garagesRef.doc(garageKey));
+            if (garage || garageKey) {
+              const garageId = garage ? garage : garageKey ? garageKey : '';
+              const garageDoc = await t.get(garagesRef.doc(garageId));
               if (garageDoc.exists) {
                 t.update(garageDoc.ref, {
                   liveries: FieldValue.arrayUnion(newLiveryRef.id)

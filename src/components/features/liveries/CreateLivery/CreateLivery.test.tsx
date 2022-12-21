@@ -350,9 +350,10 @@ describe('CreateLivery', () => {
 
       await user.selectOptions(
         screen.getByLabelText(hiddenFormLabels.garage),
-        'Option 1'
+        `Julius Little's Garage`
       );
       expect(screen.getByLabelText(hiddenFormLabels.garageKey)).toBeDisabled();
+
       await user.selectOptions(
         screen.getByLabelText(hiddenFormLabels.garage),
         formStrings.garagePlaceholder.defaultMessage

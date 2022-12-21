@@ -18,7 +18,7 @@ export const config = {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<string[] | { [key: string]: string }>
+  res: NextApiResponse<GarageDataType | { [key: string]: string }>
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
@@ -37,109 +37,68 @@ async function handler(
         }
 
         // parse req body
-        const { ids } = await new Promise<{ ids: string[] }>(
-          (resolve, reject) => {
-            const form = formidable({ multiples: true });
-            form.parse(req, (err, fields) => {
-              if (err) throw new Error(err);
-              try {
-                // check req body
-                const rawData = { ...fields } as Record<string, any>;
-                const properties = ['ids'] as const;
-                for (const property of properties) {
-                  if (
-                    !Object.prototype.hasOwnProperty.call(rawData, property)
-                  ) {
-                    return res
-                      .status(400)
-                      .json({ error: 'malformed request body' });
-                  }
-                }
-                rawData.ids = rawData.ids.split(',');
+        const parsedData = await new Promise<{
+          liveriesToAdd?: string[];
+          liveriesToRemove?: string[];
+        }>((resolve, reject) => {
+          const form = formidable({ multiples: true });
+          form.parse(req, (err, fields) => {
+            if (err) throw new Error(err);
+            try {
+              const rawData = { ...fields } as Record<string, any>;
 
-                resolve(rawData as { ids: string[] });
-              } catch (err) {
-                reject(err);
-              }
-            });
-          }
-        );
+              const data = {} as {
+                liveriesToAdd?: string[];
+                liveriesToRemove?: string[];
+              };
+              if (rawData.liveriesToRemove)
+                data.liveriesToRemove = JSON.parse(rawData.liveriesToRemove);
+              if (rawData.liveriesToAdd)
+                data.liveriesToAdd = JSON.parse(rawData.liveriesToAdd);
 
-        const garageRef = garagesRef.doc(garageId);
-        await firestore.runTransaction(async (t) => {
-          const garageDoc = await t.get(garageRef);
-          const garage = garageDoc.data() as GarageDataType | undefined;
-
-          // only update garage exists and if creator id matches auth user id
-          if (!garage || garage.creator.id !== req.uid) {
-            throw new Error('unauthorized');
-          }
-
-          // add liveries to garage
-          t.update(garageRef, { liveries: FieldValue.arrayUnion(...ids) });
+              resolve(data);
+            } catch (err) {
+              reject(err);
+            }
+          });
         });
 
-        return res.status(200).json(ids);
-      } catch (err) {
-        return res.status(500).json({ error: 'internal error' });
-      }
-    }
-    // TODO this endpoint should no longer be hit. use patch for add/remove liveries from garage
-    case Method.DELETE: {
-      try {
-        // check isAuthenticated
-        if (!req.isAuthenticated || !req.uid) {
-          return res.status(401).json({ error: 'unauthorized' });
-        }
-        // check req params
-        const garageId = req.query.id as string | undefined;
-        if (!garageId) {
-          return res.status(400).json({ error: 'malformed request params' });
-        }
-        // parse req body
-        const { ids } = await new Promise<{ ids: string[] }>(
-          (resolve, reject) => {
-            const form = formidable({ multiples: true });
-            form.parse(req, (err, fields) => {
-              if (err) throw new Error(err);
-              try {
-                // check req body
-                const rawData = { ...fields } as Record<string, any>;
-                const properties = ['ids'] as const;
-                for (const property of properties) {
-                  if (
-                    !Object.prototype.hasOwnProperty.call(rawData, property)
-                  ) {
-                    return res
-                      .status(400)
-                      .json({ error: 'malformed request body' });
-                  }
-                }
-                rawData.ids = rawData.ids.split(',');
-
-                resolve(rawData as { ids: string[] });
-              } catch (err) {
-                reject(err);
-              }
-            });
-          }
-        );
-
+        const timestamp = Date.now();
         const garageRef = garagesRef.doc(garageId);
-        await firestore.runTransaction(async (t) => {
+
+        const updatedGarage = await firestore.runTransaction(async (t) => {
           const garageDoc = await t.get(garageRef);
           const garage = garageDoc.data() as GarageDataType | undefined;
 
-          // only delete if garage exists and if creator id matches auth user id
+          // only update if garage exists and if creator id matches auth user id
           if (!garage || garage.creator.id !== req.uid) {
             throw new Error('unauthorized');
+          }
+
+          const updatedLiveries = [...garage.liveries];
+
+          // add liveries to garage
+          if (parsedData.liveriesToAdd?.length) {
+            t.update(garageRef, {
+              liveries: FieldValue.arrayUnion(...parsedData.liveriesToAdd)
+            });
+            updatedLiveries.push(...parsedData.liveriesToAdd);
           }
 
           // remove liveries from garage
-          t.update(garageRef, { liveries: FieldValue.arrayRemove(...ids) });
+          if (parsedData.liveriesToRemove?.length) {
+            t.update(garageRef, {
+              liveries: FieldValue.arrayRemove(...parsedData.liveriesToRemove)
+            });
+            updatedLiveries.filter(
+              (id) => !parsedData.liveriesToRemove?.includes(id)
+            );
+          }
+
+          return { ...garage, liveries: updatedLiveries, updatedAt: timestamp };
         });
 
-        return res.status(200).json(ids);
+        return res.status(200).json(updatedGarage);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

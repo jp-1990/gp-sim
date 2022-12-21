@@ -134,12 +134,16 @@ const Update: NextPage<Props> = ({ id }) => {
   const { filters: userFilters, setFilters: setUserFilters } = useUserFilters();
 
   const deleters = {
-    liveries: async (id: string, ids: string[]) =>
-      dispatch(
-        garageThunks.updateGarageByIdLiveries({ id, liveriesToRemove: ids })
-      ),
-    drivers: async (id: string, ids: string[]) =>
-      dispatch(garageThunks.updateGarageByIdUsers({ id, usersToRemove: ids }))
+    liveries: async (id: string, ids: string[]) => {
+      const formData = new FormData();
+      formData.append('liveriesToRemove', JSON.stringify(ids));
+      dispatch(garageThunks.updateGarageByIdLiveries({ id, formData }));
+    },
+    drivers: async (id: string, ids: string[]) => {
+      const formData = new FormData();
+      formData.append('usersToRemove', JSON.stringify(ids));
+      dispatch(garageThunks.updateGarageByIdUsers({ id, formData }));
+    }
   };
 
   // EFFECTS
@@ -198,7 +202,12 @@ const Update: NextPage<Props> = ({ id }) => {
     router.push(LIVERY_URL(id));
   };
 
-  const onOpenModal = (ids: string[], type: 'drivers' | 'liveries') => {
+  const onOpenModal = (
+    id: string,
+    ids_: string[],
+    type: 'drivers' | 'liveries'
+  ) => {
+    const ids = [...new Set([...ids_, id])];
     setModal({ ids, type, open: true });
   };
 
@@ -303,9 +312,11 @@ const Update: NextPage<Props> = ({ id }) => {
               {/* liveries list */}
               <Table<LiveriesDataType>
                 actions={[
-                  () => (
+                  ({ id }) => (
                     <Button
-                      onClick={() => onOpenModal(selectedLiveries, 'liveries')}
+                      onClick={() =>
+                        onOpenModal(id, selectedLiveries, 'liveries')
+                      }
                       variant={'outline'}
                       size="sm"
                     >
@@ -359,11 +370,13 @@ const Update: NextPage<Props> = ({ id }) => {
             <TabPanel>
               <Table<PublicUserDataType[]>
                 actions={[
-                  () => (
+                  ({ id }) => (
                     <Button
                       variant={'outline'}
                       size="sm"
-                      onClick={() => onOpenModal(selectedDrivers, 'drivers')}
+                      onClick={() =>
+                        onOpenModal(id, selectedDrivers, 'drivers')
+                      }
                     >
                       <FormattedMessage {...commonStrings.delete} />
                     </Button>

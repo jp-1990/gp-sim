@@ -224,7 +224,7 @@ async function handler(
         });
 
         await bucket.deleteFiles({
-          prefix: `${StoragePath.GARAGES}${params.id}/`
+          prefix: `${StoragePath.GARAGES}${params.id}`
         });
 
         return res.status(200).json({ id: params.id });

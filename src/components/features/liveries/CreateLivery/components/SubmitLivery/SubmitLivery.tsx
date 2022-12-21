@@ -46,13 +46,10 @@ const SubmitLivery = () => {
         liveryFiles: state.liveryFiles
       });
 
-      const createLiveryInput = {
-        // map state into upload format
-        ...mapCreateLiveryFormStateToRequestInput({
-          formState: state,
-          user
-        })
-      };
+      const createLiveryInput = mapCreateLiveryFormStateToRequestInput({
+        formState: state,
+        user
+      });
 
       // append values to form data
       const formData = new FormData();

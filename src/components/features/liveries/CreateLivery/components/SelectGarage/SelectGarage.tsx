@@ -4,12 +4,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Select, useForm } from '../../../../../shared';
 import { formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
+import { useAppSelector } from '../../../../../../store/store';
+import { selectors } from '../../../../../../store/garage/slice';
 
 /**
  * Select garage input for liveries/create page. Uses Select inside a form provider
  */
 const SelectGarage = () => {
   const intl = useIntl();
+  const userGarages = useAppSelector(selectors.selectGarages);
   const { state } = useForm();
 
   if (!state[stateKeys.PRIVATE_GARAGE]) return null;
@@ -25,7 +28,13 @@ const SelectGarage = () => {
         ...formStrings.garagePlaceholder
       })}
     >
-      <option value="option1">Option 1</option>
+      {userGarages.map((garage) => {
+        return (
+          <option key={garage.title} value={garage.id}>
+            {garage.title}
+          </option>
+        );
+      })}
     </Select>
   );
 };
