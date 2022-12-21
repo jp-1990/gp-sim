@@ -5,7 +5,6 @@ import {
   CreateGarageDataType,
   GarageDataType,
   GaragesDataType,
-  GaragesResponseType,
   Method,
   UserDataType
 } from '../../../../types';
@@ -35,7 +34,9 @@ export const config = {
 
 async function handler(
   req: NextApiRequestWithAuth,
-  res: NextApiResponse<GaragesResponseType | [] | { error: string }>
+  res: NextApiResponse<
+    GarageDataType | GarageDataType[] | [] | { error: string }
+  >
 ) {
   const method = req.method;
   const garagesRef = firestore.collection(Collection.GARAGES);
@@ -270,7 +271,7 @@ async function handler(
           throw new Error(err);
         }
 
-        return res.status(200).json([newGarageData]);
+        return res.status(200).json(newGarageData);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }

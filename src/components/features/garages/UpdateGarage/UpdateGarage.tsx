@@ -1,9 +1,9 @@
 import { Grid, GridItem, Button, useToast } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import { selectors, thunks } from '../../../../store/garage/slice';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { thunks } from '../../../../store/garage/slice';
+import { useAppDispatch } from '../../../../store/store';
 import { GarageDataType, RequestStatus } from '../../../../types';
 import {
   commonStrings,
@@ -28,6 +28,8 @@ const UpdateGarage: React.FC<Props> = ({
   image,
   id
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const intl = useIntl();
   const toast = useToast({
     duration: 8000,
@@ -38,8 +40,6 @@ const UpdateGarage: React.FC<Props> = ({
     }
   });
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectors.selectStatus);
-  const isLoading = status === RequestStatus.PENDING;
 
   const { state, setStateImmutably } = useForm<UpdateGarageFormStateType>();
 
@@ -62,20 +62,37 @@ const UpdateGarage: React.FC<Props> = ({
   };
 
   const onClick = async () => {
+    setIsLoading(true);
     try {
       if (!isLoading) {
         const { title, description } = state;
-        // prepare image files?
-        const imageFiles = state.imageFiles || [];
 
         const updateGarageInput = {
           title,
-          description,
-          imageFiles,
-          id
+          description
         };
 
-        await dispatch(thunks.updateGarageById(updateGarageInput));
+        // append values to form data
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(updateGarageInput)) {
+          formData.append(key, `${value}`);
+        }
+        for (const image of state.imageFiles || []) {
+          if (image) {
+            const buffer = await image.arrayBuffer();
+            const blob = new Blob([new Uint8Array(buffer)], {
+              type: image.type
+            });
+            formData.append('imageFile', blob, image.name);
+          }
+        }
+
+        const {
+          meta: { requestStatus }
+        } = await dispatch(thunks.updateGarageById({ id, data: formData }));
+
+        if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
         toast({
           title: intl.formatMessage(formStrings.updateSuccess, {
             item: intl.formatMessage(commonStrings.garage)
@@ -83,6 +100,7 @@ const UpdateGarage: React.FC<Props> = ({
           description: `${state.title}`,
           status: 'success'
         });
+        setIsLoading(false);
       }
     } catch (_) {
       toast({
@@ -92,6 +110,7 @@ const UpdateGarage: React.FC<Props> = ({
         }),
         status: 'error'
       });
+      setIsLoading(false);
     }
   };
 
@@ -100,9 +119,12 @@ const UpdateGarage: React.FC<Props> = ({
     if (newImageFiles[0])
       return {
         imgUrl: URL.createObjectURL(newImageFiles[0]),
-        imgAlt: newImageFiles[0].name
+        imgAlt: intl.formatMessage(formStrings.garageImage)
       };
-    return { imgUrl: image, imgAlt: image };
+    return {
+      imgUrl: image,
+      imgAlt: intl.formatMessage(formStrings.garageImage)
+    };
   };
 
   return (

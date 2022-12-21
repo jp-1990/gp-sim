@@ -123,9 +123,13 @@ const Garages: NextPage = () => {
         });
       }
       if (typeof id === 'string') {
+        const garageLiveriesIds = garages?.entities[id]?.liveries;
+
         setFilters({
           key: 'ids',
-          value: garages?.entities[id]?.liveries.join('&') ?? ''
+          value: garageLiveriesIds?.length
+            ? garageLiveriesIds.join('&')
+            : 'null'
         });
       }
     }

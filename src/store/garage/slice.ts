@@ -64,7 +64,7 @@ const getGarages = createAsyncThunk(
 
 const createGarage = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${CREATE_GARAGE}`,
-  async (data: CreateGarageDataType, { getState }) => {
+  async (data: FormData, { getState }) => {
     const state = getState() as any;
     const token = currentUserSelectors.selectCurrentUserToken(state);
 
@@ -104,13 +104,13 @@ const getGarageById = createAsyncThunk(
 
 const updateGarageById = createAsyncThunk(
   `${GARAGE_SLICE_NAME}/${UPDATE_GARAGE}`,
-  async ({ id, ...data }: UpdateGarageDataType, { getState }) => {
+  async ({ id, data }: { id: string; data: FormData }, { getState }) => {
     const state = getState() as any;
     const token = currentUserSelectors.selectCurrentUserToken(state);
 
     const res = await axios.patch<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`,
-      { data },
+      data,
       {
         headers: {
           'Content-Type': 'application/json',

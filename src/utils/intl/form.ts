@@ -170,6 +170,10 @@ const helperText = {
     id: 'utils.intl.form.emailOrPasswordError',
     defaultMessage: 'Incorrect email or password!'
   },
+  garageImage: {
+    id: 'utils.intl.form.garageImage',
+    defaultMessage: 'Garage image'
+  },
   noAccount: {
     id: 'utils.intl.form.noAccount',
     defaultMessage: "Don't have an account yet?"

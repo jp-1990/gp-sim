@@ -1,9 +1,9 @@
 import { Grid, GridItem, Divider, Button, useToast } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import { selectors, thunks } from '../../../../store/garage/slice';
-import { useAppDispatch, useAppSelector } from '../../../../store/store';
+import { thunks } from '../../../../store/garage/slice';
+import { useAppDispatch } from '../../../../store/store';
 import { RequestStatus } from '../../../../types';
 import {
   commonStrings,
@@ -25,7 +25,9 @@ import { mapCreateGarageFormStateToRequestInput } from '../utils';
 import { initialState, stateKeys, validators } from './config';
 
 const CreateGarage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const intl = useIntl();
+
   const toast = useToast({
     duration: 8000,
     isClosable: true,
@@ -35,8 +37,6 @@ const CreateGarage = () => {
     }
   });
   const dispatch = useAppDispatch();
-  const status = useAppSelector(selectors.selectStatus);
-  const isLoading = status === RequestStatus.PENDING;
 
   const user = {};
   const { state, resetState } = useForm<CreateGarageFormStateType>();
@@ -44,19 +44,35 @@ const CreateGarage = () => {
   const onClick = async () => {
     try {
       if (!isLoading) {
-        // prepare image files?
-        const imageFiles = state.imageFiles || [];
-
         const createGarageInput = {
           // map state into upload format
           ...mapCreateGarageFormStateToRequestInput({
             formState: state,
             user
-          }),
-          imageFiles
+          })
         };
 
-        await dispatch(thunks.createGarage(createGarageInput));
+        // append values to form data
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(createGarageInput)) {
+          formData.append(key, `${value}`);
+        }
+        for (const image of state.imageFiles || []) {
+          if (image) {
+            const buffer = await image.arrayBuffer();
+            const blob = new Blob([new Uint8Array(buffer)], {
+              type: image.type
+            });
+            formData.append('imageFile', blob, image.name);
+          }
+        }
+
+        const {
+          meta: { requestStatus }
+        } = await dispatch(thunks.createGarage(formData));
+
+        if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
         resetState(initialState);
         toast({
           title: intl.formatMessage(formStrings.createSuccess, {
@@ -65,6 +81,7 @@ const CreateGarage = () => {
           description: `${state.title}`,
           status: 'success'
         });
+        setIsLoading(false);
       }
     } catch (_) {
       toast({
@@ -74,6 +91,7 @@ const CreateGarage = () => {
         }),
         status: 'error'
       });
+      setIsLoading(false);
     }
   };
 

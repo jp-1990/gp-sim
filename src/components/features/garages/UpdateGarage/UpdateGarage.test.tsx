@@ -164,14 +164,17 @@ describe('UpdateGarage', () => {
       const user = userEvent.setup();
       const selectImagesButton = screen.getByLabelText(formLabels.images);
       await user.upload(selectImagesButton, imageFiles[0]);
-      expect(screen.getByAltText(imageFiles[0].name)).toBeInTheDocument();
+      expect(
+        screen.getAllByAltText(formStrings.garageImage.defaultMessage)
+      ).toHaveLength(1);
 
       const secondFile = new File(['file-e'], 'file-e.png', {
         type: 'image/png'
       });
       await user.upload(selectImagesButton, secondFile);
-      expect(screen.queryByAltText(secondFile.name)).toBeInTheDocument();
-      expect(screen.queryByAltText(imageFiles[0].name)).not.toBeInTheDocument();
+      expect(
+        screen.getAllByAltText(formStrings.garageImage.defaultMessage)
+      ).toHaveLength(1);
     });
   });
 

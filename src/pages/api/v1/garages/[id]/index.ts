@@ -122,7 +122,7 @@ async function handler(
 
         // if no update data, return
         if (!filenames.length && !parsedDataKeys.length) {
-          return res.status(200).json({ id: req.uid });
+          return res.status(200).json({ id });
         }
 
         // upload image to storage
@@ -130,9 +130,9 @@ async function handler(
         for (const filename of filenames) {
           if (files[filename].stream && files[filename].filename) {
             await bucket.deleteFiles({
-              prefix: `${StoragePath.GARAGES}${id}/`
+              prefix: `${StoragePath.GARAGES}${id}`
             });
-            file = bucket.file(`${StoragePath.GARAGES}${id}/${Date.now()}`);
+            file = bucket.file(`${StoragePath.GARAGES}${id}`);
 
             const fileWriteStream = file.createWriteStream({
               contentType: 'image/webp'
@@ -155,7 +155,7 @@ async function handler(
         const garageRef = garagesRef.doc(id);
 
         try {
-          await firestore.runTransaction(async (t) => {
+          const updatedGarage = await firestore.runTransaction(async (t) => {
             // get garage
             const garageDoc = await t.get(garageRef);
             const garage = garageDoc.data();
@@ -165,15 +165,24 @@ async function handler(
               throw new Error('unauthorized');
             }
 
+            // abort update if nothing has changed
+            const shouldUpdate = parsedDataKeys.some(
+              (key) =>
+                parsedData[key as keyof typeof parsedData] !== garage[key]
+            );
+            if (!shouldUpdate) return garage;
+
             // update doc
             t.update(garageRef, { ...parsedData, updatedAt: timestamp });
+
+            return { ...garage, ...parsedData, updatedAt: timestamp };
           });
+
+          return res.status(200).json(updatedGarage);
         } catch (err: any) {
           await file?.delete();
           throw new Error(err);
         }
-
-        return res.status(200).json({ id });
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }
