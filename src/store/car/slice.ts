@@ -55,24 +55,30 @@ const carSlice = createSlice({
       state.status = RequestStatus.IDLE;
     },
     setCars(state, action: PayloadAction<CarsDataType>) {
-      carsAdapter.setAll(state, action.payload);
+      carsAdapter.setMany(state, action.payload);
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(HYDRATE, (state, _action) => {
         const action = _action as unknown as { payload: KnownRootState };
-        return {
-          ...state,
-          ...action.payload[CAR_SLICE_NAME]
-        };
+
+        const carsServerState = action.payload[CAR_SLICE_NAME];
+        const carsArray: CarsDataType = [];
+
+        for (const id of carsServerState.ids) {
+          const car = carsServerState.entities[id];
+          if (car) carsArray.push(car);
+        }
+
+        carsAdapter.setMany(state, carsArray);
       })
       .addCase(getCars.pending, thunkPending)
       .addCase(getCars.rejected, thunkRejected)
       .addCase(
         getCars.fulfilled,
         (state, action: PayloadAction<CarsDataType>) => {
-          carsAdapter.setAll(state, action.payload);
+          carsAdapter.setMany(state, action.payload);
           state.error = null;
           state.status = RequestStatus.FULFILLED;
         }

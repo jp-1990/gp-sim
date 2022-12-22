@@ -74,8 +74,7 @@ import {
   useAuthCheck
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
-import { getGarages } from '../../../lib/garage';
-import { getCars } from '../../../lib/car';
+import db from '../../../lib';
 
 interface Props {
   id: string;
@@ -427,7 +426,7 @@ export const getStaticProps = wrapper.getStaticProps(
       }
 
       // get cars
-      const cars = await getCars();
+      const cars = await db.getCars();
 
       // set cars to store
       store.dispatch(carActions.setCars(cars));
@@ -441,7 +440,7 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const garages = await getGarages();
+  const garages = await db.getGarages();
 
   return {
     paths: garages.map(({ id }) => ({ params: { id } })),

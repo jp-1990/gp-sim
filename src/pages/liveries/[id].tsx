@@ -28,8 +28,9 @@ import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
 import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
 import { LiveryDataType, RequestStatus } from '../../types';
-import { getLiveries, getLiveryById } from '../../lib/livery';
-import { getCars } from '../../lib/car';
+
+import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 interface Props {
   id: string;
@@ -182,22 +183,18 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
 export default Livery;
 
 export const getStaticProps = wrapper.getStaticProps(
-  (store) =>
+  (_store) =>
     async ({ params }) => {
       const paramsId = params?.id;
       let id = '';
       if (isString(paramsId)) id = paramsId;
 
-      // get user by id and cars
-      const [livery, cars] = await Promise.all([getLiveryById(id), getCars()]);
+      let livery = await db.cache.getById(CacheKeys.LIVERY, id);
 
-      if (!livery || !cars) {
-        return { notFound: true };
+      if (!livery) {
+        livery = null;
+        // livery = await db.getLiveryById(id);
       }
-
-      // set user and cars to store
-      store.dispatch(liveryActions.setLivery(livery));
-      store.dispatch(carActions.setCars(cars));
 
       return {
         props: {
@@ -209,7 +206,12 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const liveries = await getLiveries();
+  let liveries = await db.cache.get(CacheKeys.LIVERY);
+
+  if (!liveries) {
+    liveries = [];
+    // liveries = await db.getLiveries();
+  }
 
   return {
     paths: liveries.map(({ id }) => ({ params: { id } })),

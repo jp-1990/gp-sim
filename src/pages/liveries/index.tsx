@@ -20,7 +20,7 @@ import { PageHeading } from '../../components/shared';
 import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import { useInfiniteScroll } from '../../hooks';
-import { getCars } from '../../lib/car';
+import db, { CacheKeys } from '../../lib';
 
 const Liveries: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -96,7 +96,19 @@ const Liveries: NextPage = () => {
 export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await getCars();
+  let liveries = await db.cache.get(CacheKeys.LIVERY);
+  let cars = await db.cache.get(CacheKeys.CAR);
+
+  if (!liveries) {
+    liveries = [];
+    // liveries = await db.getLiveries();
+  }
+  if (!cars) {
+    cars = [];
+    // cars = await db.getCars();
+  }
+
+  store.dispatch(liveryActions.setLiveries(liveries));
   store.dispatch(carActions.setCars(cars));
 
   return {

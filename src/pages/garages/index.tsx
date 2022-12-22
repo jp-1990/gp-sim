@@ -37,7 +37,7 @@ import {
   useDownloadLivery,
   useInfiniteScroll
 } from '../../hooks';
-import { getCars } from '../../lib/car';
+import db from '../../lib';
 
 const Garages: NextPage = () => {
   // AUTH CHECK
@@ -405,7 +405,7 @@ const Garages: NextPage = () => {
 export default Garages;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await getCars();
+  const cars = await db.getCars();
   store.dispatch(actions.setCars(cars));
 
   return {

@@ -11,8 +11,8 @@ import { wrapper } from '../../store/store';
 import { liveryStrings } from '../../utils/intl';
 import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { useAuthCheck } from '../../hooks/use-auth-check';
-import { getCars } from '../../lib/car';
-import { actions } from '../../store/car/slice';
+import { actions as carActions } from '../../store/car/slice';
+import db, { CacheKeys } from '../../lib';
 
 const Create: NextPage = () => {
   // AUTH CHECK
@@ -45,8 +45,14 @@ const Create: NextPage = () => {
 export default Create;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await getCars();
-  store.dispatch(actions.setCars(cars));
+  let cars = await db.cache.get(CacheKeys.CAR);
+
+  if (!cars) {
+    cars = [];
+    // cars = await db.getCars();
+  }
+
+  store.dispatch(carActions.setCars(cars));
 
   return {
     props: {}

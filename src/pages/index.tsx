@@ -1,10 +1,16 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { NextPage } from 'next';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 import { defineMessages, FormattedMessage } from 'react-intl';
 
 import styles from '../styles/Home.module.css';
 
 import MainLayout from '../components/layout/MainLayout/MainLayout';
+import db, { CacheKeys } from '../lib';
+
+import { wrapper } from '../store/store';
+import { actions as liveryActions } from '../store/livery/slice';
+import { actions as carActions } from '../store/car/slice';
 
 const messages = defineMessages({
   welcome: {
@@ -62,3 +68,21 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getStaticProps = wrapper.getStaticProps((store) => async () => {
+  const cars = await db.getCars();
+
+  const liveries = await db.getLiveries();
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    await db.cache.set(CacheKeys.CAR, cars);
+    await db.cache.set(CacheKeys.LIVERY, liveries);
+  }
+
+  store.dispatch(carActions.setCars(cars));
+  store.dispatch(liveryActions.setLiveries(liveries));
+
+  return {
+    props: {}
+  };
+});

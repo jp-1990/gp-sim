@@ -6,6 +6,7 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { HYDRATE } from 'next-redux-wrapper';
 
 import {
   KeyValueUnionOf,
@@ -16,6 +17,7 @@ import {
   Order,
   RequestStatus
 } from '../../types';
+import { applyLiveryFilters } from '../../utils/filtering/livery';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
 import {
   GARAGES_URL,
@@ -96,13 +98,24 @@ type KnownRootState = { [LIVERY_SLICE_NAME]: LiverySliceStateType };
 // THUNKS
 const getLiveries = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/getLiveries`,
-  async (args: Partial<LiveriesFilters>) => {
-    const { data } = await axios.get<LiveriesDataType>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
-      {
-        params: args
-      }
-    );
+  async (args: Partial<LiveriesFilters>, { getState }) => {
+    const state = getState() as KnownRootState;
+    const liveriesState = selectors.selectAllLiveries(state);
+
+    // cache first. only make a network request if we do not already have data
+    let data: LiveriesDataType = [];
+    if (!liveriesState.length) {
+      const res = await axios.get<LiveriesDataType>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
+        {
+          params: args
+        }
+      );
+      data = res.data;
+      return data;
+    }
+
+    data = applyLiveryFilters(liveriesState, args);
     return data;
   },
   {
@@ -240,10 +253,25 @@ const liverySlice = createSlice({
     },
     setLivery(state, action: PayloadAction<LiveryDataType>) {
       liveriesAdapter.setOne(state.liveries, action.payload);
+    },
+    setLiveries(state, action: PayloadAction<LiveriesDataType>) {
+      liveriesAdapter.setMany(state.liveries, action.payload);
     }
   },
   extraReducers(builder) {
-    // TODO hydrate ?
+    //  HYDRATE
+    builder.addCase(HYDRATE, (state, _action) => {
+      const action = _action as unknown as { payload: KnownRootState };
+      const liveriesServerState = action.payload[LIVERY_SLICE_NAME].liveries;
+      const liveriesArray: LiveriesDataType = [];
+
+      for (const id of liveriesServerState.ids) {
+        const livery = liveriesServerState.entities[id];
+        if (livery) liveriesArray.push(livery);
+      }
+
+      liveriesAdapter.setMany(state.liveries, liveriesArray);
+    });
 
     // GET LIVERIES
     builder.addCase(getLiveries.pending, thunkPending);
@@ -348,10 +376,15 @@ const selectSelectedLiveries = createSelector(
 
 const selectStatus = (state: KnownRootState) => state[LIVERY_SLICE_NAME].status;
 
+const { selectAll: selectAllLiveries } = liveriesAdapter.getSelectors(
+  (state: KnownRootState) => state[LIVERY_SLICE_NAME].liveries
+);
+
 // EXPORTS
 export const actions = liverySlice.actions;
 export const selectors = {
   createSelectScrollY,
+  selectAllLiveries,
   selectFilters,
   selectLastLiveryId,
   selectLiveryIds,

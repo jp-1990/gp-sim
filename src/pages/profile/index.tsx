@@ -34,7 +34,7 @@ import {
 } from '../../components/shared';
 
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
-import { getCars } from '../../lib/car';
+import db from '../../lib';
 import { actions as carActions } from '../../store/car/slice';
 import {
   selectors as garageSelectors,
@@ -356,7 +356,7 @@ const Profile: NextPage = () => {
 export default Profile;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await getCars();
+  const cars = await db.getCars();
   store.dispatch(carActions.setCars(cars));
 
   return {

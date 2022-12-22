@@ -58,8 +58,8 @@ const db = {
   cache: {
     /**
      * Get items from the file system cache
-     * @param key - key of {@link CacheKeys} to use to write data. type of items should match cache key
-     * @returns items - array of cars, garages, liveries or users
+     * @param key - key of {@link CacheKeys} to use to read data
+     * @returns items - array of cars, garages, liveries or users, based on the provided key
      */
     get: async <T extends CacheKeys>(
       key: T
@@ -80,11 +80,33 @@ const db = {
       }
     },
     /**
-     * Sets items to the file system cache. New items will replace existing items matched by id
-     * @param items - array of cars, garages, liveries or users
-     * @param key - key of {@link CacheKeys} to use to write data. type of items should match cache key
+     * Get item by id from the file system cache
+     * @param key - key of {@link CacheKeys} to use to read data
+     * @param id - item id to use to read data. return type of item will match cache key
+     * @returns item - car, garage, livery or user, based on the provided key and id
      */
-    set: async <T extends CacheKeys>(items: Items[T], key: T) => {
+    getById: async <T extends CacheKeys>(
+      key: T,
+      id: string
+    ): Promise<Items[T][number] | null | undefined> => {
+      try {
+        const data = await fs.readFile(path.join(process.cwd(), folder, key), {
+          encoding: 'utf8'
+        });
+
+        const normalizedItems: NormalizedItems<Items[T]> = JSON.parse(data);
+        const item = normalizedItems.entities[id];
+        return item as unknown as Items[T][number];
+      } catch (_) {
+        return undefined;
+      }
+    },
+    /**
+     * Sets items to the file system cache. New items will replace existing items matched by id
+     * @param key - key of {@link CacheKeys} to use to write data. type of items should match cache key
+     * @param items - array of cars, garages, liveries or users
+     */
+    set: async <T extends CacheKeys>(key: T, items: Items[T]) => {
       let existingItems: NormalizedItems<typeof items> = {
         ids: [],
         entities: {}

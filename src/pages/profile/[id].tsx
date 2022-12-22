@@ -23,8 +23,7 @@ import { useInfiniteScroll } from '../../hooks';
 import { LiveryDataType, UserDataType } from '../../types';
 import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
-import { getUserById, getUsers } from '../../lib/user';
-import { getCars } from '../../lib/car';
+import db from '../../lib';
 
 interface Props {
   id: string;
@@ -163,7 +162,10 @@ export const getStaticProps = wrapper.getStaticProps(
       }
 
       // get user by id and cars
-      const [user, cars] = await Promise.all([getUserById(id), getCars()]);
+      const [user, cars] = await Promise.all([
+        db.getUserById(id),
+        db.getCars()
+      ]);
 
       if (!user || !cars) {
         return { notFound: true };
@@ -183,7 +185,7 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const users = await getUsers();
+  const users = await db.getUsers();
 
   return {
     paths: users.map(({ id }) => ({ params: { id } })),

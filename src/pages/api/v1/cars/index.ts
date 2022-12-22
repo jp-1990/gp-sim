@@ -1,4 +1,4 @@
-import { getCars } from '../../../../lib/car';
+import db from '../../../../lib';
 import { CarsDataType, Method } from '../../../../types';
 import {
   NextApiRequestWithAuth,
@@ -14,7 +14,7 @@ async function handler(
 
   switch (method) {
     case Method.GET: {
-      const result = await getCars();
+      const result = await db.getCars();
 
       return res.status(200).json(result);
     }
