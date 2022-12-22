@@ -2,7 +2,7 @@ import { UserDataType, UsersDataType } from '../types';
 import { Collection, firestore } from '../utils/firebase/admin';
 import data from '../utils/dev-data/users.json';
 
-export const getUsers = async () => {
+const getUsers = async () => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data as UsersDataType;
   }
@@ -19,7 +19,7 @@ export const getUsers = async () => {
   return users;
 };
 
-export const getUserById = async (id: string) => {
+const getUserById = async (id: string) => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data.find((user) => user.id === id);
   }
@@ -32,3 +32,6 @@ export const getUserById = async (id: string) => {
 
   return userDoc.data() as UserDataType;
 };
+
+const functions = { getUsers, getUserById };
+export default functions;

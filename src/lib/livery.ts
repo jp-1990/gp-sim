@@ -2,7 +2,7 @@ import { LiveriesDataType, LiveryDataType } from '../types';
 import { Collection, firestore } from '../utils/firebase/admin';
 import data from '../utils/dev-data/liveries.json';
 
-export const getLiveries = async () => {
+const getLiveries = async () => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data as LiveriesDataType;
   }
@@ -21,7 +21,7 @@ export const getLiveries = async () => {
   return liveries;
 };
 
-export const getLiveryById = async (id: string) => {
+const getLiveryById = async (id: string) => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     const livery = data.find((livery) => livery.id === id);
     if (!livery) return undefined;
@@ -37,3 +37,6 @@ export const getLiveryById = async (id: string) => {
 
   return liveryDoc.data() as LiveryDataType;
 };
+
+const functions = { getLiveries, getLiveryById };
+export default functions;

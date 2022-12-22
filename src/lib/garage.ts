@@ -2,7 +2,7 @@ import { GarageDataType, GaragesDataType } from '../types';
 import { Collection, firestore } from '../utils/firebase/admin';
 import data from '../utils/dev-data/garages.json';
 
-export const getGarages = async () => {
+const getGarages = async () => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data as GaragesDataType;
   }
@@ -21,7 +21,7 @@ export const getGarages = async () => {
   return garages;
 };
 
-export const getGarageById = async (id: string) => {
+const getGarageById = async (id: string) => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data.find((garage) => garage.id === id);
   }
@@ -34,3 +34,6 @@ export const getGarageById = async (id: string) => {
 
   return garageDoc.data() as GarageDataType;
 };
+
+const functions = { getGarages, getGarageById };
+export default functions;

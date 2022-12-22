@@ -2,7 +2,7 @@ import { CarsDataType } from '../types';
 import { Collection, firestore } from '../utils/firebase/admin';
 import data from '../utils/dev-data/cars.json';
 
-export const getCars = async () => {
+const getCars = async () => {
   if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
     return data as CarsDataType;
   }
@@ -15,3 +15,6 @@ export const getCars = async () => {
 
   return result;
 };
+
+const functions = { getCars };
+export default functions;
