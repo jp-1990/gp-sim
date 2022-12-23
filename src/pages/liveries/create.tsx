@@ -48,11 +48,10 @@ export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   let cars = await db.cache.get(CacheKeys.CAR);
 
   if (!cars) {
-    cars = [];
-    // cars = await db.getCars();
+    cars = await db.getCars();
   }
 
-  store.dispatch(carActions.setCars(cars));
+  if (cars) store.dispatch(carActions.setCars(cars));
 
   return {
     props: {}

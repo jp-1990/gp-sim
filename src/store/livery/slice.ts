@@ -103,20 +103,15 @@ const getLiveries = createAsyncThunk(
     const liveriesState = selectors.selectAllLiveries(state);
 
     // cache first. only make a network request if we do not already have data
-    let data: LiveriesDataType = [];
-    if (!liveriesState.length) {
-      const res = await axios.get<LiveriesDataType>(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
-        {
-          params: args
-        }
-      );
-      data = res.data;
-      return data;
-    }
+    if (liveriesState.length) return applyLiveryFilters(liveriesState, args);
 
-    data = applyLiveryFilters(liveriesState, args);
-    return data;
+    const res = await axios.get<LiveriesDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}`,
+      {
+        params: args
+      }
+    );
+    return res.data;
   },
   {
     condition: (args, { getState }) => {

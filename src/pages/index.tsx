@@ -71,7 +71,6 @@ export default Home;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   const cars = await db.getCars();
-
   const liveries = await db.getLiveries();
 
   if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
@@ -79,8 +78,8 @@ export const getStaticProps = wrapper.getStaticProps((store) => async () => {
     await db.cache.set(CacheKeys.LIVERY, liveries);
   }
 
-  store.dispatch(carActions.setCars(cars));
-  store.dispatch(liveryActions.setLiveries(liveries));
+  if (cars) store.dispatch(carActions.setCars(cars));
+  if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
 
   return {
     props: {}

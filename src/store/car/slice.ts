@@ -32,12 +32,13 @@ const getCars = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState() as KnownRootState;
     const existingCars = selectCars(state);
+
+    // cache first. only make a network request if we do not already have data
     if (existingCars.length) return existingCars;
 
     const { data } = await axios.get<CarsDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${CARS_API_ROUTE}`
     );
-
     return data;
   }
 );
