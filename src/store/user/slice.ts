@@ -30,6 +30,7 @@ import {
 } from 'firebase/auth';
 import { HYDRATE } from 'next-redux-wrapper';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
+import { applyUserFilters } from '../../utils/filtering/user';
 
 // ADAPTERS
 const usersAdapter = createEntityAdapter<UserDataType>({
@@ -61,7 +62,8 @@ const getUsers = createAsyncThunk(
 
     // cache first. only make a network request if we do not already have data
     const prefetchedUsers = selectors.selectUsers(state);
-    if (prefetchedUsers.length) return prefetchedUsers;
+    if (prefetchedUsers.length)
+      return applyUserFilters(prefetchedUsers, filters);
 
     const res = await axios.get<UsersDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}`,
