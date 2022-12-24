@@ -34,7 +34,7 @@ import {
 } from '../../components/shared';
 
 import { useAuthCheck, useInfiniteScroll } from '../../hooks';
-import db from '../../lib';
+import db, { CacheKeys } from '../../lib';
 import { actions as carActions } from '../../store/car/slice';
 import {
   selectors as garageSelectors,
@@ -58,19 +58,21 @@ import {
 import { GARAGE_UPDATE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
 
 const Profile: NextPage = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(liveryActions.activatePage(PROFILE_URL));
-    dispatch(garageThunks.getGarages());
+    if (currentUser.token && currentUser.data) {
+      dispatch(liveryActions.activatePage(PROFILE_URL));
+      dispatch(garageThunks.getGarages());
+    }
     return () => {
       dispatch(liveryActions.activatePage(null));
     };
-  }, [dispatch]);
-
-  // AUTH CHECK
-  const { currentUser } = useAuthCheck();
+  }, [currentUser.token, currentUser.data, dispatch]);
 
   // STATE
   const [tabIndex, setTabIndex] = useState(0);
@@ -233,6 +235,7 @@ const Profile: NextPage = () => {
                   email={currentUser?.data?.email || ''}
                   forename={currentUser?.data?.forename || ''}
                   surname={currentUser?.data?.surname || ''}
+                  loading={!currentUser.data}
                 />
               </Form>
             </TabPanel>
@@ -356,7 +359,12 @@ const Profile: NextPage = () => {
 export default Profile;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await db.getCars();
+  let cars = await db.cache.get(CacheKeys.CAR);
+
+  if (!cars) {
+    cars = await db.getCars();
+  }
+
   store.dispatch(carActions.setCars(cars));
 
   return {

@@ -15,7 +15,7 @@ import { UpdateProfileFormStateType } from './types';
 type Props = Pick<
   UserDataType,
   'about' | 'displayName' | 'email' | 'forename' | 'image' | 'surname'
->;
+> & { loading: boolean };
 /**
  * @description Values for props should be existing values for the current user. value: string | null | undefined
  * @param {Props['about']} props.about
@@ -24,6 +24,7 @@ type Props = Pick<
  * @param {Props['forename']} props.forename
  * @param {Props['image']} props.image
  * @param {Props['surname']} props.surname
+ * @param {Props['loading']} props.loading
  */
 const UpdateProfile: React.FC<Props> = ({
   about,
@@ -31,7 +32,8 @@ const UpdateProfile: React.FC<Props> = ({
   email,
   forename,
   image,
-  surname
+  surname,
+  loading
 }) => {
   const { setStateImmutably } = useForm<UpdateProfileFormStateType>();
 
@@ -45,7 +47,7 @@ const UpdateProfile: React.FC<Props> = ({
       state.surname = surname;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loading]);
 
   return (
     <Grid

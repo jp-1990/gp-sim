@@ -16,6 +16,10 @@ export const numberToPrice = (
 
 export const isString = (str: any): str is string => typeof str === 'string';
 
+export const parsePromiseSettledRes = <T>(
+  promiseRes: PromiseSettledResult<T>
+) => (promiseRes.status === 'fulfilled' ? promiseRes.value : undefined);
+
 // THUNK UTILS
 type MinimalState = {
   error: string | null;

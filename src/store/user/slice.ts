@@ -57,6 +57,11 @@ const getUsers = createAsyncThunk(
   async (filters: UserFilters, { getState }) => {
     const state = getState() as any;
     const token = selectors.selectCurrentUserToken(state);
+    if (!token) return [];
+
+    // cache first. only make a network request if we do not already have data
+    const prefetchedUsers = selectors.selectUsers(state);
+    if (prefetchedUsers.length) return prefetchedUsers;
 
     const res = await axios.get<UsersDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}`,
@@ -85,6 +90,11 @@ const getUserById = createAsyncThunk(
   async ({ id }: { id: string }, { getState }) => {
     const state = getState() as any;
     const token = selectors.selectCurrentUserToken(state);
+    if (!token) return undefined;
+
+    // cache first. only make a network request if we do not already have data
+    const prefetchedUser = selectors.createSelectUserById(id)(state);
+    if (prefetchedUser) return prefetchedUser;
 
     const res = await axios.get<UserDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}/${id}`,
@@ -111,10 +121,18 @@ const signIn = createAsyncThunk(
   `${USER_SLICE_NAME}/signIn`,
   async (
     { email, password }: { email: string; password: string },
-    { dispatch }
+    { dispatch, getState }
   ) => {
+    const state = getState() as KnownRootState;
     const { user } = await signInWithEmailAndPassword(auth, email, password);
     const token = await user.getIdToken();
+
+    // cache first. only make a network request if we do not already have data
+    const prefetchedUser = selectors.createSelectUserById(user.uid)(state);
+    if (prefetchedUser) {
+      Router.back();
+      return prefetchedUser;
+    }
 
     const res = await axios.get<UserDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}${CURRENT}`,
@@ -212,6 +230,14 @@ const getCurrentUser = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState() as any;
     const token = selectors.selectCurrentUserToken(state);
+
+    const uid = auth.currentUser?.uid;
+
+    // cache first. only make a network request if we do not already have data
+    const prefetchedUser = selectors.createSelectUserById(uid || '')(state);
+    if (prefetchedUser) {
+      return prefetchedUser;
+    }
 
     const res = await axios.get<UserDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${USERS_API_ROUTE}${CURRENT}`,
@@ -313,8 +339,11 @@ const userSlice = createSlice({
     setToken(state, action: PayloadAction<string | null>) {
       state.currentUser.token = action.payload;
     },
-    setUser(state, action) {
+    setUser(state, action: PayloadAction<UserDataType>) {
       usersAdapter.setOne(state.users, action.payload);
+    },
+    setUsers(state, action: PayloadAction<UsersDataType>) {
+      usersAdapter.setMany(state.users, action.payload);
     },
     updateLiveries(state, action: PayloadAction<string[]>) {
       const newState = { ...state };
@@ -356,7 +385,7 @@ const userSlice = createSlice({
       })
       .addCase(getUserById.fulfilled, (state, action) => {
         usersThunkFulfilled(state.users);
-        usersAdapter.setOne(state.users, action.payload);
+        if (action.payload) usersAdapter.setOne(state.users, action.payload);
       })
 
       // SIGN IN
