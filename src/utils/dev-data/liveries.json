@@ -18,7 +18,8 @@
     "images": ["/car2.png", "/car5.png", "/car3.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1965
+    "downloads": 1965,
+    "deleted": false
   },
   {
     "id": "46b7b672-2ce1-47b2-a0ce-a66acad40ae2",
@@ -45,7 +46,8 @@
     "images": ["/car5.png", "/car1.png", "/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 449
+    "downloads": 449,
+    "deleted": false
   },
   {
     "id": "b936f9e3-95aa-4562-8066-f7ca29717602",
@@ -66,7 +68,8 @@
     "images": ["/car5.png", "/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 2024
+    "downloads": 2024,
+    "deleted": false
   },
   {
     "id": "e129b18d-e008-495d-9fd4-346eb18e60e5",
@@ -87,7 +90,8 @@
     "images": ["/car6.png", "/car4.png", "/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 2000
+    "downloads": 2000,
+    "deleted": false
   },
   {
     "id": "d63cf4fd-9d7a-4d54-9eec-b583ef69c08d",
@@ -114,7 +118,8 @@
     "images": ["/car3.png", "/car6.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1583
+    "downloads": 1583,
+    "deleted": false
   },
   {
     "id": "91b41272-0b4e-401b-9f11-f4d101ebf320",
@@ -141,7 +146,8 @@
     "images": ["/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 13
+    "downloads": 13,
+    "deleted": false
   },
   {
     "id": "7657534b-80c2-430d-a808-d40c03fd6cbe",
@@ -168,7 +174,8 @@
     "images": ["/car5.png", "/car1.png", "/car6.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1960
+    "downloads": 1960,
+    "deleted": false
   },
   {
     "id": "29c904a1-8d87-4ac0-b0f4-791554dabcdd",
@@ -189,7 +196,8 @@
     "images": ["/car4.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 636
+    "downloads": 636,
+    "deleted": false
   },
   {
     "id": "b36bb559-9ea8-44e7-b263-5be5d234bf9f",
@@ -210,7 +218,8 @@
     "images": ["/car3.png", "/car6.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1906
+    "downloads": 1906,
+    "deleted": false
   },
   {
     "id": "101031e2-5973-48ac-8a85-8990e91c534b",
@@ -237,7 +246,8 @@
     "images": ["/car1.png", "/car6.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1306
+    "downloads": 1306,
+    "deleted": false
   },
   {
     "id": "7658b3de-d9d1-49b1-9ba8-40f656963846",
@@ -264,7 +274,8 @@
     "images": ["/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1109
+    "downloads": 1109,
+    "deleted": false
   },
   {
     "id": "7dc639d3-ba6b-4758-a48d-85631aed0a53",
@@ -285,7 +296,8 @@
     "images": ["/car2.png", "/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 545
+    "downloads": 545,
+    "deleted": false
   },
   {
     "id": "2893ade3-1456-40a0-bca4-29fb125656a4",
@@ -306,7 +318,8 @@
     "images": ["/car6.png", "/car3.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1033
+    "downloads": 1033,
+    "deleted": false
   },
   {
     "id": "ec5ca764-93b1-4c26-928d-b9ce723b3988",
@@ -333,7 +346,8 @@
     "images": ["/car1.png", "/car5.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2395
+    "downloads": 2395,
+    "deleted": false
   },
   {
     "id": "9a52da51-fbea-448c-adc8-1f9163edd5f0",
@@ -354,7 +368,8 @@
     "images": ["/car2.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1887
+    "downloads": 1887,
+    "deleted": false
   },
   {
     "id": "d0b88de0-dfbc-4d0f-b6b8-edb3a6137caa",
@@ -381,7 +396,8 @@
     "images": ["/car1.png", "/car4.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2064
+    "downloads": 2064,
+    "deleted": false
   },
   {
     "id": "c80501e7-0148-4760-a111-2d14daacebe6",
@@ -408,7 +424,8 @@
     "images": ["/car1.png", "/car3.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 262
+    "downloads": 262,
+    "deleted": false
   },
   {
     "id": "8faa5b64-523e-4a28-908a-04583003acc3",
@@ -429,7 +446,8 @@
     "images": ["/car3.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1640
+    "downloads": 1640,
+    "deleted": false
   },
   {
     "id": "9ab1fd36-cb29-4238-9456-3e6f0795cbcb",
@@ -450,7 +468,8 @@
     "images": ["/car1.png", "/car5.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 11
+    "downloads": 11,
+    "deleted": false
   },
   {
     "id": "cb4e35b5-3c68-44a7-b1fa-c36e0418fc58",
@@ -471,7 +490,8 @@
     "images": ["/car4.png", "/car6.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2174
+    "downloads": 2174,
+    "deleted": false
   },
   {
     "id": "14cbbee0-0d7e-4e33-91aa-70cf3a02880f",
@@ -492,7 +512,8 @@
     "images": ["/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 466
+    "downloads": 466,
+    "deleted": false
   },
   {
     "id": "4eacf198-a6fb-44ab-8809-14f2344f58da",
@@ -519,7 +540,8 @@
     "images": ["/car2.png", "/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1244
+    "downloads": 1244,
+    "deleted": false
   },
   {
     "id": "de59aeb8-6a11-4efc-aeb2-53217b88c753",
@@ -546,7 +568,8 @@
     "images": ["/car3.png", "/car2.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 945
+    "downloads": 945,
+    "deleted": false
   },
   {
     "id": "f5a9941a-28cc-48f1-943a-b813cf364469",
@@ -567,7 +590,8 @@
     "images": ["/car1.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 683
+    "downloads": 683,
+    "deleted": false
   },
   {
     "id": "7bf02662-d69c-409b-83d2-aa8427f10de2",
@@ -594,7 +618,8 @@
     "images": ["/car4.png", "/car5.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 583
+    "downloads": 583,
+    "deleted": false
   },
   {
     "id": "f29f1482-081f-4116-a51f-102276b1d736",
@@ -615,7 +640,8 @@
     "images": ["/car5.png", "/car3.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1856
+    "downloads": 1856,
+    "deleted": false
   },
   {
     "id": "e049d2b1-7525-412a-a7cc-2306e3b47759",
@@ -636,7 +662,8 @@
     "images": ["/car5.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1616
+    "downloads": 1616,
+    "deleted": false
   },
   {
     "id": "5d33cdac-4fae-4aac-8193-515054d2c20b",
@@ -663,7 +690,8 @@
     "images": ["/car6.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1154
+    "downloads": 1154,
+    "deleted": false
   },
   {
     "id": "0ccc91b3-7198-4ff1-a706-03385e73f7e1",
@@ -690,7 +718,8 @@
     "images": ["/car3.png", "/car5.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2305
+    "downloads": 2305,
+    "deleted": false
   },
   {
     "id": "0df33cee-c3dc-4871-ac37-7f23c00a7b5d",
@@ -717,7 +746,8 @@
     "images": ["/car4.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 186
+    "downloads": 186,
+    "deleted": false
   },
   {
     "id": "962a5b1e-1c94-4a21-820c-6daf6b98a272",
@@ -744,7 +774,8 @@
     "images": ["/car3.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 2382
+    "downloads": 2382,
+    "deleted": false
   },
   {
     "id": "abf4dc75-d96d-4df4-92d1-cd86f38d18b1",
@@ -765,7 +796,8 @@
     "images": ["/car6.png", "/car1.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1347
+    "downloads": 1347,
+    "deleted": false
   },
   {
     "id": "0f5bea01-cf3a-4452-b340-6736f252c73d",
@@ -786,7 +818,8 @@
     "images": ["/car6.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 410
+    "downloads": 410,
+    "deleted": false
   },
   {
     "id": "d8ac6c99-84c1-4f6c-8b7f-7ce7926615fa",
@@ -807,7 +840,8 @@
     "images": ["/car6.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 730
+    "downloads": 730,
+    "deleted": false
   },
   {
     "id": "9d58dab1-7a50-441a-ad6e-94a9b42732da",
@@ -828,7 +862,8 @@
     "images": ["/car2.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 786
+    "downloads": 786,
+    "deleted": false
   },
   {
     "id": "bb2c0fc7-87b7-4a26-be92-d0eca807ffb1",
@@ -845,7 +880,8 @@
     "images": ["/car3.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 299
+    "downloads": 299,
+    "deleted": false
   },
   {
     "id": "27e549a9-2d43-4235-b634-34b2a42afbd2",
@@ -868,7 +904,8 @@
     "images": ["/car2.png", "/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 98
+    "downloads": 98,
+    "deleted": false
   },
   {
     "id": "520a4923-3bea-48f1-8b83-f8acfbb69fcf",
@@ -885,7 +922,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1644
+    "downloads": 1644,
+    "deleted": false
   },
   {
     "id": "3f85dd56-56aa-4eef-8ffe-32b52f091c6e",
@@ -908,7 +946,8 @@
     "images": ["/car6.png", "/car2.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 680
+    "downloads": 680,
+    "deleted": false
   },
   {
     "id": "b85374c9-4978-4870-9388-421c2d9f6a47",
@@ -931,7 +970,8 @@
     "images": ["/car4.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 396
+    "downloads": 396,
+    "deleted": false
   },
   {
     "id": "e3498ce7-fef6-49d2-8f29-f7355d84af2a",
@@ -948,7 +988,8 @@
     "images": ["/car3.png", "/car4.png", "/car2.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1655
+    "downloads": 1655,
+    "deleted": false
   },
   {
     "id": "ac90c37c-2407-4f98-86fe-9e25bfaf6727",
@@ -971,7 +1012,8 @@
     "images": ["/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2088
+    "downloads": 2088,
+    "deleted": false
   },
   {
     "id": "bce3d31f-2f63-44c3-83e7-1e3e8a5e6d12",
@@ -988,7 +1030,8 @@
     "images": ["/car3.png", "/car2.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1774
+    "downloads": 1774,
+    "deleted": false
   },
   {
     "id": "f03aa120-ff2d-46b8-98f8-48b756611253",
@@ -1011,7 +1054,8 @@
     "images": ["/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1903
+    "downloads": 1903,
+    "deleted": false
   },
   {
     "id": "70c5413d-a909-45c5-a27e-4d15cb448bed",
@@ -1028,7 +1072,8 @@
     "images": ["/car5.png", "/car2.png", "/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 106
+    "downloads": 106,
+    "deleted": false
   },
   {
     "id": "a119e820-dd55-4d16-a0c7-35d1c2fee65c",
@@ -1045,7 +1090,8 @@
     "images": ["/car6.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2283
+    "downloads": 2283,
+    "deleted": false
   },
   {
     "id": "07adadae-7488-47ff-b4f4-ecc9f23eaf42",
@@ -1068,7 +1114,8 @@
     "images": ["/car6.png", "/car5.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1061
+    "downloads": 1061,
+    "deleted": false
   },
   {
     "id": "8708573c-f2f3-4719-8199-309b13ff68cb",
@@ -1091,7 +1138,8 @@
     "images": ["/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1244
+    "downloads": 1244,
+    "deleted": false
   },
   {
     "id": "ad2478ae-8751-41c9-a012-8fe1ff19eb5d",
@@ -1108,7 +1156,8 @@
     "images": ["/car4.png", "/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 189
+    "downloads": 189,
+    "deleted": false
   },
   {
     "id": "ba24a9bd-f67b-45a9-9cc8-24fcd3420ba2",
@@ -1125,7 +1174,8 @@
     "images": ["/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2449
+    "downloads": 2449,
+    "deleted": false
   },
   {
     "id": "0625fdf6-62c7-47f8-82b2-5fb6b98e351c",
@@ -1142,7 +1192,8 @@
     "images": ["/car4.png", "/car6.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2486
+    "downloads": 2486,
+    "deleted": false
   },
   {
     "id": "47b77e23-c78a-41cb-9b30-05c8db4dca7f",
@@ -1169,7 +1220,8 @@
     "images": ["/car2.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 784
+    "downloads": 784,
+    "deleted": false
   },
   {
     "id": "efe978ca-7c45-46e3-8181-4cf6be43031b",
@@ -1196,7 +1248,8 @@
     "images": ["/car3.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1124
+    "downloads": 1124,
+    "deleted": false
   },
   {
     "id": "805298b1-547d-4a2f-8106-d1495a3ee398",
@@ -1217,7 +1270,8 @@
     "images": ["/car6.png", "/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 582
+    "downloads": 582,
+    "deleted": false
   },
   {
     "id": "5e702421-c54a-4c66-a035-4556cfd7a3a0",
@@ -1238,7 +1292,8 @@
     "images": ["/car6.png", "/car4.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1363
+    "downloads": 1363,
+    "deleted": false
   },
   {
     "id": "53a9ad04-cee8-43fa-a826-c5b2417099eb",
@@ -1259,7 +1314,8 @@
     "images": ["/car3.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2287
+    "downloads": 2287,
+    "deleted": false
   },
   {
     "id": "ca773b51-016a-4b24-b2ad-18966abf479d",
@@ -1286,7 +1342,8 @@
     "images": ["/car5.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1531
+    "downloads": 1531,
+    "deleted": false
   },
   {
     "id": "493d1424-7004-41c0-b287-0ef850ad9758",
@@ -1313,7 +1370,8 @@
     "images": ["/car1.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1784
+    "downloads": 1784,
+    "deleted": false
   },
   {
     "id": "53bd069b-5fde-4d6d-b89d-4c1506d2892a",
@@ -1340,7 +1398,8 @@
     "images": ["/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1249
+    "downloads": 1249,
+    "deleted": false
   },
   {
     "id": "f0829bbf-347e-4a58-8bb5-99d1fe8b947d",
@@ -1367,7 +1426,8 @@
     "images": ["/car5.png", "/car4.png", "/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1338
+    "downloads": 1338,
+    "deleted": false
   },
   {
     "id": "283be034-dc94-4143-80aa-d836d9d3a686",
@@ -1394,7 +1454,8 @@
     "images": ["/car3.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2413
+    "downloads": 2413,
+    "deleted": false
   },
   {
     "id": "a0767d51-cf8a-45da-a028-7a0d54740741",
@@ -1415,7 +1476,8 @@
     "images": ["/car3.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 117
+    "downloads": 117,
+    "deleted": false
   },
   {
     "id": "71f0d07f-6a83-4273-b50f-f44e8657481b",
@@ -1442,7 +1504,8 @@
     "images": ["/car6.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1475
+    "downloads": 1475,
+    "deleted": false
   },
   {
     "id": "572fd610-6b05-40c1-a2ee-dd0e28d46925",
@@ -1469,7 +1532,8 @@
     "images": ["/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1100
+    "downloads": 1100,
+    "deleted": false
   },
   {
     "id": "a0da6776-a2ca-4998-bd70-b55cf49e6b26",
@@ -1490,7 +1554,8 @@
     "images": ["/car4.png", "/car5.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1408
+    "downloads": 1408,
+    "deleted": false
   },
   {
     "id": "fb82bff8-f440-4992-8d20-200dc788243e",
@@ -1517,7 +1582,8 @@
     "images": ["/car2.png", "/car3.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 940
+    "downloads": 940,
+    "deleted": false
   },
   {
     "id": "4a63e52e-b46c-4bf2-9b57-5c522129ebb1",
@@ -1544,7 +1610,8 @@
     "images": ["/car1.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 458
+    "downloads": 458,
+    "deleted": false
   },
   {
     "id": "63764357-0222-43b0-8075-93d9b5eda237",
@@ -1571,7 +1638,8 @@
     "images": ["/car6.png", "/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 970
+    "downloads": 970,
+    "deleted": false
   },
   {
     "id": "e02232d3-5421-4ed3-a550-99efa3612979",
@@ -1592,7 +1660,8 @@
     "images": ["/car6.png", "/car1.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 669
+    "downloads": 669,
+    "deleted": false
   },
   {
     "id": "a4b3d24b-b425-476a-8109-293f4c13c518",
@@ -1613,7 +1682,8 @@
     "images": ["/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 359
+    "downloads": 359,
+    "deleted": false
   },
   {
     "id": "6657b45e-9268-4807-860d-4a8390a15814",
@@ -1634,7 +1704,8 @@
     "images": ["/car4.png", "/car1.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 869
+    "downloads": 869,
+    "deleted": false
   },
   {
     "id": "7c9d08ae-2340-4aa3-81f4-11849d6041bf",
@@ -1661,7 +1732,8 @@
     "images": ["/car6.png", "/car1.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1391
+    "downloads": 1391,
+    "deleted": false
   },
   {
     "id": "da36626d-ef54-4050-9cf2-d8cd1590316f",
@@ -1688,7 +1760,8 @@
     "images": ["/car4.png", "/car5.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 959
+    "downloads": 959,
+    "deleted": false
   },
   {
     "id": "90cd3ceb-8168-4e6c-99b4-fe953cdad919",
@@ -1715,7 +1788,8 @@
     "images": ["/car2.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 2008
+    "downloads": 2008,
+    "deleted": false
   },
   {
     "id": "e01b81d0-4784-465c-8661-639233e2709b",
@@ -1736,7 +1810,8 @@
     "images": ["/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1027
+    "downloads": 1027,
+    "deleted": false
   },
   {
     "id": "cb078c18-4aef-41f0-8da3-df567b5f8cc1",
@@ -1757,7 +1832,8 @@
     "images": ["/car5.png", "/car4.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 933
+    "downloads": 933,
+    "deleted": false
   },
   {
     "id": "e6d6432e-fc68-4418-a213-f07f9aad9d1c",
@@ -1778,7 +1854,8 @@
     "images": ["/car1.png", "/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1402
+    "downloads": 1402,
+    "deleted": false
   },
   {
     "id": "235c764a-779c-4179-9b7a-48a09011e122",
@@ -1799,7 +1876,8 @@
     "images": ["/car1.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2128
+    "downloads": 2128,
+    "deleted": false
   },
   {
     "id": "fec2aaa2-f6ef-48b9-8a37-04040c18240a",
@@ -1820,7 +1898,8 @@
     "images": ["/car5.png", "/car3.png", "/car6.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1099
+    "downloads": 1099,
+    "deleted": false
   },
   {
     "id": "d5431a7c-e247-41e2-b535-010b2168d081",
@@ -1841,7 +1920,8 @@
     "images": ["/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 374
+    "downloads": 374,
+    "deleted": false
   },
   {
     "id": "9fbca1b4-b4cf-4afe-b6ac-93d3f5b256da",
@@ -1862,7 +1942,8 @@
     "images": ["/car6.png", "/car2.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 962
+    "downloads": 962,
+    "deleted": false
   },
   {
     "id": "361955ee-33e2-469f-8e95-28f57bed7acb",
@@ -1883,7 +1964,8 @@
     "images": ["/car5.png", "/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1822
+    "downloads": 1822,
+    "deleted": false
   },
   {
     "id": "62ad4f3f-53ea-4266-b444-9347f1fbdd7b",
@@ -1910,7 +1992,8 @@
     "images": ["/car5.png", "/car1.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1801
+    "downloads": 1801,
+    "deleted": false
   },
   {
     "id": "6537e40c-69ab-425a-9be8-3a121ddc3639",
@@ -1931,7 +2014,8 @@
     "images": ["/car5.png", "/car6.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1905
+    "downloads": 1905,
+    "deleted": false
   },
   {
     "id": "b89a269e-7c57-4ef3-910e-7fa99708ab3d",
@@ -1958,7 +2042,8 @@
     "images": ["/car1.png", "/car4.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1507
+    "downloads": 1507,
+    "deleted": false
   },
   {
     "id": "3892ade7-4a05-4510-9c4d-196cd46c37f9",
@@ -1985,7 +2070,8 @@
     "images": ["/car5.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1706
+    "downloads": 1706,
+    "deleted": false
   },
   {
     "id": "4bf7eed8-247f-4e88-a036-2a76a8c2ad37",
@@ -2012,7 +2098,8 @@
     "images": ["/car3.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1973
+    "downloads": 1973,
+    "deleted": false
   },
   {
     "id": "73785034-51f2-4275-91c0-e2ffbd1e23fe",
@@ -2039,7 +2126,8 @@
     "images": ["/car4.png", "/car5.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1240
+    "downloads": 1240,
+    "deleted": false
   },
   {
     "id": "9ebecce9-b141-4f39-a460-848dc95c503b",
@@ -2066,7 +2154,8 @@
     "images": ["/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 375
+    "downloads": 375,
+    "deleted": false
   },
   {
     "id": "4c350e24-b187-4174-b746-75a72465328a",
@@ -2093,7 +2182,8 @@
     "images": ["/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1887
+    "downloads": 1887,
+    "deleted": false
   },
   {
     "id": "01f68fda-267c-4b88-b484-5fa210e84cdf",
@@ -2120,7 +2210,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1590
+    "downloads": 1590,
+    "deleted": false
   },
   {
     "id": "1e187e4c-62db-4390-bcf4-4e4e77bfe525",
@@ -2141,7 +2232,8 @@
     "images": ["/car2.png", "/car3.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2443
+    "downloads": 2443,
+    "deleted": false
   },
   {
     "id": "04f5008d-2faa-4c92-8cbf-2e21511ed737",
@@ -2168,7 +2260,8 @@
     "images": ["/car5.png", "/car6.png", "/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 910
+    "downloads": 910,
+    "deleted": false
   },
   {
     "id": "dfd7b1fb-3a69-4931-bdc9-168933b1f670",
@@ -2195,7 +2288,8 @@
     "images": ["/car1.png", "/car5.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1077
+    "downloads": 1077,
+    "deleted": false
   },
   {
     "id": "68a7e625-c790-40bd-b782-97db4c8b3a6b",
@@ -2216,7 +2310,8 @@
     "images": ["/car2.png", "/car6.png", "/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 545
+    "downloads": 545,
+    "deleted": false
   },
   {
     "id": "0ebdf6cb-f61e-4ba6-ba05-1d5fb8f9e3de",
@@ -2243,7 +2338,8 @@
     "images": ["/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 2353
+    "downloads": 2353,
+    "deleted": false
   },
   {
     "id": "75bde498-5986-400e-ac28-58bea23b5f33",
@@ -2264,7 +2360,8 @@
     "images": ["/car4.png", "/car5.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2064
+    "downloads": 2064,
+    "deleted": false
   },
   {
     "id": "e61603cd-544e-4174-9df2-9e260a2da018",
@@ -2291,7 +2388,8 @@
     "images": ["/car6.png", "/car1.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1125
+    "downloads": 1125,
+    "deleted": false
   },
   {
     "id": "3bad10d2-9172-49a8-802b-8e325cda4127",
@@ -2312,7 +2410,8 @@
     "images": ["/car2.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1074
+    "downloads": 1074,
+    "deleted": false
   },
   {
     "id": "1c58e1ee-d41c-4dcf-a78a-8a0045702fd9",
@@ -2329,7 +2428,8 @@
     "images": ["/car1.png", "/car2.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 742
+    "downloads": 742,
+    "deleted": false
   },
   {
     "id": "c5797cca-02fe-486d-97eb-5fd5e51a321b",
@@ -2346,7 +2446,8 @@
     "images": ["/car5.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 2500
+    "downloads": 2500,
+    "deleted": false
   },
   {
     "id": "b8f152bc-9312-48a5-8b2c-a85060d10d31",
@@ -2363,7 +2464,8 @@
     "images": ["/car4.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 913
+    "downloads": 913,
+    "deleted": false
   },
   {
     "id": "bbb2e744-9fad-4965-b52c-7bb7494fc505",
@@ -2386,7 +2488,8 @@
     "images": ["/car3.png", "/car4.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 801
+    "downloads": 801,
+    "deleted": false
   },
   {
     "id": "2cf6c9f8-fec3-462c-a3bf-c6e9641d6b4a",
@@ -2403,7 +2506,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 209
+    "downloads": 209,
+    "deleted": false
   },
   {
     "id": "7bd9809e-9316-438a-b0b8-083f44096c2f",
@@ -2420,7 +2524,8 @@
     "images": ["/car3.png", "/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 835
+    "downloads": 835,
+    "deleted": false
   },
   {
     "id": "eb1fb256-1b15-4dca-a44e-3af3250fdbde",
@@ -2443,7 +2548,8 @@
     "images": ["/car1.png", "/car3.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 733
+    "downloads": 733,
+    "deleted": false
   },
   {
     "id": "1f310e3e-65a7-43f5-9f14-7f5235ffb134",
@@ -2460,7 +2566,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1505
+    "downloads": 1505,
+    "deleted": false
   },
   {
     "id": "3a030846-252a-4b22-95cd-67ff6ef630e8",
@@ -2483,7 +2590,8 @@
     "images": ["/car1.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1944
+    "downloads": 1944,
+    "deleted": false
   },
   {
     "id": "f80d162c-8910-43cc-8851-8ea5cf4732e7",
@@ -2506,7 +2614,8 @@
     "images": ["/car6.png", "/car3.png", "/car1.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1240
+    "downloads": 1240,
+    "deleted": false
   },
   {
     "id": "93c50338-4881-4bc6-bdeb-0ac8b47060be",
@@ -2527,7 +2636,8 @@
     "images": ["/car5.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1153
+    "downloads": 1153,
+    "deleted": false
   },
   {
     "id": "76a68a68-50a2-4b8f-9fd9-fbbb4f1cad59",
@@ -2548,7 +2658,8 @@
     "images": ["/car5.png", "/car1.png", "/car4.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1999
+    "downloads": 1999,
+    "deleted": false
   },
   {
     "id": "e95dcb6e-a8e8-46e6-a69a-bedcc3e1a6ec",
@@ -2569,7 +2680,8 @@
     "images": ["/car4.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2097
+    "downloads": 2097,
+    "deleted": false
   },
   {
     "id": "77d19a65-9ea3-4206-885f-7082b317559e",
@@ -2590,7 +2702,8 @@
     "images": ["/car2.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2204
+    "downloads": 2204,
+    "deleted": false
   },
   {
     "id": "522bee8b-2848-49cf-ac26-2de65ca40f69",
@@ -2611,7 +2724,8 @@
     "images": ["/car1.png", "/car6.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1526
+    "downloads": 1526,
+    "deleted": false
   },
   {
     "id": "cd8cdb44-6812-45f9-a6a4-d53b81a78e71",
@@ -2638,7 +2752,8 @@
     "images": ["/car4.png", "/car3.png", "/car5.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1480
+    "downloads": 1480,
+    "deleted": false
   },
   {
     "id": "01f83864-a76d-460b-a783-f7856369ea24",
@@ -2659,7 +2774,8 @@
     "images": ["/car1.png", "/car4.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 146
+    "downloads": 146,
+    "deleted": false
   },
   {
     "id": "ad261b5c-6536-4d28-9640-6e3d9909039d",
@@ -2680,7 +2796,8 @@
     "images": ["/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1440
+    "downloads": 1440,
+    "deleted": false
   },
   {
     "id": "89055154-9e2a-4c9b-8631-4223fe077189",
@@ -2701,7 +2818,8 @@
     "images": ["/car2.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1761
+    "downloads": 1761,
+    "deleted": false
   },
   {
     "id": "d4fa9cca-269a-4b1c-954c-4890bc2ddafb",
@@ -2728,7 +2846,8 @@
     "images": ["/car5.png", "/car2.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 645
+    "downloads": 645,
+    "deleted": false
   },
   {
     "id": "15303682-cbac-4891-ac49-008fc87aafec",
@@ -2749,7 +2868,8 @@
     "images": ["/car3.png", "/car4.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1312
+    "downloads": 1312,
+    "deleted": false
   },
   {
     "id": "e9070fda-6d83-463b-bb73-5a9460555e71",
@@ -2770,7 +2890,8 @@
     "images": ["/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 689
+    "downloads": 689,
+    "deleted": false
   },
   {
     "id": "aa699f31-e660-4595-adb9-04fdec87070f",
@@ -2791,7 +2912,8 @@
     "images": ["/car5.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1571
+    "downloads": 1571,
+    "deleted": false
   },
   {
     "id": "d5ed30bd-04e2-40b5-9e52-988cc1cf88d3",
@@ -2818,7 +2940,8 @@
     "images": ["/car2.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 220
+    "downloads": 220,
+    "deleted": false
   },
   {
     "id": "c451c2e4-d2d7-4aa1-8b93-7f9946c2fded",
@@ -2845,7 +2968,8 @@
     "images": ["/car1.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2039
+    "downloads": 2039,
+    "deleted": false
   },
   {
     "id": "a0c118e5-6657-4089-ab1b-419f48f3b3ef",
@@ -2872,7 +2996,8 @@
     "images": ["/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 293
+    "downloads": 293,
+    "deleted": false
   },
   {
     "id": "18a6b489-9ca0-4c07-970f-a1368b540bf9",
@@ -2893,7 +3018,8 @@
     "images": ["/car6.png", "/car3.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1177
+    "downloads": 1177,
+    "deleted": false
   },
   {
     "id": "58f35489-44f4-4da2-92cd-029b0c669a1f",
@@ -2914,7 +3040,8 @@
     "images": ["/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1836
+    "downloads": 1836,
+    "deleted": false
   },
   {
     "id": "87977b96-943f-4d4d-8c06-225d4d8ead01",
@@ -2941,7 +3068,8 @@
     "images": ["/car5.png", "/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 226
+    "downloads": 226,
+    "deleted": false
   },
   {
     "id": "db3b2f55-52ab-4890-b5fb-2d164fb9fc9c",
@@ -2967,7 +3095,8 @@
     "images": ["/car2.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1250
+    "downloads": 1250,
+    "deleted": false
   },
   {
     "id": "aaa01f1b-5e3e-4dde-8944-2c244a9d84d4",
@@ -2994,7 +3123,8 @@
     "images": ["/car1.png", "/car5.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 640
+    "downloads": 640,
+    "deleted": false
   },
   {
     "id": "cb071e73-dc1f-4da1-a4ea-4b0ab2860344",
@@ -3015,7 +3145,8 @@
     "images": ["/car6.png", "/car1.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1609
+    "downloads": 1609,
+    "deleted": false
   },
   {
     "id": "c23626a6-8b1a-4053-86ea-3a0d50154211",
@@ -3036,7 +3167,8 @@
     "images": ["/car3.png", "/car5.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 851
+    "downloads": 851,
+    "deleted": false
   },
   {
     "id": "01582d3d-ab68-47a7-afa9-8fd988b1d03d",
@@ -3063,7 +3195,8 @@
     "images": ["/car2.png", "/car1.png", "/car3.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1256
+    "downloads": 1256,
+    "deleted": false
   },
   {
     "id": "4e3b643f-ddcd-42ea-ab08-9337c6c4228d",
@@ -3090,7 +3223,8 @@
     "images": ["/car5.png", "/car4.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1145
+    "downloads": 1145,
+    "deleted": false
   },
   {
     "id": "31258961-ff57-4f32-97cd-f221be568c99",
@@ -3111,7 +3245,8 @@
     "images": ["/car3.png", "/car5.png", "/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1214
+    "downloads": 1214,
+    "deleted": false
   },
   {
     "id": "58fde019-0045-46e0-a7c6-616adfef585f",
@@ -3138,7 +3273,8 @@
     "images": ["/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 2117
+    "downloads": 2117,
+    "deleted": false
   },
   {
     "id": "b6e9761d-4c1d-4766-adbf-92768fd3d030",
@@ -3159,7 +3295,8 @@
     "images": ["/car6.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 112
+    "downloads": 112,
+    "deleted": false
   },
   {
     "id": "d0f056bc-144f-41fa-9e18-b80e5285b20d",
@@ -3186,7 +3323,8 @@
     "images": ["/car2.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1386
+    "downloads": 1386,
+    "deleted": false
   },
   {
     "id": "627e225e-beca-4c89-8ed7-e246adab5a8a",
@@ -3213,7 +3351,8 @@
     "images": ["/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2326
+    "downloads": 2326,
+    "deleted": false
   },
   {
     "id": "70b051b0-dc44-4e74-90e4-35f8367e7666",
@@ -3240,7 +3379,8 @@
     "images": ["/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 741
+    "downloads": 741,
+    "deleted": false
   },
   {
     "id": "dee3b8ec-dbfe-46cd-9ce1-6e98dcc28080",
@@ -3261,7 +3401,8 @@
     "images": ["/car6.png", "/car4.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1209
+    "downloads": 1209,
+    "deleted": false
   },
   {
     "id": "b33f712d-2948-489d-abce-96719306bae5",
@@ -3288,7 +3429,8 @@
     "images": ["/car6.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 895
+    "downloads": 895,
+    "deleted": false
   },
   {
     "id": "f3d378d0-5534-4e91-a8a3-fc77a2c50a61",
@@ -3309,7 +3451,8 @@
     "images": ["/car2.png", "/car3.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1355
+    "downloads": 1355,
+    "deleted": false
   },
   {
     "id": "79885794-f907-4bd4-b616-b8139cd2eba0",
@@ -3336,7 +3479,8 @@
     "images": ["/car6.png", "/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2097
+    "downloads": 2097,
+    "deleted": false
   },
   {
     "id": "589477a8-a63b-4238-aaa7-97aa3f126594",
@@ -3363,7 +3507,8 @@
     "images": ["/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 61
+    "downloads": 61,
+    "deleted": false
   },
   {
     "id": "1439c369-523f-4284-9a43-49c5e1f14f5f",
@@ -3390,7 +3535,8 @@
     "images": ["/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 2048
+    "downloads": 2048,
+    "deleted": false
   },
   {
     "id": "279f3a30-5c93-468a-8dca-6aadecfe968a",
@@ -3417,7 +3563,8 @@
     "images": ["/car4.png", "/car2.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1834
+    "downloads": 1834,
+    "deleted": false
   },
   {
     "id": "04d5b414-5f29-4c8b-9a33-21d2b6fd0376",
@@ -3438,7 +3585,8 @@
     "images": ["/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1811
+    "downloads": 1811,
+    "deleted": false
   },
   {
     "id": "1b618f2c-60c3-4311-8c59-2ccb644cc0c9",
@@ -3459,7 +3607,8 @@
     "images": ["/car2.png", "/car6.png", "/car5.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 499
+    "downloads": 499,
+    "deleted": false
   },
   {
     "id": "be5d34b7-bf97-45b3-bb2d-31b7521cf6af",
@@ -3486,7 +3635,8 @@
     "images": ["/car2.png", "/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2372
+    "downloads": 2372,
+    "deleted": false
   },
   {
     "id": "bb7d1d4f-7a97-4442-97a1-2a3e089c3ca3",
@@ -3513,7 +3663,8 @@
     "images": ["/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1557
+    "downloads": 1557,
+    "deleted": false
   },
   {
     "id": "c388ba2e-c85b-4e50-a5dd-89e42d9683fe",
@@ -3534,7 +3685,8 @@
     "images": ["/car4.png", "/car6.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 974
+    "downloads": 974,
+    "deleted": false
   },
   {
     "id": "efae3a6a-a467-423e-9ebb-51ecb76bc2fb",
@@ -3561,7 +3713,8 @@
     "images": ["/car4.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 987
+    "downloads": 987,
+    "deleted": false
   },
   {
     "id": "4d0c608a-c04d-4fd1-b135-357b92caa614",
@@ -3582,7 +3735,8 @@
     "images": ["/car5.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 184
+    "downloads": 184,
+    "deleted": false
   },
   {
     "id": "62e800de-b017-437a-99ee-8f2605c941c9",
@@ -3603,7 +3757,8 @@
     "images": ["/car2.png", "/car1.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 245
+    "downloads": 245,
+    "deleted": false
   },
   {
     "id": "d9d9a05f-2db3-4242-91e8-4d6fd13dc775",
@@ -3624,7 +3779,8 @@
     "images": ["/car5.png", "/car3.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 446
+    "downloads": 446,
+    "deleted": false
   },
   {
     "id": "17b95b7b-d34b-4b9c-8462-e0b952bbf4e7",
@@ -3651,7 +3807,8 @@
     "images": ["/car2.png", "/car3.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1499
+    "downloads": 1499,
+    "deleted": false
   },
   {
     "id": "aa50d1cc-5a99-40ef-bccd-55c8a326edee",
@@ -3678,7 +3835,8 @@
     "images": ["/car1.png", "/car2.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 679
+    "downloads": 679,
+    "deleted": false
   },
   {
     "id": "8227d229-5d97-4950-b787-a54ecfebeb1e",
@@ -3705,7 +3863,8 @@
     "images": ["/car1.png", "/car2.png", "/car6.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1893
+    "downloads": 1893,
+    "deleted": false
   },
   {
     "id": "f11310b9-f39e-4962-aebf-487a5299b413",
@@ -3726,7 +3885,8 @@
     "images": ["/car3.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1712
+    "downloads": 1712,
+    "deleted": false
   },
   {
     "id": "cf90ac48-7691-4acd-b5b5-75b6f318efcc",
@@ -3753,7 +3913,8 @@
     "images": ["/car6.png", "/car5.png", "/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1317
+    "downloads": 1317,
+    "deleted": false
   },
   {
     "id": "dccc9a39-9f57-4d26-9aa7-e3e59025c667",
@@ -3780,7 +3941,8 @@
     "images": ["/car1.png", "/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1539
+    "downloads": 1539,
+    "deleted": false
   },
   {
     "id": "21b5f8f5-44b7-4d65-badd-773527588f03",
@@ -3801,7 +3963,8 @@
     "images": ["/car3.png", "/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1632
+    "downloads": 1632,
+    "deleted": false
   },
   {
     "id": "709daab8-9edc-4086-a7f5-ae20e7b4e1f5",
@@ -3828,7 +3991,8 @@
     "images": ["/car3.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1450
+    "downloads": 1450,
+    "deleted": false
   },
   {
     "id": "cd6ecad6-d63e-41c8-b778-21808e920817",
@@ -3849,7 +4013,8 @@
     "images": ["/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 2314
+    "downloads": 2314,
+    "deleted": false
   },
   {
     "id": "121b5c6f-48c8-4a96-a601-4cbae6d62458",
@@ -3876,7 +4041,8 @@
     "images": ["/car2.png", "/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 726
+    "downloads": 726,
+    "deleted": false
   },
   {
     "id": "b17f0c0b-fddc-4066-a59c-deeccbcacefd",
@@ -3903,7 +4069,8 @@
     "images": ["/car6.png", "/car1.png", "/car4.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 384
+    "downloads": 384,
+    "deleted": false
   },
   {
     "id": "f40163b7-d82b-4263-86f6-6d6e3d8c1a5e",
@@ -3924,7 +4091,8 @@
     "images": ["/car2.png", "/car3.png", "/car6.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 228
+    "downloads": 228,
+    "deleted": false
   },
   {
     "id": "acc32d4c-4864-47ea-8a2d-1d87297718c9",
@@ -3945,7 +4113,8 @@
     "images": ["/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 771
+    "downloads": 771,
+    "deleted": false
   },
   {
     "id": "b3bd495a-1c03-42aa-8235-9d714777cdfa",
@@ -3966,7 +4135,8 @@
     "images": ["/car2.png", "/car1.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 898
+    "downloads": 898,
+    "deleted": false
   },
   {
     "id": "e91b38ce-7cd9-4463-9437-c75dfc30ebb7",
@@ -3987,7 +4157,8 @@
     "images": ["/car2.png", "/car5.png", "/car3.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1553
+    "downloads": 1553,
+    "deleted": false
   },
   {
     "id": "2651e6f4-92ca-4154-a754-cc8433107fd3",
@@ -4008,7 +4179,8 @@
     "images": ["/car4.png", "/car6.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 343
+    "downloads": 343,
+    "deleted": false
   },
   {
     "id": "68a368cd-92e4-4cac-b5a9-6ff9ffe081a2",
@@ -4029,7 +4201,8 @@
     "images": ["/car2.png", "/car1.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1053
+    "downloads": 1053,
+    "deleted": false
   },
   {
     "id": "00c4fc85-e4a7-43f4-9dee-3d6d21d99e08",
@@ -4056,7 +4229,8 @@
     "images": ["/car6.png", "/car5.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 906
+    "downloads": 906,
+    "deleted": false
   },
   {
     "id": "e9321173-eb8a-422a-aaf7-3dc7cd4e8455",
@@ -4077,7 +4251,8 @@
     "images": ["/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 704
+    "downloads": 704,
+    "deleted": false
   },
   {
     "id": "d60e00ba-adbc-4f5f-bb80-7fb1fb852b8d",
@@ -4104,7 +4279,8 @@
     "images": ["/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1829
+    "downloads": 1829,
+    "deleted": false
   },
   {
     "id": "8eb9cddb-b582-4d6a-a987-16fe47db37e7",
@@ -4131,7 +4307,8 @@
     "images": ["/car1.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 789
+    "downloads": 789,
+    "deleted": false
   },
   {
     "id": "d703cc9f-7552-4f76-a629-c49bbb383185",
@@ -4152,7 +4329,8 @@
     "images": ["/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 286
+    "downloads": 286,
+    "deleted": false
   },
   {
     "id": "e633cff0-3e5d-4974-9861-59ba7797bb5f",
@@ -4179,7 +4357,8 @@
     "images": ["/car4.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2440
+    "downloads": 2440,
+    "deleted": false
   },
   {
     "id": "2636bfb9-f6d8-4613-928c-683b19f4293b",
@@ -4200,7 +4379,8 @@
     "images": ["/car5.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 2157
+    "downloads": 2157,
+    "deleted": false
   },
   {
     "id": "aeb2b643-38b7-47aa-981b-3c469418e7b3",
@@ -4221,7 +4401,8 @@
     "images": ["/car4.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1031
+    "downloads": 1031,
+    "deleted": false
   },
   {
     "id": "b4695236-61a6-412e-b927-760b9010fc2e",
@@ -4242,7 +4423,8 @@
     "images": ["/car4.png", "/car3.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 999
+    "downloads": 999,
+    "deleted": false
   },
   {
     "id": "fd16776d-ac8e-475f-a73b-e7d81f82c4be",
@@ -4263,7 +4445,8 @@
     "images": ["/car2.png", "/car3.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 18
+    "downloads": 18,
+    "deleted": false
   },
   {
     "id": "2ad78722-3257-4941-9015-54165ea03bc4",
@@ -4289,7 +4472,8 @@
     "images": ["/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 384
+    "downloads": 384,
+    "deleted": false
   },
   {
     "id": "45608122-e178-4704-b058-9121f2ec42d4",
@@ -4310,7 +4494,8 @@
     "images": ["/car6.png", "/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1149
+    "downloads": 1149,
+    "deleted": false
   },
   {
     "id": "4d688569-9a6f-4deb-8a5c-211e7bd25686",
@@ -4331,7 +4516,8 @@
     "images": ["/car1.png", "/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 228
+    "downloads": 228,
+    "deleted": false
   },
   {
     "id": "768ef6e4-fd94-46df-bef1-89193ca62abc",
@@ -4352,7 +4538,8 @@
     "images": ["/car5.png", "/car4.png", "/car1.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 1211
+    "downloads": 1211,
+    "deleted": false
   },
   {
     "id": "ac126814-7b43-4ae0-9f52-b018efc0b127",
@@ -4379,7 +4566,8 @@
     "images": ["/car2.png", "/car5.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 2429
+    "downloads": 2429,
+    "deleted": false
   },
   {
     "id": "72336af4-23c1-49ff-acd8-b8d21ea33657",
@@ -4406,7 +4594,8 @@
     "images": ["/car5.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 385
+    "downloads": 385,
+    "deleted": false
   },
   {
     "id": "fd8adb78-a59c-4f23-b210-5f7a3b06ea25",
@@ -4427,7 +4616,8 @@
     "images": ["/car1.png", "/car6.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 79
+    "downloads": 79,
+    "deleted": false
   },
   {
     "id": "cbc6f36b-2f46-4e63-9308-72ca9ed64758",
@@ -4454,7 +4644,8 @@
     "images": ["/car4.png", "/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 2313
+    "downloads": 2313,
+    "deleted": false
   },
   {
     "id": "706416b9-9d7e-4f83-a16f-8266784f1516",
@@ -4480,7 +4671,8 @@
     "images": ["/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 293
+    "downloads": 293,
+    "deleted": false
   },
   {
     "id": "0a6bc0bb-e194-4ff3-8cb0-4cbf8b085419",
@@ -4507,7 +4699,8 @@
     "images": ["/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1982
+    "downloads": 1982,
+    "deleted": false
   },
   {
     "id": "a57611d8-eafe-40b8-9792-2b965d6210bf",
@@ -4534,7 +4727,8 @@
     "images": ["/car1.png", "/car2.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1993
+    "downloads": 1993,
+    "deleted": false
   },
   {
     "id": "c4a061a6-b8d7-43cd-a1f8-041f5cc10ae5",
@@ -4560,7 +4754,8 @@
     "images": ["/car1.png", "/car2.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 712
+    "downloads": 712,
+    "deleted": false
   },
   {
     "id": "5b2d7ef2-b11a-4901-9e9a-85a0a16d7662",
@@ -4587,7 +4782,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 1939
+    "downloads": 1939,
+    "deleted": false
   },
   {
     "id": "80112e64-2be0-4766-a4ad-4245b4171294",
@@ -4614,7 +4810,8 @@
     "images": ["/car3.png", "/car6.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 3,
-    "downloads": 306
+    "downloads": 306,
+    "deleted": false
   },
   {
     "id": "e780e82c-a44f-4ff7-84be-d6380aa8e203",
@@ -4635,7 +4832,8 @@
     "images": ["/car2.png", "/car5.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1268
+    "downloads": 1268,
+    "deleted": false
   },
   {
     "id": "5799d265-86dd-4cf3-9653-f8219bc04fc0",
@@ -4662,7 +4860,8 @@
     "images": ["/car6.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 1196
+    "downloads": 1196,
+    "deleted": false
   },
   {
     "id": "2ef7cec8-440c-41ba-8520-8a1c675243b5",
@@ -4689,7 +4888,8 @@
     "images": ["/car3.png", "/car5.png", "/car2.png", "/car6.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1003
+    "downloads": 1003,
+    "deleted": false
   },
   {
     "id": "beeccf3e-f8aa-4597-a153-5a29ca69f3f4",
@@ -4710,7 +4910,8 @@
     "images": ["/car5.png", "/car4.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 4,
-    "downloads": 1978
+    "downloads": 1978,
+    "deleted": false
   },
   {
     "id": "a02e5e5e-2c81-4446-892c-99b5df33570b",
@@ -4731,7 +4932,8 @@
     "images": ["/car1.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 523
+    "downloads": 523,
+    "deleted": false
   },
   {
     "id": "3b367180-ee18-49cc-ac27-a6d0e2c65481",
@@ -4752,7 +4954,8 @@
     "images": ["/car2.png", "/car3.png", "/car4.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 0,
-    "downloads": 1742
+    "downloads": 1742,
+    "deleted": false
   },
   {
     "id": "5a364095-663c-4da2-a14c-31a4c8711c8b",
@@ -4773,7 +4976,8 @@
     "images": ["/car5.png", "/car3.png", "/car4.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 2460
+    "downloads": 2460,
+    "deleted": false
   },
   {
     "id": "6629480d-efa6-4750-bd27-40d15139b324",
@@ -4800,7 +5004,8 @@
     "images": ["/car5.png", "/car3.png", "/car2.png", "/car1.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 2,
-    "downloads": 1953
+    "downloads": 1953,
+    "deleted": false
   },
   {
     "id": "fc3a8374-6b24-4bca-ad53-bae19487a34d",
@@ -4827,7 +5032,8 @@
     "images": ["/car5.png", "/car2.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 426
+    "downloads": 426,
+    "deleted": false
   },
   {
     "id": "afefba17-50d1-418a-bf5e-b9143e90f8bd",
@@ -4848,7 +5054,8 @@
     "images": ["/car1.png", "/car2.png", "/car3.png", "/car5.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 5,
-    "downloads": 780
+    "downloads": 780,
+    "deleted": false
   },
   {
     "id": "098f69a0-485d-458e-9b29-ac892db367fc",
@@ -4869,6 +5076,7 @@
     "images": ["/car2.png", "/car6.png", "/car3.png"],
     "liveryFiles": "/test-livery-title.zip",
     "rating": 1,
-    "downloads": 328
+    "downloads": 328,
+    "deleted": false
   }
 ]
