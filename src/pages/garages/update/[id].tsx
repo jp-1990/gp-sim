@@ -40,14 +40,15 @@ import {
   thunks as liveryThunks
 } from '../../../store/livery/slice';
 import {
+  actions as garageActions,
   thunks as garageThunks,
   selectors as garageSelectors
 } from '../../../store/garage/slice';
 import {
+  actions as userActions,
   thunks as userThunks,
   selectors as userSelectors
 } from '../../../store/user/slice';
-import { actions as carActions } from '../../../store/car/slice';
 
 import {
   GARAGES_URL_ID,
@@ -66,7 +67,8 @@ import { isString } from '../../../utils/functions';
 import {
   LiveriesDataType,
   PublicUserDataType,
-  UserFilterKeys
+  UserFilterKeys,
+  UsersDataType
 } from '../../../types';
 import {
   useInfiniteScroll,
@@ -74,27 +76,29 @@ import {
   useAuthCheck
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
-import db from '../../../lib';
+import db, { CacheKeys } from '../../../lib';
 
 interface Props {
   id: string;
 }
 const Update: NextPage<Props> = ({ id }) => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(liveryActions.activatePage(GARAGES_URL_ID));
-    dispatch(garageThunks.getGarageById({ id }));
-    dispatch(userThunks.getUsers(userFilters));
+    if (currentUser.token && currentUser.data) {
+      dispatch(liveryActions.activatePage(GARAGES_URL_ID));
+      dispatch(garageThunks.getGarageById({ id }));
+      dispatch(userThunks.getUsers(userFilters));
+    }
     return () => {
       dispatch(liveryActions.activatePage(null));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, id]);
-
-  // AUTH CHECK
-  const { currentUser } = useAuthCheck();
+  }, [currentUser.token, currentUser.data, dispatch, id]);
 
   // STATE
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
@@ -425,11 +429,32 @@ export const getStaticProps = wrapper.getStaticProps(
         id = paramsId;
       }
 
-      // get cars
-      const cars = await db.getCars();
+      let garage = await db.cache.getById(CacheKeys.GARAGE, id);
+      if (!garage) {
+        garage = await db.getGarageById(id);
+      }
 
-      // set cars to store
-      store.dispatch(carActions.setCars(cars));
+      const liveries = [] as LiveriesDataType;
+      for (const liveryId of garage?.liveries || []) {
+        let livery = await db.cache.getById(CacheKeys.LIVERY, liveryId);
+        if (!livery) {
+          livery = await db.getLiveryById(liveryId);
+        }
+        if (livery) liveries.push(livery);
+      }
+
+      const users = [] as UsersDataType;
+      for (const userId of garage?.drivers || []) {
+        let user = await db.cache.getById(CacheKeys.USER, userId);
+        if (!user) {
+          user = await db.getUserById(userId);
+        }
+        if (user) users.push(user);
+      }
+
+      if (garage) store.dispatch(garageActions.setGarage(garage));
+      if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
+      if (users) store.dispatch(userActions.setUsers(users));
 
       return {
         props: {
@@ -440,7 +465,11 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const garages = await db.getGarages();
+  let garages = await db.cache.get(CacheKeys.GARAGE);
+
+  if (!garages) {
+    garages = await db.getGarages();
+  }
 
   return {
     paths: garages.map(({ id }) => ({ params: { id } })),

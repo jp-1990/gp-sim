@@ -11,6 +11,7 @@ import db, { CacheKeys } from '../lib';
 import { wrapper } from '../store/store';
 import { actions as liveryActions } from '../store/livery/slice';
 import { actions as carActions } from '../store/car/slice';
+import { actions as garageActions } from '../store/garage/slice';
 import { actions as userActions } from '../store/user/slice';
 import { parsePromiseSettledRes } from '../utils/functions';
 
@@ -72,23 +73,27 @@ const Home: NextPage = () => {
 export default Home;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const [_cars, _liveries, _users] = await Promise.allSettled([
+  const [_cars, _garages, _liveries, _users] = await Promise.allSettled([
     db.getCars(),
+    db.getGarages(),
     db.getLiveries(),
     db.getUsers()
   ]);
 
   const cars = parsePromiseSettledRes(_cars);
+  const garages = parsePromiseSettledRes(_garages);
   const liveries = parsePromiseSettledRes(_liveries);
   const users = parsePromiseSettledRes(_users);
 
   if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
     if (cars) await db.cache.set(CacheKeys.CAR, cars);
+    if (garages) await db.cache.set(CacheKeys.GARAGE, garages);
     if (liveries) await db.cache.set(CacheKeys.LIVERY, liveries);
     if (users) await db.cache.set(CacheKeys.USER, users);
   }
 
   if (cars) store.dispatch(carActions.setCars(cars));
+  if (garages) store.dispatch(garageActions.setGarages(garages));
   if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
   if (users) store.dispatch(userActions.setUsers(users));
 

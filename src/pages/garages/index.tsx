@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { FormattedMessage } from 'react-intl';
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
-import { actions } from '../../store/car/slice';
+import { actions as carActions } from '../../store/car/slice';
 import {
   FilterActionPayload,
   actions as liveryActions,
@@ -14,6 +14,7 @@ import {
   thunks as liveryThunks
 } from '../../store/livery/slice';
 import {
+  actions as garageActions,
   selectors as garageSelectors,
   thunks as garageThunks
 } from '../../store/garage/slice';
@@ -37,7 +38,7 @@ import {
   useDownloadLivery,
   useInfiniteScroll
 } from '../../hooks';
-import db from '../../lib';
+import db, { CacheKeys } from '../../lib';
 
 const Garages: NextPage = () => {
   // AUTH CHECK
@@ -405,8 +406,23 @@ const Garages: NextPage = () => {
 export default Garages;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  const cars = await db.getCars();
-  store.dispatch(actions.setCars(cars));
+  let cars = await db.cache.get(CacheKeys.CAR);
+  let garages = await db.cache.get(CacheKeys.GARAGE);
+  let liveries = await db.cache.get(CacheKeys.LIVERY);
+
+  if (!cars) {
+    cars = await db.getCars();
+  }
+  if (!garages) {
+    garages = await db.getGarages();
+  }
+  if (!liveries) {
+    liveries = await db.getLiveries();
+  }
+
+  if (cars) store.dispatch(carActions.setCars(cars));
+  if (garages) store.dispatch(garageActions.setGarages(garages));
+  if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
 
   return {
     props: {}

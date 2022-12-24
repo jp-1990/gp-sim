@@ -42,6 +42,11 @@ const getGarages = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState() as any;
     const token = currentUserSelectors.selectCurrentUserToken(state);
+    if (!token) return [];
+
+    const garagesState = selectors.selectGarages(state);
+    // cache first. only make a network request if we do not already have data
+    if (garagesState.length) return garagesState;
 
     const { data } = await axios.get<GaragesDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}`,
@@ -98,6 +103,11 @@ const getGarageById = createAsyncThunk(
   async ({ id }: { id: string }, { getState }) => {
     const state = getState() as any;
     const token = currentUserSelectors.selectCurrentUserToken(state);
+    if (!token) return undefined;
+
+    // cache first. only make a network request if we do not already have data
+    const prefetchedGarage = selectors.createSelectGarageById(id)(state);
+    if (prefetchedGarage) return prefetchedGarage;
 
     const res = await axios.get<GarageDataType>(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}`,
@@ -261,6 +271,12 @@ const garageSlice = createSlice({
     resetStatus(state) {
       state.error = null;
       state.status = RequestStatus.IDLE;
+    },
+    setGarage(state, action: PayloadAction<GarageDataType>) {
+      garagesAdapter.setOne(state, action.payload);
+    },
+    setGarages(state, action: PayloadAction<GaragesDataType>) {
+      garagesAdapter.setMany(state, action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -292,8 +308,8 @@ const garageSlice = createSlice({
       .addCase(getGarageById.rejected, thunkRejected)
       .addCase(
         getGarageById.fulfilled,
-        (state, action: PayloadAction<GarageDataType>) => {
-          garagesAdapter.setOne(state, action.payload);
+        (state, action: PayloadAction<GarageDataType | undefined>) => {
+          if (action.payload) garagesAdapter.setOne(state, action.payload);
           state.error = null;
           state.status = RequestStatus.FULFILLED;
         }
