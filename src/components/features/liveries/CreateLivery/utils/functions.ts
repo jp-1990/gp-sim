@@ -7,23 +7,13 @@ import { CreateLiveryDataType } from '../../../../../types';
 
 interface MapCreateLiveryFormStateToRequestInputArgs {
   formState: FormStateType<CreateLiveryFormStateType>;
-  user: any | undefined;
 }
 export const mapCreateLiveryFormStateToRequestInput = ({
-  formState,
-  user
+  formState
 }: MapCreateLiveryFormStateToRequestInputArgs): Omit<
   CreateLiveryDataType,
   'liveryZip' | 'imageFiles'
 > => {
-  if (process.env.NODE_ENV === 'development') {
-    user = {
-      sub: `${new Date(Date.now()).valueOf()}`,
-      displayName: 'dev-testing',
-      image: ''
-    };
-  }
-  if (!user?.sub) throw new Error('No user found');
   return {
     title: formState.title,
     car: formState.car,

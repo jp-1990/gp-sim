@@ -34,7 +34,6 @@ const SubmitLivery = () => {
       marginTop: '1.25rem'
     }
   });
-  const user = {};
   const { state, resetState } = useForm<CreateLiveryFormStateType>();
 
   const onClick = async () => {
@@ -47,8 +46,7 @@ const SubmitLivery = () => {
       });
 
       const createLiveryInput = mapCreateLiveryFormStateToRequestInput({
-        formState: state,
-        user
+        formState: state
       });
 
       // append values to form data
