@@ -16,6 +16,7 @@ async function handler(
 ) {
   const method = req.method;
   const liveriesRef = firestore.collection(Collection.LIVERIES);
+  const garagesRef = firestore.collection(Collection.GARAGES);
   const countRef = firestore.collection(Collection.COUNT);
 
   switch (method) {
@@ -66,27 +67,51 @@ async function handler(
 
         const liveryRef = liveriesRef.doc(params.id);
 
-        await firestore.runTransaction(async (t) => {
-          // get livery
-          const liveryDoc = await t.get(liveryRef);
-          const livery = liveryDoc.data() as LiveryDataType | undefined;
+        const garageIdsToRevalidate = await firestore.runTransaction(
+          async (t) => {
+            // get livery
+            const liveryDoc = await t.get(liveryRef);
+            const livery = liveryDoc.data() as LiveryDataType | undefined;
 
-          // delete only if creator id matches auth user id, and livery exists
-          if (!livery || livery.creator.id !== req.uid) {
-            throw new Error('unauthorized');
+            // delete only if creator id matches auth user id, and livery exists
+            if (!livery || livery.creator.id !== req.uid) {
+              throw new Error('unauthorized');
+            }
+
+            // decrement count on random shard
+            const shardId = Math.floor(Math.random() * CountShards.LIVERY);
+            const shardRef = countRef
+              .doc(Document.LIVERY)
+              .collection('shards')
+              .doc(shardId.toString());
+            t.update(shardRef, { count: FieldValue.increment(-1) });
+
+            // mark livery as deleted
+            t.update(liveryRef, { deleted: true });
+
+            // get ids for garages that this livery belongs to
+            const garageIds: string[] = [];
+            const garagesSnapshot = await t.get(
+              garagesRef.where(livery.id, 'in', 'liveries')
+            );
+            garagesSnapshot.forEach((doc) => {
+              garageIds.push(doc.data().id);
+            });
+
+            return garageIds;
           }
+        );
 
-          // decrement count on random shard
-          const shardId = Math.floor(Math.random() * CountShards.LIVERY);
-          const shardRef = countRef
-            .doc(Document.LIVERY)
-            .collection('shards')
-            .doc(shardId.toString());
-          t.update(shardRef, { count: FieldValue.increment(-1) });
-
-          // mark livery as deleted
-          t.update(liveryRef, { deleted: true });
-        });
+        try {
+          await res.revalidate('/liveries');
+          await res.revalidate(`/liveries/${params.id}`);
+          await res.revalidate(`/profile/${req.uid}`);
+          for (const id of garageIdsToRevalidate) {
+            await res.revalidate(`/garages/${id}`);
+          }
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
 
         return res.status(200).json({ id: params.id });
       } catch (err) {
