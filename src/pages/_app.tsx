@@ -15,6 +15,7 @@ import French from '../../lang/fr.json';
 
 import { auth } from '../utils/firebase/client';
 import { actions, thunks } from '../store/user/slice';
+import { RequestStatus } from '../types';
 
 if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'true') {
   require('../msw');
@@ -41,11 +42,18 @@ function MyApp({ Component, pageProps }: AppProps) {
       if (user) {
         const token = await user.getIdToken();
         dispatch(actions.setToken(token));
-        await dispatch(thunks.getCurrentUser());
+        const res = await dispatch(thunks.getCurrentUser());
+
+        if (res.meta.requestStatus === RequestStatus.REJECTED) {
+          const token = await user.getIdToken(true);
+          dispatch(actions.setToken(token));
+          await dispatch(thunks.getCurrentUser());
+        }
       }
     });
     return () => unsub();
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <IntlProvider
