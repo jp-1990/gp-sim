@@ -348,6 +348,13 @@ async function handler(
           throw new Error(err);
         }
 
+        try {
+          await res.revalidate('/liveries');
+          await res.revalidate(`/liveries/${newLiveryData.id}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
+
         return res.status(200).json(newLiveryData);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });

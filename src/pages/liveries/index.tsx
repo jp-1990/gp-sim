@@ -21,6 +21,7 @@ import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
 import { useInfiniteScroll } from '../../hooks';
 import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 const Liveries: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -96,8 +97,13 @@ const Liveries: NextPage = () => {
 export default Liveries;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  let liveries = await db.cache.get(CacheKeys.LIVERY);
-  let cars = await db.cache.get(CacheKeys.CAR);
+  let liveries;
+  let cars;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    liveries = await db.cache.get(CacheKeys.LIVERY);
+    cars = await db.cache.get(CacheKeys.CAR);
+  }
 
   if (!liveries) {
     liveries = await db.getLiveries();

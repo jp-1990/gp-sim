@@ -13,6 +13,7 @@ import { LIVERY_CREATE_URL } from '../../utils/nav';
 import { useAuthCheck } from '../../hooks/use-auth-check';
 import { actions as carActions } from '../../store/car/slice';
 import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 const Create: NextPage = () => {
   // AUTH CHECK
@@ -45,7 +46,11 @@ const Create: NextPage = () => {
 export default Create;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  let cars = await db.cache.get(CacheKeys.CAR);
+  let cars;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    cars = await db.cache.get(CacheKeys.CAR);
+  }
 
   if (!cars) {
     cars = await db.getCars();

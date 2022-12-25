@@ -29,6 +29,7 @@ import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
 import { LiveryDataType, RequestStatus } from '../../types';
 
 import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 interface Props {
   id: string;
@@ -187,7 +188,11 @@ export const getStaticProps = wrapper.getStaticProps(
       let id = '';
       if (isString(paramsId)) id = paramsId;
 
-      let livery = await db.cache.getById(CacheKeys.LIVERY, id);
+      let livery;
+
+      if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+        livery = await db.cache.getById(CacheKeys.LIVERY, id);
+      }
 
       if (!livery) {
         livery = await db.getLiveryById(id);
@@ -205,7 +210,11 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  let liveries = await db.cache.get(CacheKeys.LIVERY);
+  let liveries;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    liveries = await db.cache.get(CacheKeys.LIVERY);
+  }
 
   if (!liveries) {
     liveries = await db.getLiveries();
