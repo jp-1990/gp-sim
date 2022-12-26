@@ -106,6 +106,7 @@ async function handler(
           await res.revalidate('/liveries');
           await res.revalidate(`/liveries/${params.id}`);
           await res.revalidate(`/profile/${req.uid}`);
+          if (garageIdsToRevalidate.length) await res.revalidate('/garages');
           for (const id of garageIdsToRevalidate) {
             await res.revalidate(`/garages/${id}`);
           }

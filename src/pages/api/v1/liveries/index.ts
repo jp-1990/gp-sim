@@ -352,8 +352,14 @@ async function handler(
           await res.revalidate('/liveries');
           await res.revalidate(`/liveries/${newLiveryData.id}`);
           await res.revalidate(`/profile/${uid}`);
-          if (garage) await res.revalidate(`/garages/${garage}`);
-          if (garageKey) await res.revalidate(`/garages/${garageKey}`);
+          if (garage) {
+            await res.revalidate('/garages');
+            await res.revalidate(`/garages/${garage}`);
+          }
+          if (garageKey) {
+            await res.revalidate('/garages');
+            await res.revalidate(`/garages/${garageKey}`);
+          }
         } catch (_) {
           // revalidation failing should not cause an error
         }
