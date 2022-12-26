@@ -144,58 +144,85 @@ async function handler(
         // run update transaction
         const currentUserRef = usersRef.doc(req.uid);
         try {
-          await firestore.runTransaction(async (t) => {
-            // get user
-            const userDoc = await t.get(currentUserRef);
-            const user = userDoc.data() as UserDataType | undefined;
+          const [garagesToRevalidate, liveriesToRevalidate] =
+            await firestore.runTransaction(async (t) => {
+              // get user
+              const userDoc = await t.get(currentUserRef);
+              const user = userDoc.data() as UserDataType | undefined;
 
-            if (!user) throw new Error('not found');
+              if (!user) throw new Error('not found');
 
-            if (user.garages.length) {
-              const garagesSnapshot = await t.get(
-                garagesRef.where('id', 'in', user.garages)
-              );
-              // update garages where user is the creator
-              garagesSnapshot.forEach((garage) => {
-                const data = garage.data();
-                if (data.creator.id === user.id) {
-                  const creatorUpdateData: Record<string, any> = {};
-                  let shouldUpdate = false;
-                  for (const field of creatorUpdateFields) {
-                    if (data.creator[field] !== parsedData[field]) {
-                      shouldUpdate = true;
-                      creatorUpdateData[`creator.${field}`] = parsedData[field];
+              const garagesToRevalidate: string[] = [];
+              if (user.garages.length) {
+                const garagesSnapshot = await t.get(
+                  garagesRef.where('id', 'in', user.garages)
+                );
+                // update garages where user is the creator
+                garagesSnapshot.forEach((garage) => {
+                  const data = garage.data();
+                  if (data.creator.id === user.id) {
+                    garagesToRevalidate.push(garage.id);
+                    const creatorUpdateData: Record<string, any> = {};
+                    let shouldUpdate = false;
+                    for (const field of creatorUpdateFields) {
+                      if (data.creator[field] !== parsedData[field]) {
+                        shouldUpdate = true;
+                        creatorUpdateData[`creator.${field}`] =
+                          parsedData[field];
+                      }
                     }
+                    if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
                   }
-                  if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
-                }
-              });
-            }
+                });
+              }
 
-            if (user.liveries.length) {
-              const liveriesSnapshot = await t.get(
-                liveriesRef.where('id', 'in', user.liveries)
-              );
-              // update liveries where user is the creator
-              liveriesSnapshot.forEach((livery) => {
-                const data = livery.data();
-                if (data.creator.id === user.id) {
-                  const creatorUpdateData: Record<string, any> = {};
-                  let shouldUpdate = false;
-                  for (const field of creatorUpdateFields) {
-                    if (data.creator[field] !== parsedData[field]) {
-                      shouldUpdate = true;
-                      creatorUpdateData[`creator.${field}`] = parsedData[field];
+              const liveriesToRevalidate: string[] = [];
+              if (user.liveries.length) {
+                const liveriesSnapshot = await t.get(
+                  liveriesRef.where('id', 'in', user.liveries)
+                );
+                // update liveries where user is the creator
+                liveriesSnapshot.forEach((livery) => {
+                  const data = livery.data();
+                  if (data.creator.id === user.id) {
+                    liveriesToRevalidate.push(livery.id);
+                    const creatorUpdateData: Record<string, any> = {};
+                    let shouldUpdate = false;
+                    for (const field of creatorUpdateFields) {
+                      if (data.creator[field] !== parsedData[field]) {
+                        shouldUpdate = true;
+                        creatorUpdateData[`creator.${field}`] =
+                          parsedData[field];
+                      }
                     }
+                    if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
                   }
-                  if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
-                }
-              });
-            }
+                });
+              }
 
-            // update user
-            t.update(currentUserRef, parsedData);
-          });
+              // update user
+              t.update(currentUserRef, parsedData);
+
+              return [garagesToRevalidate, liveriesToRevalidate];
+            });
+
+          try {
+            await res.revalidate(`/profile/${req.uid}`);
+            if (garagesToRevalidate.length) {
+              await res.revalidate(`/garages`);
+              for (const garageId of garagesToRevalidate) {
+                await res.revalidate(`/garages/${garageId}`);
+              }
+            }
+            if (liveriesToRevalidate.length) {
+              await res.revalidate(`/liveries`);
+              for (const liveryId of liveriesToRevalidate) {
+                await res.revalidate(`/liveries/${liveryId}`);
+              }
+            }
+          } catch (_) {
+            // revalidation failing should not cause an error
+          }
         } catch (err: any) {
           await file?.delete();
           throw new Error(err);

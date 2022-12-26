@@ -78,6 +78,11 @@ async function handler(
           throw new Error(err);
         }
 
+        try {
+          await res.revalidate(`/profile/${req.uid}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
         return res.status(200).json({ id: req.uid });
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });

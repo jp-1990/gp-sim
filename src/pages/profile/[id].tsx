@@ -24,6 +24,7 @@ import { LiveryDataType, UserDataType } from '../../types';
 import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
 import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 interface Props {
   id: string;
@@ -162,8 +163,13 @@ export const getStaticProps = wrapper.getStaticProps(
       }
 
       // get user by id and cars
-      let user = await db.cache.getById(CacheKeys.USER, id);
-      let cars = await db.cache.get(CacheKeys.CAR);
+      let user;
+      let cars;
+
+      if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+        user = await db.cache.getById(CacheKeys.USER, id);
+        cars = await db.cache.get(CacheKeys.CAR);
+      }
 
       if (!user) {
         user = await db.getUserById(id);
@@ -190,7 +196,11 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  let users = await db.cache.get(CacheKeys.USER);
+  let users;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    users = await db.cache.get(CacheKeys.USER);
+  }
 
   if (!users) {
     users = await db.getUsers();

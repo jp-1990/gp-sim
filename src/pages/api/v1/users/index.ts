@@ -125,6 +125,12 @@ async function handler(
 
         await usersRef.doc(user.id).set(user);
 
+        try {
+          await res.revalidate(`/profile/${req.uid}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
+
         return res.status(201).json(user);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
