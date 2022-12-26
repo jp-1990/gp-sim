@@ -178,6 +178,14 @@ async function handler(
             return { ...garage, ...parsedData, updatedAt: timestamp };
           });
 
+          try {
+            await res.revalidate('/garages');
+            await res.revalidate(`/garages/${id}`);
+            await res.revalidate(`/profile/${req.uid}`);
+          } catch (_) {
+            // revalidation failing should not cause an error
+          }
+
           return res.status(200).json(updatedGarage);
         } catch (err: any) {
           await file?.delete();
@@ -226,6 +234,14 @@ async function handler(
         await bucket.deleteFiles({
           prefix: `${StoragePath.GARAGES}${params.id}`
         });
+
+        try {
+          await res.revalidate('/garages');
+          await res.revalidate(`/garages/${params.id}`);
+          await res.revalidate(`/profile/${req.uid}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
 
         return res.status(200).json({ id: params.id });
       } catch (err) {

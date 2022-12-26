@@ -77,6 +77,7 @@ import {
 } from '../../../hooks';
 import { Unauthorized } from '../../../components/shared';
 import db, { CacheKeys } from '../../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 interface Props {
   id: string;
@@ -429,14 +430,20 @@ export const getStaticProps = wrapper.getStaticProps(
         id = paramsId;
       }
 
-      let garage = await db.cache.getById(CacheKeys.GARAGE, id);
+      let garage;
+      if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+        garage = await db.cache.getById(CacheKeys.GARAGE, id);
+      }
       if (!garage) {
         garage = await db.getGarageById(id);
       }
 
       const liveries = [] as LiveriesDataType;
       for (const liveryId of garage?.liveries || []) {
-        let livery = await db.cache.getById(CacheKeys.LIVERY, liveryId);
+        let livery;
+        if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+          livery = await db.cache.getById(CacheKeys.LIVERY, liveryId);
+        }
         if (!livery) {
           livery = await db.getLiveryById(liveryId);
         }
@@ -445,7 +452,10 @@ export const getStaticProps = wrapper.getStaticProps(
 
       const users = [] as UsersDataType;
       for (const userId of garage?.drivers || []) {
-        let user = await db.cache.getById(CacheKeys.USER, userId);
+        let user;
+        if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+          user = await db.cache.getById(CacheKeys.USER, userId);
+        }
         if (!user) {
           user = await db.getUserById(userId);
         }
@@ -465,7 +475,11 @@ export const getStaticProps = wrapper.getStaticProps(
 );
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  let garages = await db.cache.get(CacheKeys.GARAGE);
+  let garages;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    garages = await db.cache.get(CacheKeys.GARAGE);
+  }
 
   if (!garages) {
     garages = await db.getGarages();

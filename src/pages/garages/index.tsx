@@ -39,6 +39,7 @@ import {
   useInfiniteScroll
 } from '../../hooks';
 import db, { CacheKeys } from '../../lib';
+import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 
 const Garages: NextPage = () => {
   // AUTH CHECK
@@ -406,9 +407,15 @@ const Garages: NextPage = () => {
 export default Garages;
 
 export const getStaticProps = wrapper.getStaticProps((store) => async () => {
-  let cars = await db.cache.get(CacheKeys.CAR);
-  let garages = await db.cache.get(CacheKeys.GARAGE);
-  let liveries = await db.cache.get(CacheKeys.LIVERY);
+  let cars;
+  let garages;
+  let liveries;
+
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    liveries = await db.cache.get(CacheKeys.LIVERY);
+    cars = await db.cache.get(CacheKeys.CAR);
+    garages = await db.cache.get(CacheKeys.GARAGE);
+  }
 
   if (!cars) {
     cars = await db.getCars();

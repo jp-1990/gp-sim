@@ -98,6 +98,13 @@ async function handler(
           return { ...garage, liveries: updatedLiveries, updatedAt: timestamp };
         });
 
+        try {
+          await res.revalidate('/garages');
+          await res.revalidate(`/garages/${garageId}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
+
         return res.status(200).json(updatedGarage);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
