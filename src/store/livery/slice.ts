@@ -128,6 +128,31 @@ const getLiveries = createAsyncThunk(
   }
 );
 
+const getLiveryDownloadUrl = createAsyncThunk(
+  `${LIVERY_SLICE_NAME}/getLiveryDownloadUrl`,
+  async ({ id }: { id: string }, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
+    const res = await axios.get<string>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}/download/${id}`,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
+    );
+    return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [LIVERY_SLICE_NAME]: state } = getState() as KnownRootState;
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
+  }
+);
+
 const createLivery = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/createLivery`,
   async (data: FormData, { getState }) => {
@@ -391,6 +416,7 @@ export const selectors = {
 export const thunks = {
   createLivery,
   deleteLiveryById,
-  getLiveries
+  getLiveries,
+  getLiveryDownloadUrl
 };
 export default liverySlice;
