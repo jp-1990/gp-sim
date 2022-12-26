@@ -354,8 +354,6 @@ const Garages: NextPage = () => {
               disabled={disableDownload(id)}
               onClick={onDownload({
                 selectedLiveries,
-                currentUser,
-                liveries,
                 targetLiveryId: id
               })}
               variant={'solid'}

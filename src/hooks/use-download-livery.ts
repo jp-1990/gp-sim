@@ -1,35 +1,33 @@
-import { UserSliceStateType } from '../store/user/slice';
-import { LiveryDataType } from '../types';
+import { thunks } from '../store/livery/slice';
+import { useAppDispatch } from '../store/store';
+import { RequestStatus } from '../types';
 
 export const useDownloadLivery = () => {
+  const dispatch = useAppDispatch();
+
   const onDownload =
     ({
       targetLiveryId,
-      selectedLiveries,
-      currentUser,
-      liveries
+      selectedLiveries
     }: {
       targetLiveryId: string;
       selectedLiveries: string[];
-      currentUser: UserSliceStateType['currentUser'];
-      liveries:
-        | {
-            ids: string[];
-            entities: Record<string, LiveryDataType | undefined>;
-          }
-        | undefined;
     }) =>
-    () => {
+    async () => {
       const liveriesToDownload = [
         ...new Set([...selectedLiveries, targetLiveryId])
       ];
-      const liveryFileURLs = liveriesToDownload.reduce((prev, id) => {
-        if (!currentUser?.data?.liveries.includes(`${id}`)) return prev;
-        const output = [...prev];
-        const URL = liveries?.entities[id]?.liveryFiles;
-        if (URL) output.push(URL);
-        return output;
-      }, [] as string[]);
+
+      const liveryURLPromises = liveriesToDownload.map((id) =>
+        dispatch(thunks.getLiveryDownloadUrl({ id }))
+      );
+      const settledPromises = await Promise.allSettled(liveryURLPromises);
+
+      const liveryFileURLs: string[] = [];
+      for (const promise of settledPromises) {
+        if (promise.status === RequestStatus.FULFILLED)
+          liveryFileURLs.push(promise.value.payload as string);
+      }
 
       for (let i = 0, j = liveryFileURLs.length; i < j; i++) {
         setTimeout(() => {
