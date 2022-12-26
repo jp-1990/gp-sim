@@ -14,7 +14,6 @@ export interface LiveryDataType {
   isPublic: boolean;
   deleted: boolean;
   images: string[];
-  liveryFiles: string;
   rating: number;
   downloads: number;
 }

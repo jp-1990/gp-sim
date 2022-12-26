@@ -248,7 +248,6 @@ async function handler(
           downloads: 0,
           id: newLiveryRef.id,
           images: [],
-          liveryFiles: '',
           rating: 0,
           searchHelpers: [
             ...data.tags.split(',').filter((tag) => tag),
@@ -274,7 +273,7 @@ async function handler(
             const [type, subtype] = files[filename].mimetype?.split('/') || [];
             const filePath = `${StoragePath.LIVERIES}${newLiveryRef.id}/${
               type === 'image' ? type : subtype
-            }-${i}/${Date.now()}-${i}`;
+            }${type === 'image' ? `-${i}` : ``}/${newLiveryRef.id}`;
 
             const file = bucket.file(filePath);
 
@@ -297,7 +296,6 @@ async function handler(
             const url = file.publicUrl();
 
             if (type === 'image') newLiveryData.images.push(url);
-            if (subtype === 'zip') newLiveryData.liveryFiles = url;
 
             fileArray.push(file);
           }
