@@ -95,7 +95,7 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
             <Text fontSize="md" pt={1} pb={6}>
               <FormattedMessage
                 {...commonStrings.downloads}
-                values={{ downloads: livery?.downloads || '-' }}
+                values={{ downloads: livery?.downloads || '0' }}
               />
             </Text>
             <Flex pb={4}>

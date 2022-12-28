@@ -278,13 +278,6 @@ const Profile: NextPage = () => {
                     type: TableDataTypes.STRING
                   },
                   {
-                    label: (
-                      <FormattedMessage {...commonStrings.downloadsLabel} />
-                    ),
-                    dataKey: 'downloads',
-                    type: TableDataTypes.STRING
-                  },
-                  {
                     label: <FormattedMessage {...formStrings.car} />,
                     dataKey: 'car',
                     type: TableDataTypes.STRING

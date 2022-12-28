@@ -6,7 +6,8 @@ import {
   Collection,
   withAuth,
   storage,
-  StoragePath
+  StoragePath,
+  FieldValue
 } from '../../../../../utils/firebase/admin';
 
 async function handler(
@@ -16,6 +17,7 @@ async function handler(
   const method = req.method;
 
   const usersRef = firestore.collection(Collection.USERS);
+  const liveriesRef = firestore.collection(Collection.LIVERIES);
 
   switch (method) {
     case Method.GET: {
@@ -50,6 +52,21 @@ async function handler(
         const file = bucket.file(filePath);
 
         const url = file.publicUrl();
+
+        // increment downloads on livery
+        try {
+          await liveriesRef
+            .doc(liveryId)
+            .update({ downloads: FieldValue.increment(1) });
+        } catch (_) {
+          // error here should not cause the main operation to fail, and is largely irrelevant unless it happens often
+        }
+
+        try {
+          await res.revalidate(`/liveries/${liveryId}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
 
         return res.status(200).json(url);
       } catch (err) {

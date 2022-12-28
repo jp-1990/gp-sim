@@ -23,7 +23,7 @@ describe('Livery', () => {
     images: ['/car2.png', '/car5.png', '/car3.png', '/car6.png'],
     liveryFiles: '/test-livery-title.zip',
     rating: 3,
-    downloads: 1965,
+    downloads: 965,
     deleted: false
   };
 
@@ -52,7 +52,7 @@ describe('Livery', () => {
     images: ['/car1.png', '/car6.png', '/car5.png', '/car4.png'],
     liveryFiles: '/test-livery-title.zip',
     rating: 5,
-    downloads: 1306,
+    downloads: 130,
     deleted: false
   };
 
@@ -73,7 +73,7 @@ describe('Livery', () => {
       expectAllToBeInDocument([
         downloadNum,
         creator.displayName,
-        ...tags.split(',')
+        ...tags.split(',').filter((e) => e)
       ]);
     });
   });
@@ -94,7 +94,7 @@ describe('Livery', () => {
       expectAllToBeInDocument([
         downloadNum,
         creator.displayName,
-        ...tags.split(',')
+        ...tags.split(',').filter((e) => e)
       ]);
     });
   });

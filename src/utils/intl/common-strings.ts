@@ -93,7 +93,8 @@ const actions = {
 const download = {
   downloads: {
     id: 'utils.intl.commonStrings.downloads',
-    defaultMessage: `{downloads} Downloads`
+    defaultMessage:
+      '{downloads, plural, =0 {# Downloads} one {# Download} other {# Downloads}}'
   },
   downloadsLabel: {
     id: 'utils.intl.commonStrings.downloadsLabel',
