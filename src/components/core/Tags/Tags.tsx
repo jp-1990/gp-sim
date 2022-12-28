@@ -40,7 +40,9 @@ const Tags: ComponentWithAs<'div', FlexProps & Props> = ({
   tags,
   ...props
 }) => {
-  return <Flex {...props}>{buildTags(tags)}</Flex>;
+  const tags_ = tags.filter((tag) => tag);
+  if (!tags_.length) return <></>;
+  return <Flex {...props}>{buildTags(tags_)}</Flex>;
 };
 
 export default Tags;
