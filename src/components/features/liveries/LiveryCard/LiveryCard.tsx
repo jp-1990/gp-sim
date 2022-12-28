@@ -1,7 +1,10 @@
 import React from 'react';
 import { LinkBox, Flex, Text } from '@chakra-ui/react';
 
-import { ImageWithFallback, Rating } from '../../../core';
+import {
+  ImageWithFallback
+  //  Rating
+} from '../../../core';
 import { LiveryDataType } from '../../../../types';
 import { LIVERY_URL } from '../../../../utils/nav';
 import Link from 'next/link';
@@ -32,7 +35,7 @@ const LiveryCard: React.FC<Props> = ({
   id,
   image = '',
   // price,
-  rating,
+  // rating,
   title,
   onClick
 }) => {
@@ -54,7 +57,7 @@ const LiveryCard: React.FC<Props> = ({
         >
           <Flex p={2} zIndex="1" position="relative">
             <Flex flex={1} />
-            <Rating rating={rating} />
+            {/* <Rating rating={rating} /> */}
           </Flex>
           <Flex h={'full'} opacity={0.7} />
           <Flex p={2} zIndex="2" position="relative">

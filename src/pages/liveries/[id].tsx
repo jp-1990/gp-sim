@@ -21,7 +21,11 @@ import {
 import { actions as liveryActions } from '../../store/livery/slice';
 
 import { MainLayout } from '../../components/layout';
-import { ImageWithFallback, Rating, Tags } from '../../components/core';
+import {
+  ImageWithFallback,
+  // Rating,
+  Tags
+} from '../../components/core';
 
 import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
@@ -91,7 +95,7 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
             <Heading size="xl" pb={4}>
               {`${livery?.car} - ${livery?.title}`}
             </Heading>
-            <Rating rating={livery?.rating} alignItems="flex-start" />
+            {/* <Rating rating={livery?.rating} alignItems="flex-start" /> */}
             <Text fontSize="md" pt={1} pb={6}>
               <FormattedMessage
                 {...commonStrings.downloads}
