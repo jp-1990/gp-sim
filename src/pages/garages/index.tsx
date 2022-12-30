@@ -1,9 +1,21 @@
-import { useEffect } from 'react';
-import { chakra, Box, Button, Flex, Text, Heading } from '@chakra-ui/react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import {
+  chakra,
+  Box,
+  Button,
+  Flex,
+  Text,
+  Heading,
+  InputGroup,
+  Input,
+  InputRightElement,
+  HStack,
+  useToast
+} from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 import { actions as carActions } from '../../store/car/slice';
@@ -32,7 +44,7 @@ import { LiveryFilter, Mode } from '../../components/features';
 import { GARAGES_URL, GARAGE_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { garageStrings, commonStrings, formStrings } from '../../utils/intl';
 
-import { LiveriesDataType } from '../../types';
+import { GarageDataType, LiveriesDataType } from '../../types';
 import {
   useAuthCheck,
   useDownloadLivery,
@@ -45,6 +57,7 @@ const Garages: NextPage = () => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
+  const intl = useIntl();
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -70,8 +83,14 @@ const Garages: NextPage = () => {
   );
 
   const garages = {
-    ids: useAppSelector(garageSelectors.selectGarageIds),
-    entities: useAppSelector(garageSelectors.selectGarageEntities)
+    ids: useAppSelector(
+      garageSelectors.createSelectUserInGarageIds(currentUser.data?.id || '')
+    ),
+    entities: useAppSelector(
+      garageSelectors.createSelectUserInGarageEntities(
+        currentUser.data?.id || ''
+      )
+    )
   };
   const liveries = {
     ids: useAppSelector(liverySelectors.selectLiveryIds),
@@ -139,6 +158,47 @@ const Garages: NextPage = () => {
     }
   };
 
+  // JOIN GARAGE
+  const [joinGarageLoading, setJoinGarageLoading] = useState(false);
+  const [garageKey, setGarageKey] = useState('');
+
+  const toast = useToast({
+    duration: 8000,
+    isClosable: true,
+    position: 'top',
+    containerStyle: {
+      marginTop: '1.25rem'
+    }
+  });
+
+  const onJoinGarage = async () => {
+    try {
+      if (!garageKey) return;
+      setJoinGarageLoading(true);
+
+      const res = await dispatch(garageThunks.joinGarage({ id: garageKey }));
+
+      toast({
+        title: intl.formatMessage(formStrings.joinSuccess, {
+          garage: (res.payload as GarageDataType).title
+        }),
+        status: 'success'
+      });
+      setJoinGarageLoading(false);
+      setGarageKey('');
+    } catch (err) {
+      toast({
+        title: intl.formatMessage(commonStrings.error),
+        description: intl.formatMessage(formStrings.joinError),
+        status: 'error'
+      });
+      setJoinGarageLoading(false);
+    }
+  };
+
+  const onGarageKeyChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setGarageKey(e.target?.value);
+
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
     !currentUser.data?.liveries.find((id) => `${liveryId}` === id);
@@ -154,7 +214,7 @@ const Garages: NextPage = () => {
         heading={<FormattedMessage {...garageStrings.garagesHeading} />}
         paragraph={<FormattedMessage {...garageStrings.garagesSummary} />}
       />
-      <Flex w="full" maxW="5xl" my={5}>
+      <HStack w="full" maxW="5xl" my={5} gap={2}>
         <Button colorScheme="red" w="3xs" lineHeight={1}>
           <Link href={GARAGE_CREATE_URL}>
             <a>
@@ -162,7 +222,24 @@ const Garages: NextPage = () => {
             </a>
           </Link>
         </Button>
-      </Flex>
+        <InputGroup w="sm">
+          <Input
+            value={garageKey}
+            onChange={onGarageKeyChange}
+            placeholder={intl.formatMessage(formStrings.joinGaragePlaceholder)}
+          />
+          <InputRightElement w="auto">
+            <Button
+              isLoading={joinGarageLoading}
+              colorScheme="red"
+              variant="outline"
+              onClick={onJoinGarage}
+            >
+              <FormattedMessage {...garageStrings.joinGarage} />
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+      </HStack>
 
       {/* garage list */}
       {garages && (

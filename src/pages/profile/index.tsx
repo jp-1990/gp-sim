@@ -100,8 +100,16 @@ const Profile: NextPage = () => {
   }, liveries);
 
   const garages = {
-    ids: useAppSelector(garageSelectors.selectGarageIds),
-    entities: useAppSelector(garageSelectors.selectGarageEntities)
+    ids: useAppSelector(
+      garageSelectors.createSelectUserCreatedGarageIds(
+        currentUser.data?.id || ''
+      )
+    ),
+    entities: useAppSelector(
+      garageSelectors.createSelectUserCreatedGarageEntities(
+        currentUser.data?.id || ''
+      )
+    )
   };
 
   const deletions = {

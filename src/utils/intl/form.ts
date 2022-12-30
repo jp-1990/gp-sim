@@ -95,6 +95,10 @@ const fieldPlaceholders = {
     id: 'utils.intl.form.garageKeyPlaceholder',
     defaultMessage: 'Garage Key'
   },
+  joinGaragePlaceholder: {
+    id: 'utils.intl.form.joinGaragePlaceholder',
+    defaultMessage: 'Enter a garage key'
+  },
   searchTagsPlaceholder: {
     id: 'utils.intl.form.searchTagsPlaceholder',
     defaultMessage: 'Search tags'
@@ -214,6 +218,10 @@ const result = {
     id: 'utils.intl.form.updateSuccess',
     defaultMessage: '{item} successfully updated'
   },
+  joinSuccess: {
+    id: 'utils.intl.form.joinSuccess',
+    defaultMessage: '{garage} successfully joined'
+  },
   createError: {
     id: 'utils.intl.form.createError',
     defaultMessage:
@@ -223,6 +231,11 @@ const result = {
     id: 'utils.intl.form.updateError',
     defaultMessage:
       "We're sorry, something went wrong when updating your {item}"
+  },
+  joinError: {
+    id: 'utils.intl.form.joinError',
+    defaultMessage:
+      "We're sorry, something went wrong when attempting to join the garage"
   }
 };
 

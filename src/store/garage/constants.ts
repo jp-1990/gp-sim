@@ -11,3 +11,4 @@ export const DELETE_LIVERIES_FROM_GARAGE = 'deleteLiveriesFromGarage';
 export const UPDATE_LIVERIES_IN_GARAGE = 'updateLiveriesInGarage';
 export const DELETE_USERS_FROM_GARAGE = 'deleteUsersFromGarage';
 export const UPDATE_USERS_IN_GARAGE = 'updateUsersInGarage';
+export const JOIN_GARAGE = 'joinGarage';

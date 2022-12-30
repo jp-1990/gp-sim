@@ -16,6 +16,7 @@ import {
   GARAGE_SLICE_NAME,
   GET_GARAGES,
   GET_GARAGE_BY_ID,
+  JOIN_GARAGE,
   UPDATE_GARAGE,
   UPDATE_LIVERIES_IN_GARAGE,
   UPDATE_USERS_IN_GARAGE
@@ -44,7 +45,11 @@ const getGarages = createAsyncThunk(
     const token = currentUserSelectors.selectCurrentUserToken(state);
     if (!token) return [];
 
-    const garagesState = selectors.selectGarages(state);
+    const uid = currentUserSelectors.selectCurrentUser(state).data?.id || '';
+    const garagesState = selectors
+      .selectGarages(state)
+      .filter((garage) => garage.drivers.includes(uid));
+
     // cache first. only make a network request if we do not already have data
     if (garagesState.length) return garagesState;
 
@@ -260,6 +265,41 @@ const updateGarageByIdUsers = createAsyncThunk(
   }
 );
 
+const joinGarage = createAsyncThunk(
+  `${GARAGE_SLICE_NAME}/${JOIN_GARAGE}`,
+  async (
+    {
+      id
+    }: {
+      id: string;
+    },
+    { getState }
+  ) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
+    const res = await axios.post<GarageDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/join`,
+      undefined,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
+    );
+
+    return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      return true;
+    }
+  }
+);
+
 const [thunkPending, thunkRejected] =
   getTypedThunkPendingAndRejectedCallbacks<GarageSliceStateType>();
 
@@ -357,6 +397,17 @@ const garageSlice = createSlice({
           state.error = null;
           state.status = RequestStatus.FULFILLED;
         }
+      )
+      // JOIN GARAGE
+      .addCase(joinGarage.pending, thunkPending)
+      .addCase(joinGarage.rejected, thunkRejected)
+      .addCase(
+        joinGarage.fulfilled,
+        (state, action: PayloadAction<GarageDataType>) => {
+          garagesAdapter.setOne(state, action.payload);
+          state.error = null;
+          state.status = RequestStatus.FULFILLED;
+        }
       );
   }
 });
@@ -379,6 +430,46 @@ const {
   (state: KnownRootState) => state[GARAGE_SLICE_NAME]
 );
 
+const createSelectUserCreatedGarageIds =
+  (uid: string) => (state: KnownRootState) => {
+    const garages = selectGarages(state);
+    const filteredIds: string[] = [];
+    for (const garage of garages) {
+      if (garage.creator.id === uid) filteredIds.push(garage.id);
+    }
+    return filteredIds;
+  };
+
+const createSelectUserCreatedGarageEntities =
+  (uid: string) => (state: KnownRootState) => {
+    const garages = selectGarages(state);
+    const filteredEntities: Record<string, GarageDataType> = {};
+    for (const garage of garages) {
+      if (garage.creator.id === uid) filteredEntities[garage.id] = garage;
+    }
+    return filteredEntities;
+  };
+
+const createSelectUserInGarageIds =
+  (uid: string) => (state: KnownRootState) => {
+    const garages = selectGarages(state);
+    const filteredIds: string[] = [];
+    for (const garage of garages) {
+      if (garage.drivers.includes(uid)) filteredIds.push(garage.id);
+    }
+    return filteredIds;
+  };
+
+const createSelectUserInGarageEntities =
+  (uid: string) => (state: KnownRootState) => {
+    const garages = selectGarages(state);
+    const filteredEntities: Record<string, GarageDataType> = {};
+    for (const garage of garages) {
+      if (garage.drivers.includes(uid)) filteredEntities[garage.id] = garage;
+    }
+    return filteredEntities;
+  };
+
 const createSelectGarageById = (id: string) => {
   return (state: KnownRootState) => selectGarageById(state, id);
 };
@@ -387,6 +478,10 @@ const createSelectGarageById = (id: string) => {
 export const actions = garageSlice.actions;
 export const selectors = {
   createSelectGarageById,
+  createSelectUserCreatedGarageEntities,
+  createSelectUserCreatedGarageIds,
+  createSelectUserInGarageEntities,
+  createSelectUserInGarageIds,
   selectGarages,
   selectGarageEntities,
   selectGarageIds,
@@ -397,6 +492,7 @@ export const thunks = {
   getGarages,
   createGarage,
   getGarageById,
+  joinGarage,
   updateGarageById,
   deleteGarageById,
   updateGarageByIdLiveries,

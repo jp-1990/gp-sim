@@ -12,6 +12,10 @@ const garages = {
     id: 'utils.intl.garages.garagesSummary',
     defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
   },
+  joinGarage: {
+    id: 'utils.intl.garages.joinGarage',
+    defaultMessage: `Join Garage`
+  },
   yourCollection: {
     id: 'utils.intl.garages.yourCollection',
     defaultMessage: `Your Collection`
