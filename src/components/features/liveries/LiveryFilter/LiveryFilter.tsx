@@ -52,8 +52,8 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
     setFilters({ key: Keys.CREATED, value });
   };
 
-  const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) =>
-    setFilters({ key: Keys.RATING, value: event.target.value });
+  // const onRatingChange = (event: ChangeEvent<HTMLSelectElement>) =>
+  //   setFilters({ key: Keys.RATING, value: event.target.value });
 
   return (
     <chakra.section
@@ -121,7 +121,7 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
                 </option>
               </Select>
             </GridItem>
-            <GridItem colSpan={2} rowSpan={1}>
+            {/* <GridItem colSpan={2} rowSpan={1}>
               <Select
                 aria-label={commonStrings.rating.defaultMessage}
                 placeholder={intl.formatMessage(
@@ -140,7 +140,7 @@ const LiveryFilter: ComponentWithAs<'div', BoxProps & Props> = ({
                   );
                 })}
               </Select>
-            </GridItem>
+            </GridItem> */}
           </>
         )}
       </Grid>
