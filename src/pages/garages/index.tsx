@@ -10,7 +10,15 @@ import {
   Input,
   InputRightElement,
   HStack,
-  useToast
+  useToast,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -199,6 +207,54 @@ const Garages: NextPage = () => {
   const onGarageKeyChange = (e: ChangeEvent<HTMLInputElement>) =>
     setGarageKey(e.target?.value);
 
+  // ADD TO GARAGE
+  const [isAddToGarageModalVisible, setIsAddToGarageModalVisble] =
+    useState(false);
+  const [addToGarageLoading, setAddToGarageLoading] = useState(false);
+  const [recipientGarage, setRecipientGarage] = useState('');
+  const onToggleAddToGarageModal = () => setIsAddToGarageModalVisble((p) => !p);
+
+  const onOpenAddToGarageModal = (id: string) => {
+    if (!selectedLiveries.includes(id)) toggleSelectedLiveries(id);
+    onToggleAddToGarageModal();
+  };
+
+  const onRecipientGarageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setRecipientGarage(event.target.value);
+  };
+
+  const onAddToGarage = async () => {
+    try {
+      if (!recipientGarage) return;
+      setAddToGarageLoading(true);
+
+      const formData = new FormData();
+      formData.append('liveriesToAdd', JSON.stringify(selectedLiveries));
+      await dispatch(
+        garageThunks.updateGarageByIdLiveries({ id: recipientGarage, formData })
+      );
+
+      toast({
+        title: intl.formatMessage(formStrings.updateSuccess, {
+          item: intl.formatMessage(commonStrings.garage)
+        }),
+        status: 'success'
+      });
+      setIsAddToGarageModalVisble(false);
+      setAddToGarageLoading(false);
+      setRecipientGarage('');
+    } catch (error) {
+      toast({
+        title: intl.formatMessage(commonStrings.error),
+        description: intl.formatMessage(formStrings.updateError, {
+          item: intl.formatMessage(commonStrings.garage)
+        }),
+        status: 'error'
+      });
+      setAddToGarageLoading(false);
+    }
+  };
+
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
     !currentUser.data?.liveries.find((id) => `${liveryId}` === id);
@@ -240,6 +296,85 @@ const Garages: NextPage = () => {
           </InputRightElement>
         </InputGroup>
       </HStack>
+
+      {/* modal */}
+      <Modal
+        onClose={onToggleAddToGarageModal}
+        isOpen={isAddToGarageModalVisible}
+        size="2xl"
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Liveries To A Garage</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* garage select */}
+            <Box maxW={'md'}>
+              <Select
+                id="recipient-garage-select"
+                placeholder={intl.formatMessage(formStrings.garagePlaceholder)}
+                onChange={onRecipientGarageChange}
+                value={recipientGarage}
+              >
+                {garages.ids.map((id) => {
+                  return (
+                    <option key={id} value={id}>
+                      {garages.entities[id].title}
+                    </option>
+                  );
+                })}
+              </Select>
+            </Box>
+            {/* liveries list */}
+            <Table<LiveriesDataType>
+              chakraGridProps={{ maxW: 'lg', minW: 'lg' }}
+              columns={[
+                {
+                  label: <FormattedMessage {...formStrings.title} />,
+                  dataKey: 'images',
+                  type: TableDataTypes.IMAGE
+                },
+                {
+                  label: '',
+                  dataKey: 'title',
+                  type: TableDataTypes.STRING
+                },
+                {
+                  label: <FormattedMessage {...formStrings.car} />,
+                  dataKey: 'car',
+                  type: TableDataTypes.STRING
+                }
+              ]}
+              data={
+                liveries?.ids.reduce((prev, id) => {
+                  const output = [...prev];
+                  const livery = liveries.entities[id];
+                  if (livery) output.push(livery);
+                  return output;
+                }, [] as LiveriesDataType) || []
+              }
+              hideHeaders
+            />
+          </ModalBody>
+          <ModalFooter>
+            <HStack my={2}>
+              <Button onClick={onToggleAddToGarageModal}>
+                <FormattedMessage {...commonStrings.cancel} />
+              </Button>
+              <Button
+                variant={'solid'}
+                colorScheme="red"
+                onClick={onAddToGarage}
+                isLoading={addToGarageLoading}
+                disabled={!recipientGarage}
+              >
+                <FormattedMessage {...commonStrings.addToGarage} />
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* garage list */}
       {garages && (
@@ -419,6 +554,17 @@ const Garages: NextPage = () => {
       {/* liveries list */}
       <Table<LiveriesDataType>
         actions={[
+          ({ id }) => {
+            return selectedGarage === null ? (
+              <a onClick={() => onOpenAddToGarageModal(id)}>
+                <Button variant={'outline'} size="sm" colorScheme="red">
+                  <FormattedMessage {...commonStrings.add} />
+                </Button>
+              </a>
+            ) : (
+              <></>
+            );
+          },
           ({ id }) => (
             <a onClick={() => onClickLivery(id)}>
               <Button variant={'outline'} size="sm" colorScheme="red">

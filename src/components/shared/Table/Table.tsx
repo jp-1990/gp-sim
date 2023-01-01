@@ -25,6 +25,7 @@ interface Props<T extends TableData> {
   chakraGridProps?: GridProps;
   columns: TableColumns;
   data: T;
+  hideHeaders?: boolean;
   onSelect?: TableOnSelect<T>;
   selected?: TableSelected<T>;
 }
@@ -33,6 +34,7 @@ export const Table = <DataT extends TableData>({
   chakraGridProps,
   columns,
   data,
+  hideHeaders = false,
   onSelect,
   selected
 }: Props<DataT>) => {
@@ -78,18 +80,19 @@ export const Table = <DataT extends TableData>({
       mt={4}
       {...chakraGridProps}
     >
-      {columnsWithExtras.map((column) => {
-        return (
-          <TableHeaderCell
-            key={column.dataKey}
-            divider={!!column.label && column.dataKey !== 'checkbox'}
-            px={column.dataKey === TableDataTypes.CHECKBOX ? 3 : 2}
-            colSpan={getColSpan(column.dataKey)}
-          >
-            {column.label}
-          </TableHeaderCell>
-        );
-      })}
+      {!hideHeaders &&
+        columnsWithExtras.map((column) => {
+          return (
+            <TableHeaderCell
+              key={column.dataKey}
+              divider={!!column.label && column.dataKey !== 'checkbox'}
+              px={column.dataKey === TableDataTypes.CHECKBOX ? 3 : 2}
+              colSpan={getColSpan(column.dataKey)}
+            >
+              {column.label}
+            </TableHeaderCell>
+          );
+        })}
       {data.map((row) => {
         return (
           <Fragment key={row.id}>

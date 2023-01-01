@@ -4,6 +4,10 @@ import { defineMessages } from 'react-intl';
 // scope = `utils.intl.commonStrings`;
 
 const actions = {
+  add: {
+    id: 'utils.intl.commonStrings.add',
+    defaultMessage: 'Add'
+  },
   addToBasket: {
     id: 'utils.intl.commonStrings.addToBasket',
     defaultMessage: 'Add to Basket'
@@ -11,6 +15,10 @@ const actions = {
   addToCollection: {
     id: 'utils.intl.commonStrings.addToCollection',
     defaultMessage: 'Add to Collection'
+  },
+  addToGarage: {
+    id: 'utils.intl.commonStrings.addToGarage',
+    defaultMessage: 'Add to Garage'
   },
   backTo: {
     id: 'utils.intl.commonStrings.backTo',
