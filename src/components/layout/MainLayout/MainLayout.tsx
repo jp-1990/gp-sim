@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   chakra,
@@ -14,7 +13,9 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider
+  MenuDivider,
+  Text,
+  HStack
 } from '@chakra-ui/react';
 import { useIntl, FormattedMessage } from 'react-intl';
 
@@ -24,12 +25,15 @@ import { messages } from './MainLayout.messages';
 import { profileStrings } from '../../../utils/intl';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { thunks } from '../../../store/user/slice';
+import { ImageWithFallback } from '../../core';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
-  <ListItem mr={10}>
+  <ListItem mr={12}>
     <Link href={path || '/'}>
       <a>
-        <Heading size={'md'}>{label}</Heading>
+        <Text fontSize={'lg'} fontWeight="bold">
+          {label}
+        </Text>
       </a>
     </Link>
   </ListItem>
@@ -65,13 +69,13 @@ const MainLayout: React.FC<Props> = ({
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
-  const currentUser = !!useAppSelector(
+  const currentUser = useAppSelector(
     (state) => state.userSlice.currentUser.data
   );
   const logout = () => dispatch(thunks.signOut());
 
-  const headerChakraHeight = 14;
-  const footerChakraHeight = 28;
+  const headerChakraHeight = 15;
+  const footerChakraHeight = 15;
   const footerChakraPaddingTop = 9;
   useEffect(() => {
     const calculatedMinHeight =
@@ -81,6 +85,9 @@ const MainLayout: React.FC<Props> = ({
       footerChakraPaddingTop * 4;
     setContentMinHeight(calculatedMinHeight);
   }, []);
+
+  const backgroundColor = 'red.600';
+  const textColor = 'white';
 
   return (
     <Flex direction={'column'}>
@@ -93,17 +100,20 @@ const MainLayout: React.FC<Props> = ({
       />
       {/* header */}
       <header>
-        <Grid bg="red.600" templateColumns="repeat(22, 1fr)">
+        <Grid
+          bg={backgroundColor}
+          textColor={textColor}
+          templateColumns="repeat(22, 1fr)"
+        >
           <GridItem
             colSpan={5}
             h={14}
-            bg="red.300"
             display="flex"
             alignItems="center"
             justifyContent="flex-start"
             px={4}
           >
-            <Heading size="md">Sim Paddock</Heading>
+            <Heading size="md"></Heading>
           </GridItem>
           <GridItem colSpan={12} display="flex" alignItems="center" px={4}>
             <chakra.nav>
@@ -123,7 +133,6 @@ const MainLayout: React.FC<Props> = ({
           <GridItem
             colSpan={5}
             h={14}
-            bg="red.800"
             display="flex"
             alignItems="center"
             justifyContent="flex-end"
@@ -140,12 +149,28 @@ const MainLayout: React.FC<Props> = ({
             )}
             {currentUser && (
               <Menu isLazy>
-                <MenuButton>
-                  <Heading size="sm">
-                    <FormattedMessage {...profileStrings.profile} />
-                  </Heading>
+                <MenuButton flexDir={'row'}>
+                  <HStack gap={2}>
+                    <Text size="sm">
+                      <FormattedMessage {...profileStrings.profile} />
+                    </Text>
+                    <Flex
+                      position="relative"
+                      border="1px"
+                      borderColor="gray.200"
+                      overflow="hidden"
+                      h={10}
+                      w={10}
+                      rounded={'2xl'}
+                    >
+                      <ImageWithFallback
+                        imgUrl={currentUser.image || ''}
+                        imgAlt="user display image"
+                      />
+                    </Flex>
+                  </HStack>
                 </MenuButton>
-                <MenuList>
+                <MenuList textColor={'blackAlpha.900'}>
                   <MenuItem>
                     <Link href={{ pathname: PROFILE_URL, query: { tab: 0 } }}>
                       <a>
@@ -177,6 +202,7 @@ const MainLayout: React.FC<Props> = ({
             )}
           </GridItem>
         </Grid>
+        <Box h={1} bg="red.400" boxShadow={'md'} />
       </header>
 
       {/* body */}
@@ -190,25 +216,68 @@ const MainLayout: React.FC<Props> = ({
 
       {/* footer */}
       <chakra.footer role="contentinfo" pt={9}>
-        <Flex h={28} bg="red.600">
-          <Box p="2">
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+        <Box h={1} bg="red.400" boxShadow={'md'} />
+        <Grid
+          bg={backgroundColor}
+          textColor={textColor}
+          templateColumns="repeat(22, 1fr)"
+        >
+          <GridItem
+            colSpan={5}
+            h={14}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-start"
+            px={4}
+          ></GridItem>
+          <GridItem colSpan={12} display="flex" alignItems="center" px={4}>
+            <Flex
+              alignItems={'center'}
+              justifyContent="space-between"
+              w={'full'}
             >
-              Powered by{' '}
-              <span>
-                <Image
-                  src="/vercel.svg"
-                  alt="Vercel Logo"
-                  width={72}
-                  height={16}
-                />
-              </span>
-            </a>
-          </Box>
-        </Flex>
+              <chakra.nav>
+                <List display="flex" alignItems="center">
+                  {navOptions(intl).reduce((array, item) => {
+                    const output = [...array];
+                    const { requiresUser, label, path } = item;
+                    if (requiresUser && !currentUser) return output;
+                    output.push(
+                      <ListItem mr={8}>
+                        <Link href={path || '/'}>
+                          <a>
+                            <Text fontSize={'md'} fontWeight="normal">
+                              {label}
+                            </Text>
+                          </a>
+                        </Link>
+                      </ListItem>
+                    );
+                    return output;
+                  }, [] as JSX.Element[])}
+                  {currentUser && (
+                    <ListItem mr={8}>
+                      <Link href={{ pathname: PROFILE_URL, query: { tab: 0 } }}>
+                        <a>
+                          <FormattedMessage {...profileStrings.profile} />
+                        </a>
+                      </Link>
+                    </ListItem>
+                  )}
+                </List>
+              </chakra.nav>
+              <Text fontSize={'sm'}>@JP 2022</Text>
+            </Flex>
+          </GridItem>
+          <GridItem
+            colSpan={5}
+            h={14}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+            px={4}
+          ></GridItem>
+        </Grid>
       </chakra.footer>
     </Flex>
   );

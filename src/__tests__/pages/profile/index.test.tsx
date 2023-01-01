@@ -28,7 +28,7 @@ describe('Profile', () => {
 
     expect(
       screen.getAllByText(profileStrings.profileHeading.defaultMessage)
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     expect(
       screen.getByText(profileStrings.profileSummary.defaultMessage)
     ).toBeInTheDocument();
