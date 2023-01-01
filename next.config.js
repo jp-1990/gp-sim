@@ -13,6 +13,15 @@ const nextConfig = {
         pathname: '/project-gp-sim.appspot.com/**'
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/liveries',
+        permanent: true
+      }
+    ];
   }
 };
 
