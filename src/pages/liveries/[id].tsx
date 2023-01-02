@@ -34,6 +34,7 @@ import { LiveryDataType, RequestStatus } from '../../types';
 
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
+import { Icons } from '../../utils/icons/icons';
 
 interface Props {
   id: string;
@@ -157,16 +158,18 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
                 </Text>
               </Flex>
             </Flex>
-            <Tags pb={12} tags={livery?.tags?.split(',') || []} />
+            <Tags tags={livery?.tags?.split(',') || []} />
             {!isInUserCollection && (
               <Button
                 bg="gray.900"
                 color="white"
                 size="md"
-                w={40}
+                w={52}
+                mt={12}
                 lineHeight={1}
                 disabled={isLoading}
                 onClick={onAddToCollection}
+                rightIcon={<Icons.Add />}
               >
                 <FormattedMessage {...commonStrings.addToCollection} />
               </Button>

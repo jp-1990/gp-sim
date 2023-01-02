@@ -18,7 +18,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select
+  Select,
+  IconButton
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -60,6 +61,7 @@ import {
 } from '../../hooks';
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
+import { Icons } from '../../utils/icons/icons';
 
 const Garages: NextPage = () => {
   // AUTH CHECK
@@ -278,6 +280,7 @@ const Garages: NextPage = () => {
             </a>
           </Link>
         </Button>
+        <span>OR</span>
         <InputGroup w="sm">
           <Input
             value={garageKey}
@@ -290,6 +293,7 @@ const Garages: NextPage = () => {
               colorScheme="red"
               variant="outline"
               onClick={onJoinGarage}
+              rightIcon={<Icons.People value={{ color: '#C53030' }} />}
             >
               <FormattedMessage {...garageStrings.joinGarage} />
             </Button>
@@ -557,9 +561,17 @@ const Garages: NextPage = () => {
           ({ id }) => {
             return selectedGarage === null ? (
               <a onClick={() => onOpenAddToGarageModal(id)}>
-                <Button variant={'outline'} size="sm" colorScheme="red">
-                  <FormattedMessage {...commonStrings.add} />
-                </Button>
+                <IconButton
+                  variant={'ghost'}
+                  size="sm"
+                  colorScheme="red"
+                  aria-label={'add to garage'}
+                  icon={
+                    <Icons.Add
+                      tooltip={intl.formatMessage(commonStrings.add)}
+                    />
+                  }
+                />
               </a>
             ) : (
               <></>
@@ -567,13 +579,21 @@ const Garages: NextPage = () => {
           },
           ({ id }) => (
             <a onClick={() => onClickLivery(id)}>
-              <Button variant={'outline'} size="sm" colorScheme="red">
-                <FormattedMessage {...commonStrings.view} />
-              </Button>
+              <IconButton
+                variant={'ghost'}
+                size="sm"
+                colorScheme="red"
+                aria-label={'view livery'}
+                icon={
+                  <Icons.View
+                    tooltip={intl.formatMessage(commonStrings.view)}
+                  />
+                }
+              />
             </a>
           ),
           ({ id }) => (
-            <Button
+            <IconButton
               disabled={disableDownload(id)}
               onClick={onDownload({
                 selectedLiveries,
@@ -582,9 +602,13 @@ const Garages: NextPage = () => {
               variant={'solid'}
               size="sm"
               colorScheme="red"
-            >
-              <FormattedMessage {...commonStrings.download} />
-            </Button>
+              aria-label={'download livery'}
+              icon={
+                <Icons.Download
+                  tooltip={intl.formatMessage(commonStrings.download)}
+                />
+              }
+            />
           )
         ]}
         columns={[

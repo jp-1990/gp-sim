@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { GetStaticPaths, NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
   Box,
   Button,
@@ -11,6 +11,7 @@ import {
   Flex,
   Heading,
   HStack,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -78,6 +79,7 @@ import {
 import { Unauthorized } from '../../../components/shared';
 import db, { CacheKeys } from '../../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
+import { Icons } from '../../../utils/icons/icons';
 
 interface Props {
   id: string;
@@ -88,6 +90,7 @@ const Update: NextPage<Props> = ({ id }) => {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const intl = useIntl();
 
   useEffect(() => {
     if (currentUser.token && currentUser.data) {
@@ -317,22 +320,34 @@ const Update: NextPage<Props> = ({ id }) => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <Button
+                    <a onClick={() => onClickLivery(id)}>
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        colorScheme="red"
+                        aria-label={'view livery'}
+                        icon={
+                          <Icons.View
+                            tooltip={intl.formatMessage(commonStrings.view)}
+                          />
+                        }
+                      />
+                    </a>
+                  ),
+                  ({ id }) => (
+                    <IconButton
                       onClick={() =>
                         onOpenModal(id, selectedLiveries, 'liveries')
                       }
                       variant={'outline'}
                       size="sm"
-                    >
-                      <FormattedMessage {...commonStrings.delete} />
-                    </Button>
-                  ),
-                  ({ id }) => (
-                    <a onClick={() => onClickLivery(id)}>
-                      <Button variant="solid" size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.view} />
-                      </Button>
-                    </a>
+                      aria-label={'delete livery'}
+                      icon={
+                        <Icons.Delete
+                          tooltip={intl.formatMessage(commonStrings.delete)}
+                        />
+                      }
+                    />
                   )
                 ]}
                 columns={[
@@ -375,22 +390,34 @@ const Update: NextPage<Props> = ({ id }) => {
               <Table<PublicUserDataType[]>
                 actions={[
                   ({ id }) => (
-                    <Button
+                    <Link href={PROFILE_URL_BY_ID(`${id}`)} passHref>
+                      <IconButton
+                        variant={'ghost'}
+                        size="sm"
+                        colorScheme="red"
+                        aria-label={'view driver'}
+                        icon={
+                          <Icons.View
+                            tooltip={intl.formatMessage(commonStrings.view)}
+                          />
+                        }
+                      />
+                    </Link>
+                  ),
+                  ({ id }) => (
+                    <IconButton
                       variant={'outline'}
                       size="sm"
                       onClick={() =>
                         onOpenModal(id, selectedDrivers, 'drivers')
                       }
-                    >
-                      <FormattedMessage {...commonStrings.delete} />
-                    </Button>
-                  ),
-                  ({ id }) => (
-                    <Link href={PROFILE_URL_BY_ID(`${id}`)} passHref>
-                      <Button variant={'solid'} size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.view} />
-                      </Button>
-                    </Link>
+                      aria-label={'delete driver'}
+                      icon={
+                        <Icons.Delete
+                          tooltip={intl.formatMessage(commonStrings.delete)}
+                        />
+                      }
+                    />
                   )
                 ]}
                 columns={[

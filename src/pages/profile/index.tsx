@@ -4,6 +4,7 @@ import {
   Flex,
   Heading,
   HStack,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -21,7 +22,7 @@ import { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { LiveryFilter, Mode, UpdateProfile } from '../../components/features';
 import { MainLayout } from '../../components/layout';
@@ -49,6 +50,7 @@ import {
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 
 import { GaragesDataType, LiveriesDataType } from '../../types';
+import { Icons } from '../../utils/icons/icons';
 import {
   commonStrings,
   formStrings,
@@ -63,6 +65,7 @@ const Profile: NextPage = () => {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const intl = useIntl();
 
   useEffect(() => {
     if (currentUser.token && currentUser.data) {
@@ -258,20 +261,32 @@ const Profile: NextPage = () => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <Button
+                    <a onClick={() => onClickLivery(id)}>
+                      <IconButton
+                        variant={'ghost'}
+                        size="sm"
+                        colorScheme="red"
+                        aria-label={'view livery'}
+                        icon={
+                          <Icons.View
+                            tooltip={intl.formatMessage(commonStrings.view)}
+                          />
+                        }
+                      />
+                    </a>
+                  ),
+                  ({ id }) => (
+                    <IconButton
                       variant={'outline'}
                       size="sm"
                       onClick={() => onOpenModal(id, 'livery')}
-                    >
-                      <FormattedMessage {...commonStrings.delete} />
-                    </Button>
-                  ),
-                  ({ id }) => (
-                    <a onClick={() => onClickLivery(id)}>
-                      <Button variant={'solid'} size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.view} />
-                      </Button>
-                    </a>
+                      aria-label={'delete livery'}
+                      icon={
+                        <Icons.Delete
+                          tooltip={intl.formatMessage(commonStrings.delete)}
+                        />
+                      }
+                    />
                   )
                 ]}
                 columns={[
@@ -307,20 +322,32 @@ const Profile: NextPage = () => {
               <Table<GaragesDataType>
                 actions={[
                   ({ id }) => (
-                    <Button
+                    <Link href={GARAGE_UPDATE_URL(`${id}`)} passHref>
+                      <IconButton
+                        variant={'solid'}
+                        size="sm"
+                        colorScheme="red"
+                        aria-label={'edit garage'}
+                        icon={
+                          <Icons.Edit
+                            tooltip={intl.formatMessage(commonStrings.edit)}
+                          />
+                        }
+                      />
+                    </Link>
+                  ),
+                  ({ id }) => (
+                    <IconButton
                       variant={'outline'}
                       size="sm"
                       onClick={() => onOpenModal(id, 'garage')}
-                    >
-                      <FormattedMessage {...commonStrings.delete} />
-                    </Button>
-                  ),
-                  ({ id }) => (
-                    <Link href={GARAGE_UPDATE_URL(`${id}`)} passHref>
-                      <Button variant={'solid'} size="sm" colorScheme="red">
-                        <FormattedMessage {...commonStrings.edit} />
-                      </Button>
-                    </Link>
+                      aria-label={'delete garage'}
+                      icon={
+                        <Icons.Delete
+                          tooltip={intl.formatMessage(commonStrings.delete)}
+                        />
+                      }
+                    />
                   )
                 ]}
                 columns={[

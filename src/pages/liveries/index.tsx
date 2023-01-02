@@ -19,6 +19,7 @@ import { PageHeading } from '../../components/shared';
 
 import { LIVERIES_URL, LIVERY_CREATE_URL } from '../../utils/nav';
 import { liveryStrings } from '../../utils/intl';
+import { Icons } from '../../utils/icons/icons';
 import { useInfiniteScroll } from '../../hooks';
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
@@ -75,7 +76,12 @@ const Liveries: NextPage = () => {
         paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
       />
       <Flex w="full" maxW="5xl" my={5}>
-        <Button colorScheme="red" w="3xs" lineHeight={1}>
+        <Button
+          colorScheme="red"
+          w="3xs"
+          lineHeight={1}
+          rightIcon={<Icons.Upload />}
+        >
           <Link href={LIVERY_CREATE_URL}>
             <a>
               <FormattedMessage {...liveryStrings.uploadALivery} />
