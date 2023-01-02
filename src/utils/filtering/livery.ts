@@ -1,5 +1,7 @@
 import { LiveriesDataType, LiveriesFilters, Order } from '../../types';
 
+export const LIVERY_BATCH_SIZE = 12;
+
 /**
  * @param _liveries - array of liveries to sort and filter
  * @param filters - filters to apply to liveries array
@@ -21,7 +23,6 @@ export const applyLiveryFilters = (
   const rating = _rating && !!+_rating ? +_rating : undefined;
   const search = _search?.toLowerCase();
 
-  const limit = 12;
   let offset = 0;
 
   // clone input liveries
@@ -61,7 +62,7 @@ export const applyLiveryFilters = (
     );
     offset = lastLiveryIndex + 1;
   }
-  liveries = liveries.slice(offset, offset + limit);
+  liveries = liveries.slice(offset, offset + LIVERY_BATCH_SIZE);
 
   return liveries;
 };

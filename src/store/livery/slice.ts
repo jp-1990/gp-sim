@@ -17,7 +17,10 @@ import {
   Order,
   RequestStatus
 } from '../../types';
-import { applyLiveryFilters } from '../../utils/filtering/livery';
+import {
+  applyLiveryFilters,
+  LIVERY_BATCH_SIZE
+} from '../../utils/filtering/livery';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
 import {
   GARAGES_URL,
@@ -307,7 +310,8 @@ const liverySlice = createSlice({
         if (state[activePage].scrollY) state[activePage].scrollY = null;
         if (newIds.length < Limits.LIVERIES) state[activePage].hasMore = false;
         state[activePage].liveryIds = [...new Set([...existingIds, ...newIds])];
-        state[activePage].lastLiveryId = newIds[newIds.length - 1];
+        if (newIds.length === LIVERY_BATCH_SIZE)
+          state[activePage].lastLiveryId = newIds[newIds.length - 1];
       }
 
       state.error = null;

@@ -162,13 +162,21 @@ export const getStaticProps = wrapper.getStaticProps(
         id = paramsId;
       }
 
-      // get user by id and cars
+      // get user by id, cars and liveries
       let user;
       let cars;
+      let liveries;
 
       if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
         user = await db.cache.getById(CacheKeys.USER, id);
         cars = await db.cache.get(CacheKeys.CAR);
+        if (user) {
+          liveries = [];
+          for (const id of user.liveries) {
+            const livery = await db.cache.getById(CacheKeys.LIVERY, id);
+            if (livery) liveries.push(livery);
+          }
+        }
       }
 
       if (!user) {
@@ -176,6 +184,13 @@ export const getStaticProps = wrapper.getStaticProps(
       }
       if (!cars) {
         cars = await db.getCars();
+      }
+      if (!liveries && user) {
+        liveries = [];
+        for (const id of user.liveries) {
+          const livery = await db.getLiveryById(id);
+          if (livery) liveries.push(livery);
+        }
       }
 
       if (!user || !cars) {
@@ -185,6 +200,7 @@ export const getStaticProps = wrapper.getStaticProps(
       // set user and cars to store
       store.dispatch(userActions.setUser(user));
       store.dispatch(carActions.setCars(cars));
+      if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
 
       return {
         props: {
