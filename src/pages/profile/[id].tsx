@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Grid, Text, GridItem } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, HStack } from '@chakra-ui/react';
 import { GetStaticPaths, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
@@ -105,40 +105,30 @@ const Profile: NextPage<Props> = ({ id, user }) => {
       pageDescription="User profile home screen."
       urlPath={PROFILE_URL_BY_ID(id)}
     >
-      <Grid
-        pt={8}
-        pr={8}
-        maxW="5xl"
-        templateColumns={`repeat(2, auto)`}
-        gap={8}
-      >
-        <GridItem>
-          <Flex direction="column" maxW="5xl">
-            <Heading size="2xl" pb={4}>
-              {user.displayName}
-            </Heading>
-            <Text fontSize="lg" pt={2}>
-              {user.about}
-            </Text>
-          </Flex>
-        </GridItem>
-        <GridItem>
-          <Box
-            position="relative"
-            borderWidth="2px"
-            borderRadius={200}
-            borderColor={'blackAlpha.100'}
-            overflow="hidden"
-            h={200}
-            w={200}
-          >
-            <ImageWithFallback
-              imgAlt={user.displayName}
-              imgUrl={user.image ?? undefined}
-            />
-          </Box>
-        </GridItem>
-      </Grid>
+      <HStack alignItems={'flex-start'} pt={8} pr={8} w="5xl" gap={8}>
+        <Flex direction="column" w="2xl">
+          <Heading size="2xl" p={2} bg="blackAlpha.100" rounded={'md'}>
+            {user.displayName}
+          </Heading>
+          <Text fontSize="lg" pt={4} pl={2}>
+            {user.about}
+          </Text>
+        </Flex>
+        <Box
+          position="relative"
+          borderWidth="2px"
+          rounded={'3xl'}
+          borderColor={'blackAlpha.100'}
+          overflow="hidden"
+          h={'2xs'}
+          w={'2xs'}
+        >
+          <ImageWithFallback
+            imgAlt={user.displayName}
+            imgUrl={user.image ?? undefined}
+          />
+        </Box>
+      </HStack>
       {/* liveries list */}
       <LiveryFilter
         mode={Mode.BASIC}

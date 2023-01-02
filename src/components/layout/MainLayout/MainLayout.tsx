@@ -161,7 +161,7 @@ const MainLayout: React.FC<Props> = ({
                       overflow="hidden"
                       h={10}
                       w={10}
-                      rounded={'2xl'}
+                      rounded={'xl'}
                     >
                       <ImageWithFallback
                         imgUrl={currentUser.image || ''}

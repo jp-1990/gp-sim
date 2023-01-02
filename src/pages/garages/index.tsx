@@ -152,7 +152,7 @@ const Garages: NextPage = () => {
       if (id === null) {
         setFilters({
           key: 'ids',
-          value: currentUser.data?.liveries.join('&') ?? ''
+          value: currentUser.data?.liveries?.join('&') ?? ''
         });
       }
       if (typeof id === 'string') {
@@ -259,7 +259,7 @@ const Garages: NextPage = () => {
 
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
-    !currentUser.data?.liveries.find((id) => `${liveryId}` === id);
+    !currentUser.data?.liveries?.find((id) => `${liveryId}` === id);
 
   if (!currentUser.token) return <Unauthorized />;
   return (
