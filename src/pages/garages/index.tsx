@@ -19,7 +19,8 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
-  IconButton
+  IconButton,
+  Divider
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -381,76 +382,26 @@ const Garages: NextPage = () => {
       </Modal>
 
       {/* garage list */}
-      {garages && (
-        <chakra.section
-          pt={8}
-          w="5xl"
-          display="flex"
-          justifyContent="flex-start"
-          overflow="auto"
-        >
-          <Box
-            as="button"
-            onClick={onSelectGarage(null)}
-            key="userCollection"
-            mb={2}
-            mx={0.5}
-            p={2}
-            position="relative"
-            borderWidth="2px"
-            borderRadius={6}
-            borderColor={
-              selectedGarage === null ? highlightedColor : 'blackAlpha.100'
-            }
-            overflow="hidden"
-            h="240px"
-            minW="240px"
+      <chakra.section
+        mt={4}
+        w="5xl"
+        display="flex"
+        flexDir={'column'}
+        bg={'gray.50'}
+        rounded="md"
+      >
+        {garages && (
+          <chakra.section
+            p={4}
+            w="5xl"
+            display="flex"
+            justifyContent="flex-start"
+            overflow="auto"
           >
-            <Flex
-              direction="column"
-              alignItems="center"
-              justifyContent="flex-start"
-              h="full"
-              maxW="15rem"
-              overflow="hidden"
-              position="relative"
-              zIndex={1}
-            >
-              <Text
-                color={'white'}
-                borderRadius={5}
-                px={2}
-                bg={
-                  selectedGarage === null ? highlightedColor : 'blackAlpha.800'
-                }
-                fontSize="sm"
-                noOfLines={1}
-                w="full"
-                textAlign="center"
-              >
-                <FormattedMessage {...garageStrings.yourCollection} />
-              </Text>
-            </Flex>
-            <ImageWithFallback
-              imgAlt="user livery collection"
-              imgUrl={''}
-              position="absolute"
-              top="0"
-              left="0"
-              zIndex="0"
-              bg="gray.200"
-              h="full"
-              w="full"
-              borderRadius={3}
-            />
-          </Box>
-          {garages.ids.map((id) => (
             <Box
               as="button"
-              display="flex"
-              flexDir="column"
-              onClick={onSelectGarage(garages.entities[id]?.id)}
-              key={id}
+              onClick={onSelectGarage(null)}
+              key="userCollection"
               mb={2}
               mx={0.5}
               p={2}
@@ -458,8 +409,9 @@ const Garages: NextPage = () => {
               borderWidth="2px"
               borderRadius={6}
               borderColor={
-                id === selectedGarage ? highlightedColor : 'blackAlpha.100'
+                selectedGarage === null ? highlightedColor : 'blackAlpha.100'
               }
+              bg="gray.200"
               overflow="hidden"
               h="240px"
               minW="240px"
@@ -468,84 +420,145 @@ const Garages: NextPage = () => {
                 direction="column"
                 alignItems="center"
                 justifyContent="flex-start"
-                position="relative"
-                zIndex={1}
-                w="full"
-                overflow="hidden"
-              >
-                <Text
-                  color={'white'}
-                  borderRadius={5}
-                  px={2}
-                  bg={
-                    id === selectedGarage ? highlightedColor : 'blackAlpha.800'
-                  }
-                  fontSize="sm"
-                  noOfLines={1}
-                  textAlign="center"
-                  w="full"
-                >
-                  {garages.entities[id]?.title}
-                </Text>
-              </Flex>
-              <Flex flex={1} />
-              <Flex
-                direction="column"
-                alignItems="flex-start"
-                justifyContent="flex-end"
-                maxW="15rem"
-                position="relative"
-                zIndex={1}
-                overflow="hidden"
-              >
-                <Text
-                  color={'white'}
-                  borderRadius={5}
-                  px={2}
-                  bg={
-                    id === selectedGarage ? highlightedColor : 'blackAlpha.800'
-                  }
-                  fontSize="sm"
-                  noOfLines={1}
-                >
-                  {garages.entities[id]?.creator.displayName}
-                </Text>
-              </Flex>
-              <ImageWithFallback
-                imgAlt={garages.entities[id]?.title}
-                imgUrl={garages.entities[id]?.image}
-                position="absolute"
-                top="0"
-                left="0"
-                zIndex="0"
-                bg="gray.200"
                 h="full"
-                w="full"
-                borderRadius={3}
-              />
+                maxW="15rem"
+                overflow="hidden"
+                position="relative"
+                zIndex={1}
+              >
+                <Text
+                  color={'white'}
+                  borderRadius={5}
+                  px={2}
+                  bg={
+                    selectedGarage === null
+                      ? highlightedColor
+                      : 'blackAlpha.800'
+                  }
+                  fontSize="sm"
+                  noOfLines={1}
+                  w="full"
+                  textAlign="center"
+                >
+                  <FormattedMessage {...garageStrings.yourCollection} />
+                </Text>
+                <Icons.Car
+                  color={
+                    selectedGarage === null ? '#E53E3E' : 'rgba(0, 0, 0, 0.80)'
+                  }
+                  size={'200px'}
+                />
+              </Flex>
             </Box>
-          ))}
-        </chakra.section>
-      )}
+            {garages.ids.map((id) => (
+              <Box
+                as="button"
+                display="flex"
+                flexDir="column"
+                onClick={onSelectGarage(garages.entities[id]?.id)}
+                key={id}
+                mb={2}
+                mx={0.5}
+                p={2}
+                position="relative"
+                borderWidth="2px"
+                borderRadius={6}
+                borderColor={
+                  id === selectedGarage ? highlightedColor : 'blackAlpha.100'
+                }
+                overflow="hidden"
+                h="240px"
+                minW="240px"
+              >
+                <Flex
+                  direction="column"
+                  alignItems="center"
+                  justifyContent="flex-start"
+                  position="relative"
+                  zIndex={1}
+                  w="full"
+                  overflow="hidden"
+                >
+                  <Text
+                    color={'white'}
+                    borderRadius={5}
+                    px={2}
+                    bg={
+                      id === selectedGarage
+                        ? highlightedColor
+                        : 'blackAlpha.800'
+                    }
+                    fontSize="sm"
+                    noOfLines={1}
+                    textAlign="center"
+                    w="full"
+                  >
+                    {garages.entities[id]?.title}
+                  </Text>
+                </Flex>
+                <Flex flex={1} />
+                <Flex
+                  direction="column"
+                  alignItems="flex-start"
+                  justifyContent="flex-end"
+                  maxW="15rem"
+                  position="relative"
+                  zIndex={1}
+                  overflow="hidden"
+                >
+                  <Text
+                    color={'white'}
+                    borderRadius={5}
+                    px={2}
+                    bg={
+                      id === selectedGarage
+                        ? highlightedColor
+                        : 'blackAlpha.800'
+                    }
+                    fontSize="sm"
+                    noOfLines={1}
+                  >
+                    {garages.entities[id]?.creator.displayName}
+                  </Text>
+                </Flex>
+                <ImageWithFallback
+                  imgAlt={garages.entities[id]?.title}
+                  imgUrl={garages.entities[id]?.image}
+                  position="absolute"
+                  top="0"
+                  left="0"
+                  zIndex="0"
+                  bg="gray.200"
+                  h="full"
+                  w="full"
+                  borderRadius={3}
+                />
+              </Box>
+            ))}
+          </chakra.section>
+        )}
 
-      {/* selected garage info */}
-      <chakra.section
-        w="5xl"
-        pt={8}
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-      >
-        <Heading size="md" pb={4}>
-          {garages?.entities[selectedGarage ?? '']?.title ?? (
-            <FormattedMessage {...garageStrings.yourCollection} />
-          )}
-        </Heading>
-        <Text fontSize="sm" pb={4}>
-          {garages?.entities[selectedGarage ?? '']?.description ?? (
-            <FormattedMessage {...garageStrings.yourCollectionDescription} />
-          )}
-        </Text>
+        <Divider />
+        {/* selected garage info */}
+        <chakra.section
+          w="5xl"
+          pt={6}
+          px={4}
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+        >
+          <Heading size="md" pb={4}>
+            {garages?.entities[selectedGarage ?? '']?.title ?? (
+              <FormattedMessage {...garageStrings.yourCollection} />
+            )}
+          </Heading>
+          <Text fontSize="sm" pb={6}>
+            {garages?.entities[selectedGarage ?? '']?.description ?? (
+              <FormattedMessage {...garageStrings.yourCollectionDescription} />
+            )}
+          </Text>
+        </chakra.section>
       </chakra.section>
 
       {/* search and filter */}

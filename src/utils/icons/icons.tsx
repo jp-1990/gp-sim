@@ -1,4 +1,5 @@
 import {
+  IoCarSportSharp as Car,
   IoTrashOutline as Delete,
   IoEyeOutline as View
 } from 'react-icons/io5';
@@ -46,6 +47,7 @@ const withProvider = (Icon: IconType) => {
 export const Icons = {
   Add: withProvider(Add),
   AddCircle: withProvider(AddCircle),
+  Car: withProvider(Car),
   Delete: withProvider(Delete),
   Download: withProvider(Download),
   Edit: withProvider(Edit),
