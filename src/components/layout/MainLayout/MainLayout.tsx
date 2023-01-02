@@ -243,7 +243,7 @@ const MainLayout: React.FC<Props> = ({
                     const { requiresUser, label, path } = item;
                     if (requiresUser && !currentUser) return output;
                     output.push(
-                      <ListItem mr={8}>
+                      <ListItem mr={8} key={label}>
                         <Link href={path || '/'}>
                           <a>
                             <Text fontSize={'md'} fontWeight="normal">
@@ -256,7 +256,7 @@ const MainLayout: React.FC<Props> = ({
                     return output;
                   }, [] as JSX.Element[])}
                   {currentUser && (
-                    <ListItem mr={8}>
+                    <ListItem mr={8} key="profile">
                       <Link href={{ pathname: PROFILE_URL, query: { tab: 0 } }}>
                         <a>
                           <FormattedMessage {...profileStrings.profile} />
