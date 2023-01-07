@@ -37,7 +37,8 @@ const initialFilters = {
   search: '',
   car: '',
   created: Order.ASC,
-  rating: '0'
+  rating: '0',
+  isPublic: null
 };
 type FilterState = typeof initialFilters;
 export type FilterActionPayload = NonNullable<KeyValueUnionOf<FilterState>>;
@@ -54,7 +55,7 @@ const liveriesAdapter = createEntityAdapter<LiveryDataType>();
 const initialState = {
   [LIVERIES_URL]: {
     scrollY: null as number | null,
-    filters: { ...initialFilters },
+    filters: { ...initialFilters, isPublic: true },
     liveryIds: [] as string[],
     lastLiveryId: null as string | null,
     hasMore: null as boolean | null
@@ -85,7 +86,7 @@ const initialState = {
   },
   [PROFILE_URL_ID]: {
     scrollY: null as number | null,
-    filters: { ...initialFilters },
+    filters: { ...initialFilters, isPublic: true },
     liveryIds: [] as string[],
     lastLiveryId: null as string | null,
     hasMore: null as boolean | null

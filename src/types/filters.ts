@@ -12,6 +12,7 @@ export interface LiveriesFilters {
   created?: Order;
   rating?: string;
   lastLiveryId?: EntityId | null;
+  isPublic?: boolean | null;
 }
 
 export enum LiveriesFilterKeys {

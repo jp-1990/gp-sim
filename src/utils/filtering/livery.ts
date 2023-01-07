@@ -15,6 +15,7 @@ export const applyLiveryFilters = (
     car,
     created,
     lastLiveryId,
+    isPublic,
     ids: _ids,
     rating: _rating,
     search: _search
@@ -36,10 +37,13 @@ export const applyLiveryFilters = (
 
   // filter
   liveries = liveries.filter((livery) => {
+    if (livery.deleted) return false;
     if (ids?.length && !ids.includes(livery.id)) return false;
     if (car && car !== livery.car) return false;
     if (rating && rating < livery.rating) return false;
     if (search && !livery.searchHelpers.includes(search)) return false;
+    if (typeof isPublic === 'boolean' && isPublic !== livery.isPublic)
+      return false;
     return true;
   });
 
