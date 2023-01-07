@@ -76,18 +76,18 @@ const Liveries: NextPage = () => {
         paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
       />
       <Flex w="full" maxW="5xl" my={5}>
-        <Button
-          colorScheme="red"
-          w="3xs"
-          lineHeight={1}
-          rightIcon={<Icons.Upload />}
-        >
-          <Link href={LIVERY_CREATE_URL}>
+        <Link href={LIVERY_CREATE_URL} passHref>
+          <Button
+            colorScheme="red"
+            w="3xs"
+            lineHeight={1}
+            rightIcon={<Icons.Upload />}
+          >
             <a>
               <FormattedMessage {...liveryStrings.uploadALivery} />
             </a>
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </Flex>
       <LiveryFilter
         mode={Mode.FULL}

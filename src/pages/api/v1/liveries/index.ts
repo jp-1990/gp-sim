@@ -112,9 +112,10 @@ async function handler(
           // prepare query
           let query =
             liveriesRef as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
+
+          query = query.where('deleted', '==', false);
           for (const param of definedParams) {
             if (filters[param]) query = query.where(...filters[param]);
-            query.where('deleted', '==', false);
             if (orders[param]) query = query.orderBy(...orders[param]);
           }
 

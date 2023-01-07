@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useToast } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 
 import { SubmitButton, useForm } from '../../../../../shared';
 import {
@@ -24,6 +25,7 @@ import { RequestStatus } from '../../../../../../types';
 const SubmitLivery = () => {
   const [isLoading, setIsLoading] = useState(false);
 
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const toast = useToast({
@@ -71,6 +73,9 @@ const SubmitLivery = () => {
       if (requestStatus === RequestStatus.REJECTED) throw new Error();
 
       resetState(initialState);
+      setIsLoading(false);
+      router.back();
+
       toast({
         title: intl.formatMessage(formStrings.createSuccess, {
           item: intl.formatMessage(commonStrings.livery)
@@ -78,8 +83,6 @@ const SubmitLivery = () => {
         description: `${state.title}`,
         status: 'success'
       });
-
-      setIsLoading(false);
     } catch (_) {
       toast({
         title: intl.formatMessage(commonStrings.error),
