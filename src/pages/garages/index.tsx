@@ -352,7 +352,7 @@ const Garages: NextPage = () => {
                 }
               ]}
               data={
-                liveries?.ids.reduce((prev, id) => {
+                selectedLiveries?.reduce((prev, id) => {
                   const output = [...prev];
                   const livery = liveries.entities[id];
                   if (livery) output.push(livery);
