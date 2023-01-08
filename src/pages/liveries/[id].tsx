@@ -8,6 +8,7 @@ import {
   chakra,
   Flex,
   Heading,
+  HStack,
   Text,
   useToast
 } from '@chakra-ui/react';
@@ -29,12 +30,13 @@ import {
 
 import { isString } from '../../utils/functions';
 import { commonStrings, formStrings, liveryStrings } from '../../utils/intl';
-import { LIVERY_URL, LOGIN_URL } from '../../utils/nav';
+import { LIVERY_URL, LOGIN_URL, PROFILE_URL_BY_ID } from '../../utils/nav';
 import { LiveryDataType, RequestStatus } from '../../types';
 
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 import { Icons } from '../../utils/icons/icons';
+import Link from 'next/link';
 
 interface Props {
   id: string;
@@ -93,11 +95,12 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
       <Box maxW="5xl" display="flex" flexDir={'column'}>
         <chakra.section pt={8}>
           <Flex direction="column" maxW="5xl">
-            <Heading size="xl" pb={4}>
-              {`${livery?.car} - ${livery?.title}`}
-            </Heading>
+            <Heading size="xl">{`${livery?.title}`}</Heading>
+            <Text size="lg" pb={4}>
+              {`${livery?.car}`}
+            </Text>
             {/* <Rating rating={livery?.rating} alignItems="flex-start" /> */}
-            <Text fontSize="md" pt={1} pb={6}>
+            <Text fontSize="md" pt={1} pb={4}>
               <FormattedMessage
                 {...commonStrings.downloads}
                 values={{ downloads: livery?.downloads || '0' }}
@@ -150,34 +153,56 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
                 />
               </Flex>
               <Flex direction="column" ml={4}>
-                <Heading size="md" pb={4}>
-                  {livery?.creator.displayName}
-                </Heading>
-                <Text fontSize="sm" pb={4}>
-                  {livery?.description}
-                </Text>
+                <Link href={PROFILE_URL_BY_ID(livery.creator.id)}>
+                  <a>
+                    <HStack alignItems={'center'} pb={4} gap={2}>
+                      <Flex
+                        position="relative"
+                        border="1px"
+                        borderColor="gray.200"
+                        overflow="hidden"
+                        h={10}
+                        w={10}
+                        minW={10}
+                        rounded={'xl'}
+                      >
+                        <ImageWithFallback
+                          imgUrl={livery?.creator.image || ''}
+                          imgAlt="creator display image"
+                        />
+                      </Flex>
+                      <Flex flexDir={'column'}>
+                        <Text fontSize={'xs'} as="i">
+                          <FormattedMessage {...commonStrings.artist} />
+                        </Text>
+                        <Heading size="md">
+                          {livery?.creator.displayName}
+                        </Heading>
+                      </Flex>
+                    </HStack>
+                  </a>
+                </Link>
+                <Text fontSize="sm">{livery?.description}</Text>
               </Flex>
             </Flex>
             <Tags tags={livery?.tags?.split(',') || []} />
-            {!isInUserCollection && (
-              <Button
-                bg="gray.900"
-                color="white"
-                size="md"
-                w={52}
-                mt={12}
-                lineHeight={1}
-                disabled={isLoading}
-                onClick={onAddToCollection}
-                rightIcon={<Icons.Add />}
-              >
-                <FormattedMessage {...commonStrings.addToCollection} />
-              </Button>
-            )}
+            <Button
+              bg="gray.900"
+              color="white"
+              size="md"
+              w={52}
+              mt={12}
+              lineHeight={1}
+              disabled={isLoading || isInUserCollection}
+              onClick={onAddToCollection}
+              rightIcon={<Icons.Add />}
+            >
+              <FormattedMessage {...commonStrings.addToCollection} />
+            </Button>
             {isInUserCollection && (
-              <Heading size="md" pb={4}>
+              <Text size="md" mt={2}>
                 <FormattedMessage {...liveryStrings.inColletion} />
-              </Heading>
+              </Text>
             )}
           </Flex>
         </chakra.section>

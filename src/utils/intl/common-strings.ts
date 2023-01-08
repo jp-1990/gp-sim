@@ -111,6 +111,10 @@ const download = {
 };
 
 const main = {
+  artist: {
+    id: 'utils.intl.commonStrings.artist',
+    defaultMessage: 'Artist'
+  },
   paintshop: {
     id: 'utils.intl.commonStrings.paintshop',
     defaultMessage: 'Paintshop'

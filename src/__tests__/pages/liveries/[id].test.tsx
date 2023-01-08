@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '../../../utils/testing/test-utils';
+import { render, waitFor } from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import Livery from '../../../pages/liveries/[id]';
 
@@ -66,11 +66,11 @@ describe('Livery', () => {
     const { downloads, car, title, creator, tags } =
       liveryNotInCurrentUserCollection;
     const downloadNum = `${downloads} Downloads`;
-    const carAndTitle = `${car} - ${title}`;
 
     await waitFor(() => {
-      expect(screen.queryAllByText(carAndTitle)).toHaveLength(1);
       expectAllToBeInDocument([
+        car,
+        title,
         downloadNum,
         creator.displayName,
         ...tags.split(',').filter((e) => e)
@@ -88,10 +88,11 @@ describe('Livery', () => {
     const { downloads, car, title, creator, tags } =
       liveryInCurrentUserCollection;
     const downloadNum = `${downloads} Downloads`;
-    const carAndTitle = `${car} - ${title}`;
+
     await waitFor(() => {
-      expect(screen.queryAllByText(carAndTitle)).toHaveLength(1);
       expectAllToBeInDocument([
+        car,
+        title,
         downloadNum,
         creator.displayName,
         ...tags.split(',').filter((e) => e)
