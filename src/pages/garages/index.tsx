@@ -260,7 +260,7 @@ const Garages: NextPage = () => {
 
   const highlightedColor = 'red.500';
   const disableDownload = (liveryId: string | number) =>
-    !currentUser.data?.liveries?.find((id) => `${liveryId}` === id);
+    !(currentUser.data?.liveries || []).find((id) => `${liveryId}` === id);
 
   if (!currentUser.token) return <Unauthorized />;
   return (

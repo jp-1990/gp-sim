@@ -75,7 +75,7 @@ async function handler(
             throw new Error('unauthorized');
           }
 
-          const updatedLiveries = [...garage.liveries];
+          let updatedLiveries = [...garage.liveries];
 
           // add liveries to garage
           if (parsedData.liveriesToAdd?.length) {
@@ -90,7 +90,7 @@ async function handler(
             t.update(garageRef, {
               liveries: FieldValue.arrayRemove(...parsedData.liveriesToRemove)
             });
-            updatedLiveries.filter(
+            updatedLiveries = updatedLiveries.filter(
               (id) => !parsedData.liveriesToRemove?.includes(id)
             );
           }

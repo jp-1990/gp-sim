@@ -24,7 +24,8 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
 
 import { MainLayout } from '../../../components/layout';
@@ -68,6 +69,7 @@ import { isString } from '../../../utils/functions';
 import {
   LiveriesDataType,
   PublicUserDataType,
+  RequestStatus,
   UserFilterKeys,
   UsersDataType
 } from '../../../types';
@@ -91,6 +93,15 @@ const Update: NextPage<Props> = ({ id }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const intl = useIntl();
+
+  const toast = useToast({
+    duration: 8000,
+    isClosable: true,
+    position: 'top',
+    containerStyle: {
+      marginTop: '1.25rem'
+    }
+  });
 
   useEffect(() => {
     if (currentUser.token && currentUser.data) {
@@ -144,12 +155,16 @@ const Update: NextPage<Props> = ({ id }) => {
     liveries: async (id: string, ids: string[]) => {
       const formData = new FormData();
       formData.append('liveriesToRemove', JSON.stringify(ids));
-      dispatch(garageThunks.updateGarageByIdLiveries({ id, formData }));
+      return await dispatch(
+        garageThunks.updateGarageByIdLiveries({ id, formData })
+      );
     },
     drivers: async (id: string, ids: string[]) => {
       const formData = new FormData();
       formData.append('usersToRemove', JSON.stringify(ids));
-      dispatch(garageThunks.updateGarageByIdUsers({ id, formData }));
+      return await dispatch(
+        garageThunks.updateGarageByIdUsers({ id, formData })
+      );
     }
   };
 
@@ -189,7 +204,7 @@ const Update: NextPage<Props> = ({ id }) => {
     }
   }, [garageData?.drivers, setUserFilters]);
 
-  // HANDLERS;s
+  // HANDLERS
   const toggleSelectedDrivers = (id: string | string[]) => {
     if (typeof id === 'object') return setSelectedDrivers(id);
     setSelectedDrivers((prev) => {
@@ -222,10 +237,38 @@ const Update: NextPage<Props> = ({ id }) => {
     setModal({ ids: undefined, type: undefined, open: false });
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
     if (modal.ids && modal.type && garageData) {
-      deleters[modal.type](garageData.id, modal.ids);
+      try {
+        let idsToDelete = modal.ids;
+        if (modal.type === 'drivers')
+          idsToDelete = idsToDelete.filter(
+            (id) => id !== garageData.creator.id
+          );
+
+        const {
+          meta: { requestStatus }
+        } = await deleters[modal.type](garageData.id, idsToDelete);
+
+        if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
+        toast({
+          title: intl.formatMessage(formStrings.updateSuccess, {
+            item: intl.formatMessage(commonStrings.garage)
+          }),
+          status: 'success'
+        });
+      } catch (err) {
+        toast({
+          title: intl.formatMessage(commonStrings.error),
+          description: intl.formatMessage(formStrings.updateError, {
+            item: intl.formatMessage(commonStrings.garage)
+          }),
+          status: 'error'
+        });
+      }
     }
+
     onCloseModal();
   };
 
@@ -262,6 +305,8 @@ const Update: NextPage<Props> = ({ id }) => {
             image={garageData.image}
           />
         )}
+
+        {/* CONFIRMATION MODAL */}
         <Modal onClose={onCloseModal} isOpen={modal.open} isCentered>
           <ModalOverlay />
           <ModalContent>
@@ -286,6 +331,17 @@ const Update: NextPage<Props> = ({ id }) => {
                   )
                 }}
               />
+              {modal.type === 'drivers' &&
+                modal.ids?.includes(garageData?.creator.id || '') && (
+                  <p>
+                    <Text as="i">
+                      *
+                      <FormattedMessage
+                        {...formStrings.garageCreatorCannotBeRemoved}
+                      />
+                    </Text>
+                  </p>
+                )}
             </ModalBody>
             <ModalFooter>
               <HStack>
@@ -299,6 +355,7 @@ const Update: NextPage<Props> = ({ id }) => {
             </ModalFooter>
           </ModalContent>
         </Modal>
+
         <Tabs
           mt={2}
           variant="enclosed"
@@ -373,7 +430,7 @@ const Update: NextPage<Props> = ({ id }) => {
                   }
                 ]}
                 data={
-                  liveries?.ids.reduce((prev, id) => {
+                  garageData?.liveries?.reduce((prev, id) => {
                     const output = [...prev];
                     const livery = liveries.entities[id];
                     if (livery) output.push(livery);
@@ -428,7 +485,7 @@ const Update: NextPage<Props> = ({ id }) => {
                   }
                 ]}
                 data={
-                  users?.ids.reduce((prev, id) => {
+                  garageData?.drivers.reduce((prev, id) => {
                     const output = [...prev];
                     const user = users.entities[id];
                     if (user) output.push(user);

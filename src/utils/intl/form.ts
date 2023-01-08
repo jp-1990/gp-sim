@@ -174,6 +174,10 @@ const helperText = {
     id: 'utils.intl.form.emailOrPasswordError',
     defaultMessage: 'Incorrect email or password!'
   },
+  garageCreatorCannotBeRemoved: {
+    id: 'utils.intl.form.garageCreatorCannotBeRemoved',
+    defaultMessage: 'Garage creator cannot be removed'
+  },
   garageImage: {
     id: 'utils.intl.form.garageImage',
     defaultMessage: 'Garage image'
