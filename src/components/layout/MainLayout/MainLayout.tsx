@@ -171,28 +171,37 @@ const MainLayout: React.FC<Props> = ({
                   </HStack>
                 </MenuButton>
                 <MenuList textColor={'blackAlpha.900'}>
-                  <MenuItem>
-                    <Link href={{ pathname: PROFILE_URL, query: { tab: 0 } }}>
+                  <Link
+                    passHref
+                    href={{ pathname: PROFILE_URL, query: { tab: 0 } }}
+                  >
+                    <MenuItem>
                       <a>
                         <FormattedMessage {...profileStrings.viewProfile} />
                       </a>
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                  </Link>
                   <MenuDivider />
-                  <MenuItem>
-                    <Link href={{ pathname: PROFILE_URL, query: { tab: 1 } }}>
+                  <Link
+                    passHref
+                    href={{ pathname: PROFILE_URL, query: { tab: 1 } }}
+                  >
+                    <MenuItem>
                       <a>
                         <FormattedMessage {...profileStrings.myLiveries} />
                       </a>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link href={{ pathname: PROFILE_URL, query: { tab: 2 } }}>
+                    </MenuItem>
+                  </Link>
+                  <Link
+                    passHref
+                    href={{ pathname: PROFILE_URL, query: { tab: 2 } }}
+                  >
+                    <MenuItem>
                       <a>
                         <FormattedMessage {...profileStrings.myGarages} />
                       </a>
-                    </Link>
-                  </MenuItem>
+                    </MenuItem>
+                  </Link>
                   <MenuDivider />
                   <MenuItem onClick={logout}>
                     <FormattedMessage {...messages.logout} />
