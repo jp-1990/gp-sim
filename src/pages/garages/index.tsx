@@ -274,13 +274,13 @@ const Garages: NextPage = () => {
         paragraph={<FormattedMessage {...garageStrings.garagesSummary} />}
       />
       <HStack w="full" maxW="5xl" my={5} gap={2}>
-        <Button colorScheme="red" w="3xs" lineHeight={1}>
-          <Link href={GARAGE_CREATE_URL}>
+        <Link href={GARAGE_CREATE_URL} passHref>
+          <Button colorScheme="red" w="3xs" lineHeight={1}>
             <a>
               <FormattedMessage {...garageStrings.createAGarage} />
             </a>
-          </Link>
-        </Button>
+          </Button>
+        </Link>
         <span>OR</span>
         <InputGroup w="sm">
           <Input
@@ -563,7 +563,7 @@ const Garages: NextPage = () => {
 
       {/* search and filter */}
       <LiveryFilter
-        mode={Mode.BASIC}
+        mode={Mode.FULL}
         filters={filters}
         setFilters={setFilters}
       />

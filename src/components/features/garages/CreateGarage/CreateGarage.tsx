@@ -1,4 +1,5 @@
 import { Grid, GridItem, Divider, Button, useToast } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -27,6 +28,7 @@ import { initialState, stateKeys, validators } from './config';
 const CreateGarage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const intl = useIntl();
+  const router = useRouter();
 
   const toast = useToast({
     duration: 8000,
@@ -44,6 +46,8 @@ const CreateGarage = () => {
   const onClick = async () => {
     try {
       if (!isLoading) {
+        setIsLoading(true);
+
         const createGarageInput = {
           // map state into upload format
           ...mapCreateGarageFormStateToRequestInput({
@@ -74,6 +78,9 @@ const CreateGarage = () => {
         if (requestStatus === RequestStatus.REJECTED) throw new Error();
 
         resetState(initialState);
+        setIsLoading(false);
+        router.back();
+
         toast({
           title: intl.formatMessage(formStrings.createSuccess, {
             item: intl.formatMessage(commonStrings.garage)
@@ -81,7 +88,6 @@ const CreateGarage = () => {
           description: `${state.title}`,
           status: 'success'
         });
-        setIsLoading(false);
       }
     } catch (_) {
       toast({
@@ -211,6 +217,7 @@ const CreateGarage = () => {
           variant="outline"
           w="3xs"
           lineHeight={1}
+          onClick={() => router.back()}
         >
           {<FormattedMessage {...commonStrings.cancel} />}
         </Button>
