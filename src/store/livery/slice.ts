@@ -104,7 +104,7 @@ const getLiveries = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/getLiveries`,
   async (args: Partial<LiveriesFilters>, { getState }) => {
     const state = getState() as KnownRootState;
-    const liveriesState = selectors.selectAllLiveries(state);
+    const liveriesState = selectors.selectLiveries(state);
 
     // cache first. only make a network request if we do not already have data
     if (liveriesState.length) return applyLiveryFilters(liveriesState, args);
@@ -123,6 +123,7 @@ const getLiveries = createAsyncThunk(
       const activePage = state.activePage;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       if (!activePage) return false;
       if (state[activePage].filters.ids !== args.ids) return false;
       if (state[activePage].hasMore === false) return false;
@@ -152,6 +153,7 @@ const getLiveryDownloadUrl = createAsyncThunk(
     condition: (_, { getState }) => {
       const { [LIVERY_SLICE_NAME]: state } = getState() as KnownRootState;
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -178,6 +180,7 @@ const createLivery = createAsyncThunk(
     condition: (_, { getState }) => {
       const { [LIVERY_SLICE_NAME]: state } = getState() as KnownRootState;
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -203,6 +206,7 @@ const deleteLiveryById = createAsyncThunk(
     condition: (_, { getState }) => {
       const { [LIVERY_SLICE_NAME]: state } = getState() as KnownRootState;
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -401,15 +405,37 @@ const selectSelectedLiveries = createSelector(
 
 const selectStatus = (state: KnownRootState) => state[LIVERY_SLICE_NAME].status;
 
-const { selectAll: selectAllLiveries } = liveriesAdapter.getSelectors(
+const { selectAll: selectLiveries } = liveriesAdapter.getSelectors(
   (state: KnownRootState) => state[LIVERY_SLICE_NAME].liveries
 );
+
+const createSelectUserCreatedLiveryIds =
+  (uid: string) => (state: KnownRootState) => {
+    const liveries = selectLiveries(state);
+    const filteredIds: string[] = [];
+    for (const livery of liveries) {
+      if (livery.creator.id === uid) filteredIds.push(livery.id);
+    }
+    return filteredIds;
+  };
+
+const createSelectUserCreatedLiveryEntities =
+  (uid: string) => (state: KnownRootState) => {
+    const liveries = selectLiveries(state);
+    const filteredEntities: Record<string, LiveryDataType> = {};
+    for (const livery of liveries) {
+      if (livery.creator.id === uid) filteredEntities[livery.id] = livery;
+    }
+    return filteredEntities;
+  };
 
 // EXPORTS
 export const actions = liverySlice.actions;
 export const selectors = {
   createSelectScrollY,
-  selectAllLiveries,
+  createSelectUserCreatedLiveryEntities,
+  createSelectUserCreatedLiveryIds,
+  selectLiveries,
   selectFilters,
   selectLastLiveryId,
   selectLiveryIds,

@@ -16,7 +16,8 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  Tabs
+  Tabs,
+  useToast
 } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import Link from 'next/link';
@@ -49,7 +50,7 @@ import {
 } from '../../store/livery/slice';
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 
-import { GaragesDataType, LiveriesDataType } from '../../types';
+import { GaragesDataType, LiveriesDataType, RequestStatus } from '../../types';
 import { Icons } from '../../utils/icons/icons';
 import {
   commonStrings,
@@ -67,6 +68,15 @@ const Profile: NextPage = () => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
 
+  const toast = useToast({
+    duration: 8000,
+    isClosable: true,
+    position: 'top',
+    containerStyle: {
+      marginTop: '1.25rem'
+    }
+  });
+
   useEffect(() => {
     if (currentUser.token && currentUser.data) {
       dispatch(liveryActions.activatePage(PROFILE_URL));
@@ -82,7 +92,8 @@ const Profile: NextPage = () => {
   const [modal, setModal] = useState({
     id: undefined as string | undefined,
     type: undefined as 'garage' | 'livery' | undefined,
-    open: false
+    open: false,
+    loading: false
   });
 
   // HOOKS
@@ -93,14 +104,17 @@ const Profile: NextPage = () => {
   );
 
   const liveries = {
-    ids: useAppSelector(liverySelectors.selectLiveryIds),
-    entities: useAppSelector(liverySelectors.selectLiveryEntities)
+    ids: useAppSelector(
+      liverySelectors.createSelectUserCreatedLiveryIds(
+        currentUser.data?.id || ''
+      )
+    ),
+    entities: useAppSelector(
+      liverySelectors.createSelectUserCreatedLiveryEntities(
+        currentUser.data?.id || ''
+      )
+    )
   };
-
-  const { Loader } = useInfiniteScroll(() => {
-    if (!currentUser.token) return;
-    dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId }));
-  }, liveries);
 
   const garages = {
     ids: useAppSelector(
@@ -115,7 +129,13 @@ const Profile: NextPage = () => {
     )
   };
 
-  const deletions = {
+  const { Loader } = useInfiniteScroll(() => {
+    if (!currentUser.token) return;
+    if (lastLiveryId && liveries.ids.length < 12) return;
+    dispatch(liveryThunks.getLiveries({ ...filters, lastLiveryId }));
+  }, liveries);
+
+  const deleters = {
     garage: (id: string) => dispatch(garageThunks.deleteGarageById({ id })),
     livery: (id: string) => dispatch(liveryThunks.deleteLiveryById({ id }))
   };
@@ -153,15 +173,40 @@ const Profile: NextPage = () => {
   };
 
   const onOpenModal = (id: string, type: 'garage' | 'livery') => {
-    setModal({ id, type, open: true });
+    setModal({ id, type, open: true, loading: false });
   };
 
   const onCloseModal = () => {
-    setModal({ id: undefined, type: undefined, open: false });
+    setModal({ id: undefined, type: undefined, open: false, loading: false });
   };
 
-  const onDelete = () => {
-    if (modal.id && modal.type) deletions[modal.type](modal.id);
+  const onDelete = async () => {
+    if (modal.id && modal.type) {
+      setModal((prev) => ({ ...prev, loading: true }));
+      try {
+        const {
+          meta: { requestStatus }
+        } = await deleters[modal.type](modal.id);
+
+        if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
+        toast({
+          title: intl.formatMessage(formStrings.deleteSuccess, {
+            item: intl.formatMessage(commonStrings[modal.type])
+          }),
+          status: 'success'
+        });
+      } catch (err) {
+        toast({
+          title: intl.formatMessage(commonStrings.error),
+          description: intl.formatMessage(formStrings.deleteError, {
+            item: intl.formatMessage(commonStrings[modal.type])
+          }),
+          status: 'error'
+        });
+      }
+    }
+
     onCloseModal();
   };
 
@@ -176,6 +221,8 @@ const Profile: NextPage = () => {
         heading={<FormattedMessage {...profileStrings.profileHeading} />}
         paragraph={<FormattedMessage {...profileStrings.profileSummary} />}
       />
+
+      {/* CONFIRMATION MODAL */}
       <Modal onClose={onCloseModal} isOpen={modal.open} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -205,7 +252,12 @@ const Profile: NextPage = () => {
               <Button onClick={onCloseModal}>
                 <FormattedMessage {...commonStrings.cancel} />
               </Button>
-              <Button variant={'solid'} colorScheme="red" onClick={onDelete}>
+              <Button
+                isLoading={modal.loading}
+                variant={'solid'}
+                colorScheme="red"
+                onClick={onDelete}
+              >
                 <FormattedMessage {...commonStrings.delete} />
               </Button>
             </HStack>

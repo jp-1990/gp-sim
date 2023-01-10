@@ -78,6 +78,15 @@ async function handler(
               throw new Error('unauthorized');
             }
 
+            // get ids for garages that this livery belongs to
+            const garageIds: string[] = [];
+            const garagesSnapshot = await t.get(
+              garagesRef.where('liveries', 'array-contains', livery.id)
+            );
+            garagesSnapshot.forEach((doc) => {
+              garageIds.push(doc.data().id);
+            });
+
             // decrement count on random shard
             const shardId = Math.floor(Math.random() * CountShards.LIVERY);
             const shardRef = countRef
@@ -88,15 +97,6 @@ async function handler(
 
             // mark livery as deleted
             t.update(liveryRef, { deleted: true });
-
-            // get ids for garages that this livery belongs to
-            const garageIds: string[] = [];
-            const garagesSnapshot = await t.get(
-              garagesRef.where(livery.id, 'in', 'liveries')
-            );
-            garagesSnapshot.forEach((doc) => {
-              garageIds.push(doc.data().id);
-            });
 
             return garageIds;
           }

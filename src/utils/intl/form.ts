@@ -222,6 +222,10 @@ const result = {
     id: 'utils.intl.form.updateSuccess',
     defaultMessage: '{item} successfully updated'
   },
+  deleteSuccess: {
+    id: 'utils.intl.form.deleteSuccess',
+    defaultMessage: '{item} successfully deleted'
+  },
   joinSuccess: {
     id: 'utils.intl.form.joinSuccess',
     defaultMessage: '{garage} successfully joined'
@@ -235,6 +239,11 @@ const result = {
     id: 'utils.intl.form.updateError',
     defaultMessage:
       "We're sorry, something went wrong when updating your {item}"
+  },
+  deleteError: {
+    id: 'utils.intl.form.deleteError',
+    defaultMessage:
+      "We're sorry, something went wrong when deleting your {item}"
   },
   joinError: {
     id: 'utils.intl.form.joinError',
