@@ -96,7 +96,7 @@ async function handler(
         }
 
         // check req body
-        const { forename, surname, displayName, email } = req.body;
+        const { forename, surname, displayName, email } = req.body.data;
         if (!displayName || !email) {
           return res.status(400).json({ error: 'malformed request body' });
         }

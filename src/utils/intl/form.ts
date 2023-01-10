@@ -230,6 +230,10 @@ const result = {
     id: 'utils.intl.form.joinSuccess',
     defaultMessage: '{garage} successfully joined'
   },
+  passwordResetSuccess: {
+    id: 'utils.intl.form.passwordResetSuccess',
+    defaultMessage: 'Password reset email successfully sent'
+  },
   createError: {
     id: 'utils.intl.form.createError',
     defaultMessage:
@@ -249,6 +253,11 @@ const result = {
     id: 'utils.intl.form.joinError',
     defaultMessage:
       "We're sorry, something went wrong when attempting to join the garage"
+  },
+  passwordResetError: {
+    id: 'utils.intl.form.passwordResetError',
+    defaultMessage:
+      "We're sorry, something went wrong when attempting to reset your password"
   }
 };
 

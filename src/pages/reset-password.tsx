@@ -8,7 +8,8 @@ import {
   Grid,
   GridItem,
   Heading,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
 
 import { MainLayout } from '../components/layout';
@@ -26,6 +27,15 @@ const Login: NextPage = () => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectors.selectCurrentUserStatus);
 
+  const toast = useToast({
+    duration: 8000,
+    isClosable: true,
+    position: 'top',
+    containerStyle: {
+      marginTop: '1.25rem'
+    }
+  });
+
   useEffect(() => {
     return () => {
       dispatch(actions.resetStatus());
@@ -34,7 +44,24 @@ const Login: NextPage = () => {
 
   const onSubmit = async (state: { email: string }) => {
     if (!state.email) return;
-    dispatch(thunks.resetPassword(state.email));
+    try {
+      const {
+        meta: { requestStatus }
+      } = await dispatch(thunks.resetPassword(state.email));
+
+      if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
+      toast({
+        title: intl.formatMessage(formStrings.passwordResetSuccess),
+        status: 'success'
+      });
+    } catch (err) {
+      toast({
+        title: intl.formatMessage(commonStrings.error),
+        description: intl.formatMessage(formStrings.passwordResetError),
+        status: 'error'
+      });
+    }
   };
 
   return (
