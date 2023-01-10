@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text, HStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, HStack, Divider } from '@chakra-ui/react';
 import { GetStaticPaths, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
@@ -107,9 +107,10 @@ const Profile: NextPage<Props> = ({ id, user }) => {
     >
       <HStack alignItems={'flex-start'} pt={8} pr={8} w="5xl" gap={8}>
         <Flex direction="column" w="2xl">
-          <Heading size="2xl" p={2} bg="blackAlpha.100" rounded={'md'}>
+          <Heading size="2xl" p={2}>
             {user.displayName}
           </Heading>
+          <Divider />
           <Text fontSize="lg" pt={4} pl={2}>
             {user.about}
           </Text>
