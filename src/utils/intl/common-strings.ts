@@ -92,6 +92,10 @@ const actions = {
     id: 'uti.intl.commonStrings.signUp',
     defaultMessage: 'Sign up'
   },
+  submit: {
+    id: 'uti.intl.commonStrings.submit',
+    defaultMessage: 'Submit'
+  },
   view: {
     id: 'utils.intl.commonStrings.view',
     defaultMessage: 'View'
