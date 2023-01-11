@@ -36,3 +36,11 @@ export interface CreateLiveryDataType
   garage?: string;
   garageKey?: string;
 }
+
+export interface UpdateLiveryDataType
+  extends Pick<
+    LiveryDataType,
+    'title' | 'description' | 'price' | 'tags' | 'isPublic'
+  > {
+  imageFiles: Array<File>;
+}

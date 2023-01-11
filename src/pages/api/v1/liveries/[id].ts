@@ -1,4 +1,15 @@
-import { LiveriesDataType, LiveryDataType, Method } from '../../../../types';
+import formidable from 'formidable';
+import {
+  LiveriesDataType,
+  LiveryDataType,
+  Method,
+  UpdateLiveryDataType
+} from '../../../../types';
+import {
+  customOnFormidablePart,
+  UploadFiles,
+  validateObject
+} from '../../../../utils/api/uploads';
 import {
   firestore,
   NextApiResponse,
@@ -48,7 +59,139 @@ async function handler(
         return res.status(500).json({ error: 'internal error' });
       }
     }
-    // TODO: decide on update logic
+
+    case Method.PATCH: {
+      try {
+        // check isAuthenticated
+        if (!req.isAuthenticated || !req.uid) {
+          return res.status(401).json({ error: 'unauthorized' });
+        }
+
+        // check req params
+        const params = {
+          id: req.query.id as string | undefined
+        };
+        if (!params.id) {
+          return res.status(400).json({ error: 'malformed request params' });
+        }
+        const liveryId = params.id;
+
+        // parse req
+        const files: UploadFiles = {};
+        const parsedData = await new Promise<
+          Omit<UpdateLiveryDataType, 'imageFiles'>
+        >((resolve, reject) => {
+          const form = formidable({ multiples: true });
+          form.onPart = customOnFormidablePart(files, form, [
+            { name: 'imageFiles', limit: 4 }
+          ]);
+          form.parse(req, (err, fields, _files) => {
+            if (err) throw new Error(err);
+            try {
+              // check req body
+              const rawData = { ...fields } as any;
+              const isValid = validateObject(
+                rawData,
+                ['description', 'isPublic', 'price', 'tags', 'title'],
+                'exact'
+              );
+              if (!isValid)
+                return res
+                  .status(400)
+                  .json({ error: 'malformed request body' });
+              rawData.price = +rawData.price;
+              rawData.isPublic = rawData.isPublic === 'true' ? true : false;
+
+              resolve(rawData);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
+
+        const timestamp = Date.now();
+        const liveryRef = liveriesRef.doc(liveryId);
+        const updateLiveryData: Partial<
+          Record<keyof UpdateLiveryDataType | 'images' | 'updatedAt', any>
+        > = {
+          // images: [],
+          updatedAt: timestamp
+        };
+        for (const key of Object.keys(parsedData)) {
+          const updateValue = parsedData[key as keyof typeof parsedData];
+          if (updateValue !== null && updateValue !== undefined) {
+            updateLiveryData[key as keyof typeof parsedData] = updateValue;
+          }
+        }
+
+        // TODO: how do we do images? we need to replace the correct images, and leave the rest alone
+        // const filenames = Object.keys(files);
+
+        // // ensure bucket path is clear
+        // const bucket = storage.bucket();
+        // await bucket.deleteFiles({
+        //   prefix: `${StoragePath.LIVERIES}${liveryId}`
+        // });
+
+        // // upload files
+        // const fileArray = [];
+        // for (const [i, filename] of filenames.entries()) {
+        //   if (files[filename].stream && files[filename].filename) {
+        //     // get file path
+        //     const [type, subtype] = files[filename].mimetype?.split('/') || [];
+        //     const filePath = `${StoragePath.LIVERIES}${liveryRef.id}/${
+        //       type === 'image' ? type : subtype
+        //     }${type === 'image' ? `-${i}` : ``}/${liveryRef.id}`;
+
+        //     const file = bucket.file(filePath);
+
+        //     // upload file
+        //     const fileWriteStream = file.createWriteStream({
+        //       contentType: files[filename].mimetype as string
+        //     });
+        //     const transformStream =
+        //       subtype === 'zip'
+        //         ? new PassThrough()
+        //         : defaultLiveryImageTransform();
+
+        //     await pipeline(
+        //       files[filename].stream as PassThrough,
+        //       transformStream,
+        //       fileWriteStream
+        //     );
+
+        //     await file.makePublic();
+        //     const url = file.publicUrl();
+
+        //     if (type === 'image') updateLiveryData.images.push(url);
+
+        //     fileArray.push(file);
+        //   }
+        // }
+
+        let updatedLivery: LiveryDataType;
+        try {
+          await liveryRef.update(updateLiveryData);
+          updatedLivery = (await liveryRef.get()).data() as LiveryDataType;
+        } catch (err: any) {
+          // for (const file of fileArray) {
+          //   await file.delete();
+          // }
+          throw new Error(err);
+        }
+
+        try {
+          await res.revalidate('/liveries');
+          await res.revalidate(`/liveries/${updatedLivery.id}`);
+        } catch (_) {
+          // revalidation failing should not cause an error
+        }
+
+        return res.status(200).json(updatedLivery);
+      } catch (err) {
+        return res.status(500).json({ error: 'internal error' });
+      }
+    }
 
     case Method.DELETE: {
       try {
