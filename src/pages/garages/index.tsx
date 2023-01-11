@@ -57,6 +57,7 @@ import { garageStrings, commonStrings, formStrings } from '../../utils/intl';
 import { GarageDataType, LiveriesDataType, RequestStatus } from '../../types';
 import {
   useAuthCheck,
+  useConfirmationModal,
   useDownloadLivery,
   useInfiniteScroll
 } from '../../hooks';
@@ -171,8 +172,6 @@ const Garages: NextPage = () => {
 
   // JOIN/LEAVE GARAGE
   const [joinGarageLoading, setJoinGarageLoading] = useState(false);
-  const [leaveGarageLoading, setLeaveGarageLoading] = useState(false);
-  const [confirmationModal, setConfirmationModal] = useState(false);
   const [garageKey, setGarageKey] = useState('');
 
   const toast = useToast({
@@ -217,7 +216,6 @@ const Garages: NextPage = () => {
   const onLeaveGarage = async () => {
     try {
       if (!selectedGarage) return;
-      setLeaveGarageLoading(true);
 
       const {
         meta: { requestStatus }
@@ -229,8 +227,6 @@ const Garages: NextPage = () => {
         title: intl.formatMessage(formStrings.leaveSuccess),
         status: 'success'
       });
-      setConfirmationModal(false);
-      setLeaveGarageLoading(false);
       onSelectGarage(null)();
     } catch (err) {
       toast({
@@ -238,12 +234,19 @@ const Garages: NextPage = () => {
         description: intl.formatMessage(formStrings.leaveError),
         status: 'error'
       });
-      setLeaveGarageLoading(false);
     }
   };
 
-  const openConfirmationModal = () => setConfirmationModal(true);
-  const closeConfirmationModal = () => setConfirmationModal(false);
+  const {
+    ConfirmationModal,
+    isLoading: isLeaveGarageLoading,
+    onOpen: onOpenConfirmationModal
+  } = useConfirmationModal({
+    header: intl.formatMessage(garageStrings.leaveGarage),
+    body: intl.formatMessage(garageStrings.leaveGarageAreYouSure),
+    submitText: intl.formatMessage(garageStrings.leaveGarage),
+    onSubmit: onLeaveGarage
+  });
 
   const onGarageKeyChange = (e: ChangeEvent<HTMLInputElement>) =>
     setGarageKey(e.target?.value);
@@ -346,39 +349,9 @@ const Garages: NextPage = () => {
       </HStack>
 
       {/* CONFIRMATION MODAL */}
-      <Modal
-        onClose={closeConfirmationModal}
-        isOpen={confirmationModal}
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <FormattedMessage {...garageStrings.leaveGarage} />
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormattedMessage {...garageStrings.leaveGarageAreYouSure} />
-          </ModalBody>
-          <ModalFooter>
-            <HStack>
-              <Button onClick={closeConfirmationModal}>
-                <FormattedMessage {...commonStrings.cancel} />
-              </Button>
-              <Button
-                variant={'solid'}
-                colorScheme="red"
-                isLoading={leaveGarageLoading}
-                onClick={onLeaveGarage}
-              >
-                <FormattedMessage {...garageStrings.leaveGarage} />
-              </Button>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <ConfirmationModal />
 
-      {/* modal */}
+      {/* MODAL */}
       <Modal
         onClose={onToggleAddToGarageModal}
         isOpen={isAddToGarageModalVisible}
@@ -639,10 +612,10 @@ const Garages: NextPage = () => {
           <Flex justifyContent="end">
             <Button
               m={4}
-              isLoading={leaveGarageLoading}
+              isLoading={isLeaveGarageLoading}
               colorScheme="red"
               variant="ghost"
-              onClick={openConfirmationModal}
+              onClick={onOpenConfirmationModal}
               rightIcon={<Icons.Exit value={{ color: '#C53030' }} />}
             >
               <FormattedMessage {...garageStrings.leaveGarage} />
