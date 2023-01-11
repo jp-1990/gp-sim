@@ -54,7 +54,7 @@ import { LiveryFilter, Mode } from '../../components/features';
 import { GARAGES_URL, GARAGE_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { garageStrings, commonStrings, formStrings } from '../../utils/intl';
 
-import { GarageDataType, LiveriesDataType } from '../../types';
+import { GarageDataType, LiveriesDataType, RequestStatus } from '../../types';
 import {
   useAuthCheck,
   useDownloadLivery,
@@ -169,8 +169,10 @@ const Garages: NextPage = () => {
     }
   };
 
-  // JOIN GARAGE
+  // JOIN/LEAVE GARAGE
   const [joinGarageLoading, setJoinGarageLoading] = useState(false);
+  const [leaveGarageLoading, setLeaveGarageLoading] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState(false);
   const [garageKey, setGarageKey] = useState('');
 
   const toast = useToast({
@@ -187,11 +189,16 @@ const Garages: NextPage = () => {
       if (!garageKey) return;
       setJoinGarageLoading(true);
 
-      const res = await dispatch(garageThunks.joinGarage({ id: garageKey }));
+      const {
+        payload,
+        meta: { requestStatus }
+      } = await dispatch(garageThunks.joinGarage({ id: garageKey }));
+
+      if (requestStatus === RequestStatus.REJECTED) throw new Error();
 
       toast({
         title: intl.formatMessage(formStrings.joinSuccess, {
-          garage: (res.payload as GarageDataType).title
+          garage: (payload as GarageDataType).title
         }),
         status: 'success'
       });
@@ -206,6 +213,37 @@ const Garages: NextPage = () => {
       setJoinGarageLoading(false);
     }
   };
+
+  const onLeaveGarage = async () => {
+    try {
+      if (!selectedGarage) return;
+      setLeaveGarageLoading(true);
+
+      const {
+        meta: { requestStatus }
+      } = await dispatch(garageThunks.leaveGarage({ id: selectedGarage }));
+
+      if (requestStatus === RequestStatus.REJECTED) throw new Error();
+
+      toast({
+        title: intl.formatMessage(formStrings.leaveSuccess),
+        status: 'success'
+      });
+      setConfirmationModal(false);
+      setLeaveGarageLoading(false);
+      onSelectGarage(null)();
+    } catch (err) {
+      toast({
+        title: intl.formatMessage(commonStrings.error),
+        description: intl.formatMessage(formStrings.leaveError),
+        status: 'error'
+      });
+      setLeaveGarageLoading(false);
+    }
+  };
+
+  const openConfirmationModal = () => setConfirmationModal(true);
+  const closeConfirmationModal = () => setConfirmationModal(false);
 
   const onGarageKeyChange = (e: ChangeEvent<HTMLInputElement>) =>
     setGarageKey(e.target?.value);
@@ -259,8 +297,13 @@ const Garages: NextPage = () => {
   };
 
   const highlightedColor = 'red.500';
-  const disableDownload = (liveryId: string | number) =>
-    !(currentUser.data?.liveries || []).find((id) => `${liveryId}` === id);
+  const disableDownload = (_liveryId: string | number) => {
+    // TODO: should livery download be disabled for users who belong to the garage but do not own the livery directly?
+    // return !(currentUser.data?.liveries || []).find(
+    //   (id) => `${liveryId}` === id
+    // );
+    return false;
+  };
 
   if (!currentUser.token) return <Unauthorized />;
   return (
@@ -301,6 +344,39 @@ const Garages: NextPage = () => {
           </InputRightElement>
         </InputGroup>
       </HStack>
+
+      {/* CONFIRMATION MODAL */}
+      <Modal
+        onClose={closeConfirmationModal}
+        isOpen={confirmationModal}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <FormattedMessage {...garageStrings.leaveGarage} />
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormattedMessage {...garageStrings.leaveGarageAreYouSure} />
+          </ModalBody>
+          <ModalFooter>
+            <HStack>
+              <Button onClick={closeConfirmationModal}>
+                <FormattedMessage {...commonStrings.cancel} />
+              </Button>
+              <Button
+                variant={'solid'}
+                colorScheme="red"
+                isLoading={leaveGarageLoading}
+                onClick={onLeaveGarage}
+              >
+                <FormattedMessage {...garageStrings.leaveGarage} />
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {/* modal */}
       <Modal
@@ -559,6 +635,20 @@ const Garages: NextPage = () => {
             )}
           </Text>
         </chakra.section>
+        {selectedGarage && (
+          <Flex justifyContent="end">
+            <Button
+              m={4}
+              isLoading={leaveGarageLoading}
+              colorScheme="red"
+              variant="ghost"
+              onClick={openConfirmationModal}
+              rightIcon={<Icons.Exit value={{ color: '#C53030' }} />}
+            >
+              <FormattedMessage {...garageStrings.leaveGarage} />
+            </Button>
+          </Flex>
+        )}
       </chakra.section>
 
       {/* search and filter */}

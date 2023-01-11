@@ -230,6 +230,10 @@ const result = {
     id: 'utils.intl.form.joinSuccess',
     defaultMessage: '{garage} successfully joined'
   },
+  leaveSuccess: {
+    id: 'utils.intl.form.leaveSuccess',
+    defaultMessage: 'Garage successfully left'
+  },
   passwordResetSuccess: {
     id: 'utils.intl.form.passwordResetSuccess',
     defaultMessage: 'Password reset email successfully sent'
@@ -253,6 +257,11 @@ const result = {
     id: 'utils.intl.form.joinError',
     defaultMessage:
       "We're sorry, something went wrong when attempting to join the garage"
+  },
+  leaveError: {
+    id: 'utils.intl.form.leaveError',
+    defaultMessage:
+      "We're sorry, something went wrong when attempting to leave the garage"
   },
   passwordResetError: {
     id: 'utils.intl.form.passwordResetError',

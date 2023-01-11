@@ -16,6 +16,10 @@ const garages = {
     id: 'utils.intl.garages.joinGarage',
     defaultMessage: `Join Garage`
   },
+  leaveGarage: {
+    id: 'utils.intl.garages.leaveGarage',
+    defaultMessage: `Leave Garage`
+  },
   yourCollection: {
     id: 'utils.intl.garages.yourCollection',
     defaultMessage: `Your Collection`
@@ -78,6 +82,10 @@ const edit = {
   deleteItemAreYouSure: {
     id: 'utils.intl.liveries.deleteItemAreYouSure',
     defaultMessage: `Are you sure you want to delete these { item }?`
+  },
+  leaveGarageAreYouSure: {
+    id: 'utils.intl.liveries.leaveGarageAreYouSure',
+    defaultMessage: `Are you sure you want to leave this garage?`
   }
 };
 
