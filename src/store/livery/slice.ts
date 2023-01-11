@@ -186,6 +186,33 @@ const createLivery = createAsyncThunk(
   }
 );
 
+const updateLiveryById = createAsyncThunk(
+  `${LIVERY_SLICE_NAME}/updateLivery`,
+  async ({ id, data }: { id: string; data: FormData }, { getState }) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
+    const res = await axios.patch<LiveryDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${LIVERIES_API_ROUTE}/${id}`,
+      data,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
+    );
+    return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [LIVERY_SLICE_NAME]: state } = getState() as KnownRootState;
+      if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
+      return true;
+    }
+  }
+);
+
 const deleteLiveryById = createAsyncThunk(
   `${LIVERY_SLICE_NAME}/deleteLivery`,
   async ({ id }: { id: string }, { getState }) => {
@@ -332,6 +359,15 @@ const liverySlice = createSlice({
       state.status = RequestStatus.FULFILLED;
     });
 
+    // UPDATE LIVERY
+    builder.addCase(updateLiveryById.pending, thunkPending);
+    builder.addCase(updateLiveryById.rejected, thunkRejected);
+    builder.addCase(updateLiveryById.fulfilled, (state, action) => {
+      liveriesAdapter.setOne(state.liveries, action.payload);
+      state.error = null;
+      state.status = RequestStatus.FULFILLED;
+    });
+
     // DELETE LIVERY
     builder.addCase(deleteLiveryById.pending, thunkPending);
     builder.addCase(deleteLiveryById.rejected, thunkRejected);
@@ -446,6 +482,7 @@ export const selectors = {
 };
 export const thunks = {
   createLivery,
+  updateLiveryById,
   deleteLiveryById,
   getLiveries,
   getLiveryDownloadUrl
