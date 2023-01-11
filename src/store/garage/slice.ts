@@ -17,6 +17,7 @@ import {
   GET_GARAGES,
   GET_GARAGE_BY_ID,
   JOIN_GARAGE,
+  LEAVE_GARAGE,
   UPDATE_GARAGE,
   UPDATE_LIVERIES_IN_GARAGE,
   UPDATE_USERS_IN_GARAGE
@@ -69,6 +70,7 @@ const getGarages = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -98,6 +100,7 @@ const createGarage = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -130,6 +133,7 @@ const getGarageById = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -159,6 +163,7 @@ const updateGarageById = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -186,6 +191,7 @@ const deleteGarageById = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -223,6 +229,7 @@ const updateGarageByIdLiveries = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -260,6 +267,7 @@ const updateGarageByIdUsers = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -295,6 +303,43 @@ const joinGarage = createAsyncThunk(
       const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
 
       if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
+      return true;
+    }
+  }
+);
+
+const leaveGarage = createAsyncThunk(
+  `${GARAGE_SLICE_NAME}/${LEAVE_GARAGE}`,
+  async (
+    {
+      id
+    }: {
+      id: string;
+    },
+    { getState }
+  ) => {
+    const state = getState() as any;
+    const token = currentUserSelectors.selectCurrentUserToken(state);
+
+    const res = await axios.post<GarageDataType>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${GARAGE_API_ROUTE}/${id}/leave`,
+      undefined,
+      {
+        headers: {
+          authorization: token ?? ''
+        }
+      }
+    );
+
+    return res.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const { [GARAGE_SLICE_NAME]: state } = getState() as KnownRootState;
+
+      if (state.status === RequestStatus.PENDING) return false;
+      if (state.status === RequestStatus.REJECTED) return false;
       return true;
     }
   }
@@ -408,6 +453,17 @@ const garageSlice = createSlice({
           state.error = null;
           state.status = RequestStatus.FULFILLED;
         }
+      )
+      // LEAVE GARAGE
+      .addCase(leaveGarage.pending, thunkPending)
+      .addCase(leaveGarage.rejected, thunkRejected)
+      .addCase(
+        leaveGarage.fulfilled,
+        (state, action: PayloadAction<GarageDataType>) => {
+          garagesAdapter.setOne(state, action.payload);
+          state.error = null;
+          state.status = RequestStatus.FULFILLED;
+        }
       );
   }
 });
@@ -493,6 +549,7 @@ export const thunks = {
   createGarage,
   getGarageById,
   joinGarage,
+  leaveGarage,
   updateGarageById,
   deleteGarageById,
   updateGarageByIdLiveries,
