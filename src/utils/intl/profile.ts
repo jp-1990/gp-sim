@@ -24,6 +24,10 @@ const profile = {
     id: 'utils.intl.profile.myLiveries',
     defaultMessage: 'My liveries'
   },
+  noLiveries: {
+    id: 'utils.intl.profile.noLiveries',
+    defaultMessage: 'This user has not uploaded any liveries'
+  },
   profileHeading: {
     id: 'utils.intl.profile.profileHeading',
     defaultMessage: `Profile`

@@ -25,6 +25,9 @@ import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
+import { FormattedMessage } from 'react-intl';
+import { profileStrings } from '../../utils/intl';
+import { Icons } from '../../utils/icons/icons';
 
 interface Props {
   id: string;
@@ -50,8 +53,10 @@ const Profile: NextPage<Props> = ({ id, user }) => {
   );
 
   const liveries = {
-    ids: useAppSelector(liverySelectors.selectLiveryIds),
-    entities: useAppSelector(liverySelectors.selectLiveryEntities)
+    ids: useAppSelector(liverySelectors.createSelectUserCreatedLiveryIds(id)),
+    entities: useAppSelector(
+      liverySelectors.createSelectUserCreatedLiveryEntities(id)
+    )
   };
 
   const { Loader } = useInfiniteScroll(
@@ -124,10 +129,22 @@ const Profile: NextPage<Props> = ({ id, user }) => {
           h={'2xs'}
           w={'2xs'}
         >
-          <ImageWithFallback
-            imgAlt={user.displayName}
-            imgUrl={user.image ?? undefined}
-          />
+          {user.image ? (
+            <ImageWithFallback
+              imgAlt={user.displayName}
+              imgUrl={user.image ?? undefined}
+            />
+          ) : (
+            <Flex
+              w="100%"
+              h="100%"
+              bgColor="gray.100"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Icons.Person color="black" size={'12em'} />
+            </Flex>
+          )}
         </Box>
       </HStack>
       {/* liveries list */}
@@ -136,7 +153,13 @@ const Profile: NextPage<Props> = ({ id, user }) => {
         filters={filters}
         setFilters={setFilters}
       />
-      <LiveryList liveries={liveries} onClickLivery={onClickLivery} />
+      {!liveries.ids.length ? (
+        <Text fontSize="lg" pt={12}>
+          <FormattedMessage {...profileStrings.noLiveries} />
+        </Text>
+      ) : (
+        <LiveryList liveries={liveries} onClickLivery={onClickLivery} />
+      )}
       <Loader />
     </MainLayout>
   );

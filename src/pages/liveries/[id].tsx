@@ -166,10 +166,22 @@ const Livery: NextPage<Props> = ({ id, livery }) => {
                         minW={10}
                         rounded={'xl'}
                       >
-                        <ImageWithFallback
-                          imgUrl={livery?.creator.image || ''}
-                          imgAlt="creator display image"
-                        />
+                        {livery.creator.image ? (
+                          <ImageWithFallback
+                            imgUrl={livery?.creator.image || ''}
+                            imgAlt="creator display image"
+                          />
+                        ) : (
+                          <Flex
+                            w="100%"
+                            h="100%"
+                            bgColor="gray.100"
+                            justifyContent="center"
+                            alignItems="center"
+                          >
+                            <Icons.Person color="black" size={'1.8em'} />
+                          </Flex>
+                        )}
                       </Flex>
                       <Flex flexDir={'column'}>
                         <Text fontSize={'xs'} as="i">
