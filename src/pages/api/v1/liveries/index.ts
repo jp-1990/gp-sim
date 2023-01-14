@@ -273,7 +273,9 @@ async function handler(
             const [type, subtype] = files[filename].mimetype?.split('/') || [];
             const filePath = `${StoragePath.LIVERIES}${newLiveryRef.id}/${
               type === 'image' ? type : subtype
-            }${type === 'image' ? `-${i}` : ``}/${newLiveryRef.id}`;
+            }${type === 'image' ? `-${i}` : ``}/${
+              type === 'image' ? Date.now() : newLiveryRef.id
+            }`;
 
             const file = bucket.file(filePath);
 

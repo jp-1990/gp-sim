@@ -1,10 +1,13 @@
 import formidable from 'formidable';
+import { PassThrough } from 'stream';
+import { pipeline } from 'stream/promises';
 import {
   LiveriesDataType,
   LiveryDataType,
   Method,
   UpdateLiveryDataType
 } from '../../../../types';
+import { defaultLiveryImageTransform } from '../../../../utils/api/images';
 import {
   customOnFormidablePart,
   UploadFiles,
@@ -18,8 +21,18 @@ import {
   Document,
   withAuth,
   CountShards,
-  FieldValue
+  FieldValue,
+  storage,
+  StoragePath
 } from '../../../../utils/firebase/admin';
+import { isNotNullish, parseStringBoolean } from '../../../../utils/functions';
+
+//set bodyparser
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
 
 async function handler(
   req: NextApiRequestWithAuth,
@@ -76,6 +89,13 @@ async function handler(
         }
         const liveryId = params.id;
 
+        const liveryRef = liveriesRef.doc(liveryId);
+        const currentLivery = (await liveryRef.get()).data() as LiveryDataType;
+
+        if (req.uid !== currentLivery.creator.id) {
+          return res.status(401).json({ error: 'unauthorized' });
+        }
+
         // parse req
         const files: UploadFiles = {};
         const parsedData = await new Promise<
@@ -92,15 +112,18 @@ async function handler(
               const rawData = { ...fields } as any;
               const isValid = validateObject(
                 rawData,
-                ['description', 'isPublic', 'price', 'tags', 'title'],
-                'exact'
+                ['description', 'isPublic', 'tags', 'title', 'imagesToRemove'],
+                'partial'
               );
+
               if (!isValid)
                 return res
                   .status(400)
                   .json({ error: 'malformed request body' });
-              rawData.price = +rawData.price;
-              rawData.isPublic = rawData.isPublic === 'true' ? true : false;
+              for (const key of Object.keys(rawData)) {
+                if (rawData[key] === 'undefined') rawData[key] = undefined;
+              }
+              rawData.isPublic = parseStringBoolean(rawData.isPublic);
 
               resolve(rawData);
             } catch (err) {
@@ -109,80 +132,107 @@ async function handler(
           });
         });
 
+        const { imagesToRemove, ...data } = parsedData;
+
         const timestamp = Date.now();
-        const liveryRef = liveriesRef.doc(liveryId);
         const updateLiveryData: Partial<
-          Record<keyof UpdateLiveryDataType | 'images' | 'updatedAt', any>
+          Record<
+            | keyof UpdateLiveryDataType
+            | 'images'
+            | 'updatedAt'
+            | 'searchHelpers',
+            any
+          >
         > = {
-          // images: [],
-          updatedAt: timestamp
+          images: [],
+          updatedAt: timestamp,
+          searchHelpers: [currentLivery.creator.displayName.toLowerCase()]
         };
-        for (const key of Object.keys(parsedData)) {
-          const updateValue = parsedData[key as keyof typeof parsedData];
-          if (updateValue !== null && updateValue !== undefined) {
-            updateLiveryData[key as keyof typeof parsedData] = updateValue;
+
+        // if a key has a value, add to updateData
+        for (const key of Object.keys(data)) {
+          const updateValue = data[key as keyof typeof data];
+          if (isNotNullish(updateValue)) {
+            updateLiveryData[key as keyof typeof data] = updateValue;
           }
         }
 
-        // TODO: how do we do images? we need to replace the correct images, and leave the rest alone
-        // const filenames = Object.keys(files);
+        // build new search helpers array
+        let splitTitle = [...currentLivery.title.split(' ')];
+        let splitTags = [...currentLivery.tags.split(',').filter((t) => t)];
+        if (isNotNullish(data.title)) splitTitle = data.title.split(' ');
+        if (isNotNullish(data.tags))
+          splitTags = data.title.split(',').filter((t) => t);
+        updateLiveryData.searchHelpers.push(
+          ...[...splitTags, ...splitTitle].map((e) => e.toLowerCase())
+        );
 
-        // // ensure bucket path is clear
-        // const bucket = storage.bucket();
-        // await bucket.deleteFiles({
-        //   prefix: `${StoragePath.LIVERIES}${liveryId}`
-        // });
+        // add images which are not being removed to updateData
+        for (const image of currentLivery.images) {
+          const img = (image.match(/(image-[0-9])/g) || [''])[0];
+          if (imagesToRemove.includes(img)) continue;
+          updateLiveryData.images.push(image);
+        }
 
-        // // upload files
-        // const fileArray = [];
-        // for (const [i, filename] of filenames.entries()) {
-        //   if (files[filename].stream && files[filename].filename) {
-        //     // get file path
-        //     const [type, subtype] = files[filename].mimetype?.split('/') || [];
-        //     const filePath = `${StoragePath.LIVERIES}${liveryRef.id}/${
-        //       type === 'image' ? type : subtype
-        //     }${type === 'image' ? `-${i}` : ``}/${liveryRef.id}`;
+        const filenames = Object.keys(files);
 
-        //     const file = bucket.file(filePath);
+        // ensure bucket path is clear
+        const bucket = storage.bucket();
+        for await (const image of imagesToRemove) {
+          await bucket.deleteFiles({
+            prefix: `${StoragePath.LIVERIES}${liveryId}/${image}`
+          });
+        }
 
-        //     // upload file
-        //     const fileWriteStream = file.createWriteStream({
-        //       contentType: files[filename].mimetype as string
-        //     });
-        //     const transformStream =
-        //       subtype === 'zip'
-        //         ? new PassThrough()
-        //         : defaultLiveryImageTransform();
+        // upload files
+        const availableFilenames = [...(imagesToRemove || [])];
+        const fileArray = [];
+        for (const [_, filename] of filenames.entries()) {
+          if (files[filename].stream && files[filename].filename) {
+            // get file path
+            const filePath = `${StoragePath.LIVERIES}${liveryRef.id}/${
+              availableFilenames[0]
+            }/${Date.now()}`;
+            const file = bucket.file(filePath);
 
-        //     await pipeline(
-        //       files[filename].stream as PassThrough,
-        //       transformStream,
-        //       fileWriteStream
-        //     );
+            // upload file
+            const fileWriteStream = file.createWriteStream({
+              contentType: files[filename].mimetype as string
+            });
+            const transformStream = defaultLiveryImageTransform();
 
-        //     await file.makePublic();
-        //     const url = file.publicUrl();
+            await pipeline(
+              files[filename].stream as PassThrough,
+              transformStream,
+              fileWriteStream
+            );
 
-        //     if (type === 'image') updateLiveryData.images.push(url);
+            await file.makePublic();
+            const url = file.publicUrl();
 
-        //     fileArray.push(file);
-        //   }
-        // }
-
-        let updatedLivery: LiveryDataType;
-        try {
-          await liveryRef.update(updateLiveryData);
-          updatedLivery = (await liveryRef.get()).data() as LiveryDataType;
-        } catch (err: any) {
-          // for (const file of fileArray) {
-          //   await file.delete();
-          // }
-          throw new Error(err);
+            updateLiveryData.images.push(url);
+            fileArray.push(file);
+            availableFilenames.shift();
+          }
         }
 
         try {
+          await liveryRef.update(updateLiveryData);
+        } catch (err: any) {
+          for (const file of fileArray) {
+            await file.delete();
+          }
+          throw new Error(err);
+        }
+
+        const updatedLivery = {
+          ...currentLivery,
+          ...updateLiveryData
+        };
+
+        try {
           await res.revalidate('/liveries');
-          await res.revalidate(`/liveries/${updatedLivery.id}`);
+          await res.revalidate(`/liveries/${liveryId}`);
         } catch (_) {
           // revalidation failing should not cause an error
         }
