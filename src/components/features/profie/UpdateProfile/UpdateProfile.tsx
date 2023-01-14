@@ -40,7 +40,7 @@ const UpdateProfile: React.FC<Props> = ({
   useEffect(() => {
     setStateImmutably((state) => {
       state.about = about;
-      state.image = image;
+      state.imageFiles = image ? [image] : [];
       state.displayName = displayName;
       state.email = email;
       state.forename = forename;
@@ -48,6 +48,15 @@ const UpdateProfile: React.FC<Props> = ({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  const user = {
+    about,
+    image,
+    displayName,
+    email,
+    forename,
+    surname
+  };
 
   return (
     <Grid
@@ -76,7 +85,7 @@ const UpdateProfile: React.FC<Props> = ({
         <About />
       </GridItem>
       <GridItem colSpan={4} mt={8}>
-        <SubmitProfile />
+        <SubmitProfile user={user} />
       </GridItem>
     </Grid>
   );

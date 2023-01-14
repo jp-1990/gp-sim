@@ -25,11 +25,9 @@ export interface CreateUserProfileDataType
   extends Partial<Pick<UserDataType, 'forename' | 'surname'>>,
     Pick<UserDataType, 'email' | 'displayName'> {}
 
-export type UpdateUserProfileDataType = Partial<
-  Pick<
-    UserDataType,
-    'about' | 'forename' | 'surname' | 'email' | 'displayName'
-  > & {
-    imageFile: File | null | undefined;
-  }
->;
+export type UpdateUserProfileDataType = Pick<
+  UserDataType,
+  'about' | 'forename' | 'surname' | 'email' | 'displayName'
+> & {
+  imageFile: File | null | undefined;
+};

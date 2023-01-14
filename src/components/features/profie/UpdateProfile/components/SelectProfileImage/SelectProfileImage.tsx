@@ -1,43 +1,60 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { SelectFiles } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
 import { stateKeys, validators } from '../../config';
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { ImageWithFallback } from '../../../../../core';
+import { Icons } from '../../../../../../utils/icons/icons';
 
 const ImageBox = ({
-  url,
+  image,
   name,
   onRemove
 }: {
-  url: string;
+  image: string | File;
   name: string;
   onRemove: () => void;
 }) => {
   return (
-    <Box
-      display="flex"
-      flexDir="column"
-      borderRadius={4}
-      overflow="hidden"
-      position="relative"
-      border="1px solid"
-      borderColor="gray.200"
-      w="xs"
-    >
-      <ImageWithFallback
-        position={'relative'}
-        h="xs"
+    <>
+      <Box
+        display="flex"
+        flexDir="column"
+        borderTop={4}
+        overflow="hidden"
+        position="relative"
+        border="1px solid"
+        borderColor="gray.200"
         w="xs"
-        imgUrl={url}
-        imgAlt={name}
-      />
+        h="xs"
+      >
+        {image ? (
+          <ImageWithFallback
+            objectFit={'scale-down'}
+            imgUrl={
+              typeof image === 'string' ? image : URL.createObjectURL(image)
+            }
+            imgAlt={name}
+          />
+        ) : (
+          <Flex
+            h="xs"
+            w="xs"
+            bgColor="gray.100"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Icons.Person color="black" size={'14em'} />
+          </Flex>
+        )}
+      </Box>
       <Button
         size="sm"
         w="xs"
-        borderRadius={0}
+        borderTopRadius={0}
+        borderBottomRadius={4}
         onClick={onRemove}
         colorScheme="blackAlpha"
         fontWeight="normal"
@@ -45,7 +62,7 @@ const ImageBox = ({
       >
         {<FormattedMessage {...commonStrings.remove} />}
       </Button>
-    </Box>
+    </>
   );
 };
 
@@ -53,7 +70,6 @@ const ImageBox = ({
  * Select image input for profile page. Uses SelectFiles inside a form provider and displays the selected image to the user.
  */
 const SelectProfileImage = () => {
-  const [showCurrent, setShowCurrent] = useState(true);
   const intl = useIntl();
 
   return (
@@ -71,27 +87,14 @@ const SelectProfileImage = () => {
       {(state, onRemove) => {
         if (!state) return null;
         const { [stateKeys.IMAGE_FILES]: images } = { ...state };
-        const currentImage =
-          (state[stateKeys.CURRENT_IMAGE] as string) || null || undefined;
+        const image = images[0];
         return (
           <Box gap={3} pt={3}>
-            {images.length || !showCurrent || !currentImage ? (
-              images.map((image, i) => (
-                <ImageBox
-                  key={i}
-                  name={image.name}
-                  url={URL.createObjectURL(image)}
-                  onRemove={() => onRemove(i)}
-                />
-              ))
-            ) : (
-              <ImageBox
-                key={'current'}
-                name="current-profile-image"
-                url={currentImage}
-                onRemove={() => setShowCurrent(false)}
-              />
-            )}
+            <ImageBox
+              image={image}
+              name="profile image"
+              onRemove={() => onRemove(0)}
+            />
           </Box>
         );
       }}

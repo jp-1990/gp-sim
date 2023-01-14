@@ -6,15 +6,25 @@ import { SubmitButton, useForm } from '../../../../../shared';
 import { commonStrings, formStrings } from '../../../../../../utils/intl';
 
 import { UpdateProfileFormStateType } from '../../types';
-import { mapUpdateProfileFormStateToRequestInput } from '../../utils';
 import { thunks } from '../../../../../../store/user/slice';
 import { useAppDispatch } from '../../../../../../store/store';
-import { RequestStatus } from '../../../../../../types';
+import { RequestStatus, UserDataType } from '../../../../../../types';
+import { stateKeys } from '../../config';
+
+const { ABOUT, FORENAME, SURNAME, DISPLAY_NAME, EMAIL, IMAGE_FILES } =
+  stateKeys;
 
 /**
  * Submit button for profile page. Uses SubmitButton inside a form provider to submit the state of the form.
  */
-const SubmitProfile = () => {
+const SubmitProfile = ({
+  user
+}: {
+  user: Omit<
+    UserDataType,
+    'createdAt' | 'garages' | 'id' | 'lastLogin' | 'liveries' | 'updatedAt'
+  >;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const intl = useIntl();
@@ -28,7 +38,6 @@ const SubmitProfile = () => {
   });
   const dispatch = useAppDispatch();
 
-  const user = {};
   const { state } = useForm<UpdateProfileFormStateType>();
 
   const onClick = async () => {
@@ -36,20 +45,26 @@ const SubmitProfile = () => {
     try {
       if (!isLoading) {
         const updateProfileInput = {
-          // map state into upload format
-          ...mapUpdateProfileFormStateToRequestInput({
-            formState: state,
-            user
-          })
+          about: user.about === state[ABOUT] ? undefined : state[ABOUT],
+          forename:
+            user.forename === state[FORENAME] ? undefined : state[FORENAME],
+          surname: user.surname === state[SURNAME] ? undefined : state[SURNAME],
+          displayName:
+            user.displayName === state[DISPLAY_NAME]
+              ? undefined
+              : state[DISPLAY_NAME],
+          email: user.email === state[EMAIL] ? undefined : state[EMAIL],
+          removeImage: false
         };
 
         // append values to form data
         const formData = new FormData();
-        for (const [key, value] of Object.entries(updateProfileInput)) {
-          formData.append(key, `${value}`);
-        }
-        for (const image of state.imageFiles || []) {
-          if (image) {
+
+        if (!state[IMAGE_FILES]?.length) updateProfileInput.removeImage = true;
+
+        for (const image of state[IMAGE_FILES] || []) {
+          if (image instanceof File) {
+            updateProfileInput.removeImage = true;
             const buffer = await image.arrayBuffer();
             const blob = new Blob([new Uint8Array(buffer)], {
               type: image.type
@@ -58,6 +73,11 @@ const SubmitProfile = () => {
           }
         }
 
+        for (const [key, value] of Object.entries(updateProfileInput)) {
+          formData.append(key, `${value}`);
+        }
+
+        // make request
         const {
           meta: { requestStatus }
         } = await dispatch(thunks.updateCurrentUser(formData));

@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Center, ChakraComponent, Text } from '@chakra-ui/react';
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 
 const fallbackUrl = '/image-not-found.webp';
-type Props = ChakraComponent<'div', { imgUrl?: string; imgAlt?: string }>;
+type Props = ChakraComponent<
+  'div',
+  {
+    imgUrl?: string;
+    imgAlt?: string;
+    layout?: 'fill' | 'fixed' | 'intrinsic' | 'responsive' | undefined;
+    objectFit?: ImageProps['objectFit'];
+  }
+>;
 
 /**
  *
@@ -12,7 +20,13 @@ type Props = ChakraComponent<'div', { imgUrl?: string; imgAlt?: string }>;
  *
  * @description If no image is provided, a simple 'No Image' placeholder will be shown. If the Next.js Image encounters an error, it will attempt to fallback to a default image (/image-not-found.webp).
  */
-const ImageWithFallback: Props = ({ imgUrl, imgAlt = '', ...props }) => {
+const ImageWithFallback: Props = ({
+  imgUrl,
+  imgAlt = '',
+  layout = 'fill',
+  objectFit = 'cover',
+  ...props
+}) => {
   const [url, setUrl] = useState<string | undefined>(imgUrl);
 
   useEffect(() => {
@@ -25,8 +39,8 @@ const ImageWithFallback: Props = ({ imgUrl, imgAlt = '', ...props }) => {
       <Image
         alt={imgAlt}
         src={url}
-        layout="fill"
-        objectFit="cover"
+        layout={layout}
+        objectFit={objectFit}
         onError={onError}
       />
     </Center>
