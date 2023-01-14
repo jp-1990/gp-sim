@@ -100,7 +100,7 @@ const SelectLiveryFiles = () => {
       {(state, onRemove) => {
         if (!state) return null;
         const { [stateKeys.LIVERY_FILES]: files } = { ...state };
-        const stateFiles = [...files];
+        const stateFiles = [...files] as File[];
 
         const getId = (files: File[], name: string) =>
           files.findIndex((f) => f.name === name);
@@ -140,7 +140,9 @@ const SelectLiveryFiles = () => {
                   requiredName={name}
                   selectedName={targetFile.name}
                   approved={approved}
-                  onRemove={() => onRemove(getId(files, targetFile.name))}
+                  onRemove={() =>
+                    onRemove(getId(files as File[], targetFile.name))
+                  }
                 />
               );
               const indexToRemove = availableIndexes.findIndex(
@@ -159,7 +161,7 @@ const SelectLiveryFiles = () => {
                 requiredName={requiredFiles[index].name}
                 selectedName={file.name}
                 approved={false}
-                onRemove={() => onRemove(getId(files, file.name))}
+                onRemove={() => onRemove(getId(files as File[], file.name))}
               />
             );
             availableIndexes.shift();

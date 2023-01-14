@@ -178,8 +178,12 @@ const CreateGarage = () => {
                     <ImageWithFallback
                       h="full"
                       w="full"
-                      imgUrl={URL.createObjectURL(image)}
-                      imgAlt={image.name}
+                      imgUrl={
+                        typeof image === 'string'
+                          ? image
+                          : URL.createObjectURL(image)
+                      }
+                      imgAlt={typeof image === 'string' ? image : image.name}
                     />
                     <Button
                       size="sm"
@@ -187,7 +191,9 @@ const CreateGarage = () => {
                       onClick={() => onRemove(i)}
                       colorScheme="blackAlpha"
                       fontWeight="normal"
-                      aria-label={`remove-${image.name}`}
+                      aria-label={`remove-${
+                        typeof image === 'string' ? image : image.name
+                      }`}
                     >
                       {<FormattedMessage {...commonStrings.remove} />}
                     </Button>
