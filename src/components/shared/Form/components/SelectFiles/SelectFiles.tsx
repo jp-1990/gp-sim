@@ -27,7 +27,7 @@ interface SelectFilesProps<T extends string> extends DefaultInputProps {
   max?: number;
   children?:
     | ((
-        state: StateWithStateKey<T, File[]> | undefined,
+        state: StateWithStateKey<T, (File | string)[]> | undefined,
         removeImageByIndex: (index: number) => void
       ) => React.ReactNode)
     | ReactNode;

@@ -16,6 +16,21 @@ export const numberToPrice = (
 
 export const isString = (str: any): str is string => typeof str === 'string';
 
+export const isNotNullish = <T>(val: T): val is T =>
+  val !== null && val !== undefined;
+
+/**
+ * Accepts any string. If the string is 'true' or 'false', returns that boolean, otherwise returns undefined
+ * @param str - any string
+ * @returns boolean | undefined
+ */
+export const parseStringBoolean = (str: string | undefined) => {
+  if (!str) return undefined;
+  if (str === 'true') return true;
+  if (str === 'false') return false;
+  return undefined;
+};
+
 export const parsePromiseSettledRes = <T>(
   promiseRes: PromiseSettledResult<T>
 ) => (promiseRes.status === 'fulfilled' ? promiseRes.value : undefined);

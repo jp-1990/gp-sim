@@ -58,7 +58,12 @@ import {
   garageStrings,
   profileStrings
 } from '../../utils/intl';
-import { GARAGE_UPDATE_URL, LIVERY_URL, PROFILE_URL } from '../../utils/nav';
+import {
+  GARAGE_UPDATE_URL,
+  LIVERY_UPDATE_URL,
+  LIVERY_URL,
+  PROFILE_URL
+} from '../../utils/nav';
 
 const Profile: NextPage = () => {
   // AUTH CHECK
@@ -162,9 +167,14 @@ const Profile: NextPage = () => {
   const setFilters = (payload: FilterActionPayload) =>
     dispatch(liveryActions.filtersChanged(payload));
 
-  const onClickLivery = (id: string) => {
+  const onViewLivery = (id: string) => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
     router.push(LIVERY_URL(id));
+  };
+
+  const onEditLivery = (id: string) => {
+    dispatch(liveryActions.scrollYChanged(window.scrollY));
+    router.push(LIVERY_UPDATE_URL(id));
   };
 
   const onTabsChange = (index: number) => {
@@ -313,7 +323,7 @@ const Profile: NextPage = () => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <a onClick={() => onClickLivery(id)}>
+                    <a onClick={() => onViewLivery(id)}>
                       <IconButton
                         variant={'ghost'}
                         size="sm"
@@ -322,6 +332,21 @@ const Profile: NextPage = () => {
                         icon={
                           <Icons.View
                             tooltip={intl.formatMessage(commonStrings.view)}
+                          />
+                        }
+                      />
+                    </a>
+                  ),
+                  ({ id }) => (
+                    <a onClick={() => onEditLivery(id)}>
+                      <IconButton
+                        variant={'solid'}
+                        size="sm"
+                        colorScheme="red"
+                        aria-label={'edit garage'}
+                        icon={
+                          <Icons.Edit
+                            tooltip={intl.formatMessage(commonStrings.edit)}
                           />
                         }
                       />

@@ -41,7 +41,27 @@ const upload = {
   }
 };
 
+const update = {
+  updateHeading: {
+    id: 'utils.intl.liveries.updateHeading',
+    defaultMessage: `Update a Livery`
+  },
+  updateSummary: {
+    id: 'utils.intl.liveries.updateSummary',
+    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+  },
+  updateALivery: {
+    id: 'utils.intl.liveries.updateALivery',
+    defaultMessage: 'Update a Livery'
+  },
+  updateLivery: {
+    id: 'utils.intl.liveries.updateLivery',
+    defaultMessage: 'Update Livery'
+  }
+};
+
 export const liveryStrings = defineMessages({
   ...liveries,
-  ...upload
+  ...upload,
+  ...update
 });

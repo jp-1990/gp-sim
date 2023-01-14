@@ -38,9 +38,7 @@ export interface CreateLiveryDataType
 }
 
 export interface UpdateLiveryDataType
-  extends Pick<
-    LiveryDataType,
-    'title' | 'description' | 'price' | 'tags' | 'isPublic'
-  > {
+  extends Pick<LiveryDataType, 'title' | 'description' | 'tags' | 'isPublic'> {
   imageFiles: Array<File>;
+  imagesToRemove: string[];
 }
