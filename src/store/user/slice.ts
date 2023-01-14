@@ -460,6 +460,7 @@ const userSlice = createSlice({
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         currentUserThunkFulfileld(state.currentUser);
         state.currentUser.data = action.payload;
+        usersAdapter.setOne(state.users, action.payload);
       })
 
       // UPDATE CURRENT USER
@@ -472,6 +473,7 @@ const userSlice = createSlice({
       .addCase(updateCurrentUser.fulfilled, (state, action) => {
         currentUserThunkFulfileld(state.currentUser);
         state.currentUser.data = action.payload;
+        usersAdapter.setOne(state.users, action.payload);
       })
 
       // UPDATE CURRENT USER LIVERIES
@@ -484,6 +486,7 @@ const userSlice = createSlice({
       .addCase(updateCurrentUserLiveries.fulfilled, (state, action) => {
         currentUserThunkFulfileld(state.currentUser);
         state.currentUser.data = action.payload;
+        usersAdapter.setOne(state.users, action.payload);
       });
   }
 });
