@@ -29,11 +29,10 @@ describe('LiverCard', () => {
 
   it('renders the provided values', () => {
     render(<LiveryCard {...testLivery} image={testLivery.images[0]} />);
-    const { id, rating, downloads, images, creator, price, ...testValues } =
-      testLivery;
     expectAllToBeInDocument([
-      ...Object.values(testValues),
-      creator.displayName
+      testLivery.car,
+      testLivery.title,
+      testLivery.creator.displayName
     ]);
   });
 

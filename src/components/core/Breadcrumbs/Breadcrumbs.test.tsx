@@ -1,9 +1,5 @@
 import '@testing-library/jest-dom';
-import {
-  render,
-  screen,
-  setMockCurrentUser
-} from '../../../utils/testing/test-utils';
+import { render, setMockCurrentUser } from '../../../utils/testing/test-utils';
 import { expectAllToBeInDocument } from '../../../utils/testing/helpers';
 import Breadcrumbs from './Breadcrumbs';
 
