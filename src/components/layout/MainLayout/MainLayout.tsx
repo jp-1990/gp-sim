@@ -26,6 +26,7 @@ import { profileStrings } from '../../../utils/intl';
 import { useAppDispatch, useAppSelector } from '../../../store/store';
 import { thunks } from '../../../store/user/slice';
 import { ImageWithFallback } from '../../core';
+import { Icons } from '../../../utils/icons/icons';
 
 const NavItem = ({ label, path }: { label: string; path?: string }) => (
   <ListItem mr={12}>
@@ -163,10 +164,21 @@ const MainLayout: React.FC<Props> = ({
                       w={10}
                       rounded={'xl'}
                     >
-                      <ImageWithFallback
-                        imgUrl={currentUser.image || ''}
-                        imgAlt="user display image"
-                      />
+                      {currentUser.image ? (
+                        <ImageWithFallback
+                          imgUrl={currentUser.image || ''}
+                          imgAlt="user display image"
+                        />
+                      ) : (
+                        <Flex
+                          w="100%"
+                          bgColor="gray.100"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <Icons.Person color="black" />
+                        </Flex>
+                      )}
                     </Flex>
                   </HStack>
                 </MenuButton>

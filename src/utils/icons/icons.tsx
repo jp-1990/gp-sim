@@ -3,7 +3,11 @@ import {
   IoTrashOutline as Delete,
   IoEyeOutline as View
 } from 'react-icons/io5';
-import { IoMdPeople as People, IoMdExit as Exit } from 'react-icons/io';
+import {
+  IoMdPeople as People,
+  IoMdPerson as Person,
+  IoMdExit as Exit
+} from 'react-icons/io';
 import {
   AiOutlinePlus as Add,
   AiOutlinePlusCircle as AddCircle,
@@ -53,6 +57,7 @@ export const Icons = {
   Edit: withProvider(Edit),
   Exit: withProvider(Exit),
   People: withProvider(People),
+  Person: withProvider(Person),
   Upload: withProvider(Upload),
   View: withProvider(View)
 };
