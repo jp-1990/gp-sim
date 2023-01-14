@@ -21,6 +21,10 @@ import {
   StoragePath,
   withAuth
 } from '../../../../../utils/firebase/admin';
+import {
+  isNotNullish,
+  parseStringBoolean
+} from '../../../../../utils/functions';
 
 //set bodyparser
 export const config = {
@@ -66,10 +70,18 @@ async function handler(
           return res.status(401).json({ error: 'unauthorized' });
         }
 
-        // parse req body
+        const userId = req.uid;
+        const userRef = usersRef.doc(userId);
+        const currentUser = (await userRef.get()).data() as UserDataType;
+        if (!currentUser) return res.status(404).json({ error: 'not found' });
+
+        // parse req
         const files: UploadFiles = {};
         const parsedData = await new Promise<
-          Omit<UpdateUserProfileDataType, 'imageFile'> & { image?: string }
+          Omit<UpdateUserProfileDataType, 'imageFile'> & {
+            image?: string;
+            removeImage?: boolean;
+          }
         >((resolve, reject) => {
           const form = formidable({ multiples: true });
           form.onPart = customOnFormidablePart(files, form, [
@@ -81,19 +93,28 @@ async function handler(
               // check req body
               const data = {
                 ...fields
-              } as unknown as Omit<UpdateUserProfileDataType, 'imageFile'>;
+              } as any;
 
-              const isValid = validateObject(data, [
-                'about',
-                'forename',
-                'surname',
-                'email',
-                'displayName'
-              ]);
+              const isValid = validateObject(
+                data,
+                [
+                  'about',
+                  'forename',
+                  'surname',
+                  'email',
+                  'displayName',
+                  'removeImage'
+                ],
+                'partial'
+              );
               if (!isValid)
                 return res
                   .status(400)
                   .json({ error: 'malformed request body' });
+              for (const key of Object.keys(data)) {
+                if (data[key] === 'undefined') data[key] = undefined;
+              }
+              data.removeImage = parseStringBoolean(data.removeImage);
 
               resolve(data);
             } catch (err) {
@@ -102,22 +123,55 @@ async function handler(
           });
         });
 
+        const { removeImage, ...data } = parsedData;
+
+        const timestamp = Date.now();
+        const updateProfileData: Partial<
+          Omit<
+            UserDataType,
+            'id' | 'createdAt' | 'lastLogin' | 'garages' | 'liveries'
+          >
+        > = {
+          updatedAt: timestamp
+        };
+        const creatorUpdateData: Record<string, string> = {};
+
+        // if a key has a value, add to updateData
+        for (const key of Object.keys(data)) {
+          const updateValue = data[key as keyof typeof data];
+          if (isNotNullish(updateValue)) {
+            if (key === 'displayName') {
+              creatorUpdateData[`creator.${key}`] = updateValue as string;
+            }
+            updateProfileData[key as keyof typeof data] = updateValue as string;
+          }
+        }
+
+        if (removeImage) {
+          updateProfileData.image = '';
+          creatorUpdateData[`creator.image`] = '';
+        }
+
         const filenames = Object.keys(files);
         const parsedDataKeys = Object.keys(parsedData);
 
         // if no update data, return
         if (!filenames.length && !parsedDataKeys.length) {
-          return res.status(200).json({ id: req.uid });
+          return res.status(200).json(currentUser);
+        }
+
+        // clear bucket path
+        const bucket = storage.bucket();
+        if (removeImage) {
+          await bucket.deleteFiles({
+            prefix: `${StoragePath.USERS}${userId}`
+          });
         }
 
         // upload image to storage
         let file;
         for (const filename of filenames) {
           if (files[filename].stream && files[filename].filename) {
-            const bucket = storage.bucket();
-            await bucket.deleteFiles({
-              prefix: `${StoragePath.USERS}${req.uid}/`
-            });
             file = bucket.file(`${StoragePath.USERS}${req.uid}/${Date.now()}`);
 
             const fileWriteStream = file.createWriteStream({
@@ -133,90 +187,40 @@ async function handler(
 
             await file.makePublic();
             const url = file.publicUrl();
-            parsedData.image = url;
+
+            updateProfileData.image = url;
+            creatorUpdateData['creator.image'] = url;
           }
         }
 
-        const creatorUpdateFields: ('displayName' | 'image')[] = [];
-        if (parsedData.displayName) creatorUpdateFields.push('displayName');
-        if (parsedData.image) creatorUpdateFields.push('image');
-
         // run update transaction
-        const currentUserRef = usersRef.doc(req.uid);
         try {
-          const [garagesToRevalidate, liveriesToRevalidate] =
-            await firestore.runTransaction(async (t) => {
-              // get user
-              const userDoc = await t.get(currentUserRef);
-              const user = userDoc.data() as UserDataType | undefined;
-
-              if (!user) throw new Error('not found');
-
-              const garagesToRevalidate: string[] = [];
-              if (user.garages.length) {
-                const garagesSnapshot = await t.get(
-                  garagesRef.where('id', 'in', user.garages)
-                );
-                // update garages where user is the creator
-                garagesSnapshot.forEach((garage) => {
-                  const data = garage.data();
-                  if (data.creator.id === user.id) {
-                    garagesToRevalidate.push(garage.id);
-                    const creatorUpdateData: Record<string, any> = {};
-                    let shouldUpdate = false;
-                    for (const field of creatorUpdateFields) {
-                      if (data.creator[field] !== parsedData[field]) {
-                        shouldUpdate = true;
-                        creatorUpdateData[`creator.${field}`] =
-                          parsedData[field];
-                      }
-                    }
-                    if (shouldUpdate) t.update(garage.ref, creatorUpdateData);
-                  }
-                });
+          await firestore.runTransaction(async (t) => {
+            if (Object.keys(creatorUpdateData).length) {
+              for (const garage of currentUser.garages) {
+                t.update(garagesRef.doc(garage), creatorUpdateData);
               }
 
-              const liveriesToRevalidate: string[] = [];
-              if (user.liveries.length) {
-                const liveriesSnapshot = await t.get(
-                  liveriesRef.where('id', 'in', user.liveries)
-                );
-                // update liveries where user is the creator
-                liveriesSnapshot.forEach((livery) => {
-                  const data = livery.data();
-                  if (data.creator.id === user.id) {
-                    liveriesToRevalidate.push(livery.id);
-                    const creatorUpdateData: Record<string, any> = {};
-                    let shouldUpdate = false;
-                    for (const field of creatorUpdateFields) {
-                      if (data.creator[field] !== parsedData[field]) {
-                        shouldUpdate = true;
-                        creatorUpdateData[`creator.${field}`] =
-                          parsedData[field];
-                      }
-                    }
-                    if (shouldUpdate) t.update(livery.ref, creatorUpdateData);
-                  }
-                });
+              for (const livery of currentUser.liveries) {
+                t.update(liveriesRef.doc(livery), creatorUpdateData);
               }
+            }
 
-              // update user
-              t.update(currentUserRef, parsedData);
-
-              return [garagesToRevalidate, liveriesToRevalidate];
-            });
+            // update user
+            t.update(userRef, updateProfileData);
+          });
 
           try {
-            await res.revalidate(`/profile/${req.uid}`);
-            if (garagesToRevalidate.length) {
+            await res.revalidate(`/profile/${userId}`);
+            if (currentUser.garages.length) {
               await res.revalidate(`/garages`);
-              for (const garageId of garagesToRevalidate) {
+              for (const garageId of currentUser.garages) {
                 await res.revalidate(`/garages/${garageId}`);
               }
             }
-            if (liveriesToRevalidate.length) {
+            if (currentUser.liveries.length) {
               await res.revalidate(`/liveries`);
-              for (const liveryId of liveriesToRevalidate) {
+              for (const liveryId of currentUser.liveries) {
                 await res.revalidate(`/liveries/${liveryId}`);
               }
             }
@@ -228,7 +232,12 @@ async function handler(
           throw new Error(err);
         }
 
-        return res.status(200).json({ id: req.uid });
+        const updatedUser = {
+          ...currentUser,
+          ...updateProfileData
+        };
+
+        return res.status(200).json(updatedUser);
       } catch (err) {
         return res.status(500).json({ error: 'internal error' });
       }
