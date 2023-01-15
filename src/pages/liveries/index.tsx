@@ -23,9 +23,19 @@ import { Icons } from '../../utils/icons/icons';
 import { useInfiniteScroll } from '../../hooks';
 import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
+import { LiveriesDataType } from '../../types';
 
-const Liveries: NextPage = () => {
+type Props = {
+  _liveries: LiveriesDataType;
+};
+
+const Liveries: NextPage<Props> = ({ _liveries }) => {
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (_liveries) dispatch(liveryActions.setLiveries(_liveries));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     dispatch(liveryActions.activatePage(LIVERIES_URL));
@@ -122,6 +132,6 @@ export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
 
   return {
-    props: {}
+    props: { _liveries: liveries }
   };
 });

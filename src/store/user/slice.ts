@@ -28,7 +28,6 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { HYDRATE } from 'next-redux-wrapper';
 import { getTypedThunkPendingAndRejectedCallbacks } from '../../utils/functions';
 import { applyUserFilters } from '../../utils/filtering/user';
 
@@ -356,16 +355,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // HYDRATE
-      .addCase(HYDRATE, (state, _action) => {
-        const action = _action as unknown as { payload: KnownRootState };
-        const users = { users: action.payload[USER_SLICE_NAME].users };
-        return {
-          ...state,
-          ...users
-        };
-      })
-
       // GET USERS
       .addCase(getUsers.pending, (state) => {
         usersThunkPending(state.users);

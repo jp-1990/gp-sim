@@ -54,7 +54,12 @@ import { LiveryFilter, Mode } from '../../components/features';
 import { GARAGES_URL, GARAGE_CREATE_URL, LIVERY_URL } from '../../utils/nav';
 import { garageStrings, commonStrings, formStrings } from '../../utils/intl';
 
-import { GarageDataType, LiveriesDataType, RequestStatus } from '../../types';
+import {
+  GarageDataType,
+  GaragesDataType,
+  LiveriesDataType,
+  RequestStatus
+} from '../../types';
 import {
   useAuthCheck,
   useConfirmationModal,
@@ -65,13 +70,24 @@ import db, { CacheKeys } from '../../lib';
 import { PHASE_PRODUCTION_BUILD } from 'next/dist/shared/lib/constants';
 import { Icons } from '../../utils/icons/icons';
 
-const Garages: NextPage = () => {
+type Props = {
+  _garages: GaragesDataType;
+  _liveries: LiveriesDataType;
+};
+
+const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
   const intl = useIntl();
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (_garages) dispatch(garageActions.setGarages(_garages));
+    if (_liveries) dispatch(liveryActions.setLiveries(_liveries));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (currentUser.token) {
@@ -753,6 +769,6 @@ export const getStaticProps = wrapper.getStaticProps((store) => async () => {
   if (liveries) store.dispatch(liveryActions.setLiveries(liveries));
 
   return {
-    props: {}
+    props: { _garages: garages, _liveries: liveries }
   };
 });

@@ -67,6 +67,7 @@ import {
 import { isString } from '../../../utils/functions';
 
 import {
+  GarageDataType,
   LiveriesDataType,
   PublicUserDataType,
   RequestStatus,
@@ -85,14 +86,24 @@ import { Icons } from '../../../utils/icons/icons';
 
 interface Props {
   id: string;
+  _garage: GarageDataType;
+  _liveries: LiveriesDataType;
+  _users: UsersDataType;
 }
-const Update: NextPage<Props> = ({ id }) => {
+const Update: NextPage<Props> = ({ id, _garage, _liveries, _users }) => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
   const router = useRouter();
   const dispatch = useAppDispatch();
   const intl = useIntl();
+
+  useEffect(() => {
+    if (_garage) dispatch(garageActions.setGarage(_garage));
+    if (_liveries) dispatch(liveryActions.setLiveries(_liveries));
+    if (_users) dispatch(userActions.setUsers(_users));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toast = useToast({
     duration: 8000,
@@ -552,7 +563,10 @@ export const getStaticProps = wrapper.getStaticProps(
 
       return {
         props: {
-          id
+          id,
+          _garage: garage,
+          _liveries: liveries,
+          _users: users
         }
       };
     }

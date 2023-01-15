@@ -20,7 +20,7 @@ import { actions as carActions } from '../../store/car/slice';
 import { useAppDispatch, useAppSelector, wrapper } from '../../store/store';
 
 import { useInfiniteScroll } from '../../hooks';
-import { LiveryDataType, UserDataType } from '../../types';
+import { LiveriesDataType, LiveryDataType, UserDataType } from '../../types';
 import { isString } from '../../utils/functions';
 import { LIVERY_URL, PROFILE_URL_BY_ID, PROFILE_URL_ID } from '../../utils/nav';
 import db, { CacheKeys } from '../../lib';
@@ -32,10 +32,17 @@ import { Icons } from '../../utils/icons/icons';
 interface Props {
   id: string;
   user: UserDataType;
+  _liveries: LiveriesDataType;
 }
-const Profile: NextPage<Props> = ({ id, user }) => {
+const Profile: NextPage<Props> = ({ id, user, _liveries }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (user) dispatch(userActions.setUser(user));
+    if (_liveries) dispatch(liveryActions.setLiveries(_liveries));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     dispatch(liveryActions.activatePage(PROFILE_URL_ID));
@@ -219,7 +226,8 @@ export const getStaticProps = wrapper.getStaticProps(
       return {
         props: {
           id,
-          user
+          user,
+          _liveries: liveries
         }
       };
     }

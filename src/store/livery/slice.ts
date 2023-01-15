@@ -6,7 +6,6 @@ import {
   PayloadAction
 } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { HYDRATE } from 'next-redux-wrapper';
 
 import {
   KeyValueUnionOf,
@@ -314,20 +313,6 @@ const liverySlice = createSlice({
     }
   },
   extraReducers(builder) {
-    //  HYDRATE
-    builder.addCase(HYDRATE, (state, _action) => {
-      const action = _action as unknown as { payload: KnownRootState };
-      const liveriesServerState = action.payload[LIVERY_SLICE_NAME].liveries;
-      const liveriesArray: LiveriesDataType = [];
-
-      for (const id of liveriesServerState.ids) {
-        const livery = liveriesServerState.entities[id];
-        if (livery) liveriesArray.push(livery);
-      }
-
-      liveriesAdapter.setMany(state.liveries, liveriesArray);
-    });
-
     // GET LIVERIES
     builder.addCase(getLiveries.pending, thunkPending);
     builder.addCase(getLiveries.rejected, thunkRejected);
