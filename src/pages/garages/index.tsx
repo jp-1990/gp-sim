@@ -615,7 +615,7 @@ const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
               <FormattedMessage {...garageStrings.yourCollection} />
             )}
           </Heading>
-          <Text fontSize="sm" pb={6}>
+          <Text fontSize="md" pb={6}>
             {garages?.entities[selectedGarage ?? '']?.description ?? (
               <FormattedMessage {...garageStrings.yourCollectionDescription} />
             )}

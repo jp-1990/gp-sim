@@ -13,7 +13,7 @@ const formLabels: Record<string, string> = {
   about: formStrings.about.defaultMessage,
   firstName: formStrings.firstName.defaultMessage,
   lastName: formStrings.lastName.defaultMessage,
-  email: formStrings.email.defaultMessage,
+  // email: formStrings.email.defaultMessage,
   displayName: formStrings.displayName.defaultMessage,
   images: commonStrings.selectImage.defaultMessage
 };
@@ -117,7 +117,7 @@ describe('UpdateProfile', () => {
     });
   });
 
-  describe('email field', () => {
+  describe.skip('email field', () => {
     it('correctly renders the email field with and without errors', async () => {
       render(<TestComponent />);
       const user = userEvent.setup();
@@ -249,10 +249,10 @@ describe('UpdateProfile', () => {
       const user = userEvent.setup();
 
       const displayName = screen.getByLabelText(formLabels.displayName);
-      const email = screen.getByLabelText(formLabels.email);
+      // const email = screen.getByLabelText(formLabels.email);
 
       await user.clear(displayName);
-      await user.clear(email);
+      // await user.clear(email);
 
       expect(screen.getByLabelText(formLabels.displayName)).toBeInvalid();
       expect(
@@ -267,16 +267,16 @@ describe('UpdateProfile', () => {
       const user = userEvent.setup();
 
       const displayName = screen.getByLabelText(formLabels.displayName);
-      const email = screen.getByLabelText(formLabels.email);
+      // const email = screen.getByLabelText(formLabels.email);
 
       await user.clear(displayName);
-      await user.clear(email);
+      // await user.clear(email);
 
       await user.type(displayName, inputValues.displayName);
-      await user.type(email, inputValues.email);
+      // await user.type(email, inputValues.email);
 
       expect(screen.getByLabelText(formLabels.displayName)).toBeValid();
-      expect(screen.getByLabelText(formLabels.email)).toBeValid();
+      // expect(screen.getByLabelText(formLabels.email)).toBeValid();
       expect(
         screen.getByRole('button', {
           name: commonStrings.saveChanges.defaultMessage

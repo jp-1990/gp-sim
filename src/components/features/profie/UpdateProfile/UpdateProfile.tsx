@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 
 import { useForm } from '../../../shared';
 import DisplayName from './components/DisplayName/DisplayName';
-import Email from './components/Email/Email';
+// import Email from './components/Email/Email';
 import Forename from './components/Forename/Forename';
 import Surname from './components/Surname/Surname';
 import SelectProfileImage from './components/SelectProfileImage/SelectProfileImage';
@@ -42,7 +42,7 @@ const UpdateProfile: React.FC<Props> = ({
       state.about = about;
       state.imageFiles = image ? [image] : [];
       state.displayName = displayName;
-      state.email = email;
+      // state.email = email;
       state.forename = forename;
       state.surname = surname;
     });
@@ -75,9 +75,9 @@ const UpdateProfile: React.FC<Props> = ({
       <GridItem colSpan={4}>
         <Surname />
       </GridItem>
-      <GridItem colSpan={4}>
+      {/* <GridItem colSpan={4}>
         <Email />
-      </GridItem>
+      </GridItem> */}
       <GridItem colSpan={4}>
         <DisplayName />
       </GridItem>
