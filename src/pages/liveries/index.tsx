@@ -93,7 +93,7 @@ const Liveries: NextPage<Props> = ({ _liveries }) => {
             lineHeight={1}
             rightIcon={<Icons.Upload />}
           >
-            <a>
+            <a href={LIVERY_CREATE_URL}>
               <FormattedMessage {...liveryStrings.uploadALivery} />
             </a>
           </Button>

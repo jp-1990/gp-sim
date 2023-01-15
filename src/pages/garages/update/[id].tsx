@@ -230,9 +230,8 @@ const Update: NextPage<Props> = ({ id, _garage, _liveries, _users }) => {
   const toggleSelectedLiveries = (payload: string | string[]) =>
     dispatch(liveryActions.selectedLiveriesChanged(payload));
 
-  const onClickLivery = (id: string) => {
+  const onClickLivery = () => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
-    router.push(LIVERY_URL(id));
   };
 
   const onOpenModal = (
@@ -388,8 +387,9 @@ const Update: NextPage<Props> = ({ id, _garage, _liveries, _users }) => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <a onClick={() => onClickLivery(id)}>
+                    <a href={LIVERY_URL(id)}>
                       <IconButton
+                        onClick={() => onClickLivery()}
                         variant="ghost"
                         size="sm"
                         colorScheme="red"

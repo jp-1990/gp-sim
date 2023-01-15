@@ -159,9 +159,8 @@ const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
   const toggleSelectedLiveries = (payload: string | string[]) =>
     dispatch(liveryActions.selectedLiveriesChanged(payload));
 
-  const onClickLivery = (id: string) => {
+  const onClickLivery = () => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
-    router.push(LIVERY_URL(id));
   };
 
   const onSelectGarage = (id: string | null | undefined) => () => {
@@ -338,7 +337,7 @@ const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
       <HStack w="full" maxW="5xl" my={5} gap={2}>
         <Link href={GARAGE_CREATE_URL} passHref>
           <Button colorScheme="red" w="3xs" lineHeight={1}>
-            <a>
+            <a href={GARAGE_CREATE_URL}>
               <FormattedMessage {...garageStrings.createAGarage} />
             </a>
           </Button>
@@ -652,26 +651,24 @@ const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
         actions={[
           ({ id }) => {
             return selectedGarage === null ? (
-              <a onClick={() => onOpenAddToGarageModal(id)}>
-                <IconButton
-                  variant={'ghost'}
-                  size="sm"
-                  colorScheme="red"
-                  aria-label={'add to garage'}
-                  icon={
-                    <Icons.Add
-                      tooltip={intl.formatMessage(commonStrings.add)}
-                    />
-                  }
-                />
-              </a>
+              <IconButton
+                onClick={() => onOpenAddToGarageModal(id)}
+                variant={'ghost'}
+                size="sm"
+                colorScheme="red"
+                aria-label={'add to garage'}
+                icon={
+                  <Icons.Add tooltip={intl.formatMessage(commonStrings.add)} />
+                }
+              />
             ) : (
               <></>
             );
           },
           ({ id }) => (
-            <a onClick={() => onClickLivery(id)}>
+            <a href={LIVERY_URL(id)}>
               <IconButton
+                onClick={() => onClickLivery()}
                 variant={'ghost'}
                 size="sm"
                 colorScheme="red"

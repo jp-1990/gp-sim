@@ -167,14 +167,12 @@ const Profile: NextPage = () => {
   const setFilters = (payload: FilterActionPayload) =>
     dispatch(liveryActions.filtersChanged(payload));
 
-  const onViewLivery = (id: string) => {
+  const onViewLivery = () => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
-    router.push(LIVERY_URL(id));
   };
 
-  const onEditLivery = (id: string) => {
+  const onEditLivery = () => {
     dispatch(liveryActions.scrollYChanged(window.scrollY));
-    router.push(LIVERY_UPDATE_URL(id));
   };
 
   const onTabsChange = (index: number) => {
@@ -323,8 +321,9 @@ const Profile: NextPage = () => {
               <Table<LiveriesDataType>
                 actions={[
                   ({ id }) => (
-                    <a onClick={() => onViewLivery(id)}>
+                    <a href={LIVERY_URL(id)}>
                       <IconButton
+                        onClick={() => onViewLivery()}
                         variant={'ghost'}
                         size="sm"
                         colorScheme="red"
@@ -338,8 +337,9 @@ const Profile: NextPage = () => {
                     </a>
                   ),
                   ({ id }) => (
-                    <a onClick={() => onEditLivery(id)}>
+                    <a href={LIVERY_UPDATE_URL(id)}>
                       <IconButton
+                        onClick={() => onEditLivery()}
                         variant={'solid'}
                         size="sm"
                         colorScheme="red"
