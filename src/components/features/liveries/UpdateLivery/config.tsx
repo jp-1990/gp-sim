@@ -1,3 +1,5 @@
+import { validatorOptions } from '../../../shared/Form/utils';
+
 export const stateKeys = {
   TITLE: 'title',
   DESCRIPTION: 'description',
@@ -16,7 +18,7 @@ export const initialState = {
 };
 
 export const validators = {
-  title: undefined,
+  title: [validatorOptions.NON_NULL_STRING],
   description: undefined,
   publicLivery: undefined,
   price: undefined,

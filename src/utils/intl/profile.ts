@@ -34,7 +34,7 @@ const profile = {
   },
   profileSummary: {
     id: 'utils.intl.profile.profileSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+    defaultMessage: `From here you can edit your profile details. You can also manage liveries and garages that you have created. You have the option to edit them or delete them at any time.`
   },
   deleteItem: {
     id: 'utils.intl.liveries.deleteItem',

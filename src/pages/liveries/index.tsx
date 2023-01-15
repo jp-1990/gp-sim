@@ -81,13 +81,14 @@ const Liveries: NextPage<Props> = ({ _liveries }) => {
       pageDescription="Find your next livery from the collection uploaded by our users!"
       urlPath={LIVERIES_URL}
     >
-      <PageHeading
-        heading={<FormattedMessage {...liveryStrings.liveriesHeading} />}
-        paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
-      />
-      <Flex w="full" maxW="5xl" my={5}>
+      <Flex direction="column" w="full" maxW="5xl">
+        <PageHeading
+          heading={<FormattedMessage {...liveryStrings.liveriesHeading} />}
+          paragraph={<FormattedMessage {...liveryStrings.liveriesSummary} />}
+        />
         <Link href={LIVERY_CREATE_URL} passHref>
           <Button
+            my={5}
             colorScheme="red"
             w="3xs"
             lineHeight={1}

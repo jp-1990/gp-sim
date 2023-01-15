@@ -10,7 +10,8 @@ const liveries = {
   },
   liveriesSummary: {
     id: 'utils.intl.liveries.liveriesSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+    defaultMessage:
+      'From here you can browse through a list of the liveries contributed by the artists using this platform. If you find a livery you like, you can click on it to view it in more detail. From that page, you will also have the option to add it to your collection. If you are looking to upload your own livery, hit the upload button below!'
   },
   inColletion: {
     id: 'utils.intl.liveries.inColletion',
@@ -25,7 +26,7 @@ const upload = {
   },
   uploadSummary: {
     id: 'utils.intl.liveries.uploadSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+    defaultMessage: `When uploading a livery, the only things you need to fill in are a title for your livery, the car it belongs to, and the livery files themselves (you will NOT be able to edit the livery files later, so make sure you double check them). Everything else is optional, but if you're making the livery publically available, a description and some images might increase popularity!`
   },
   uploadALivery: {
     id: 'utils.intl.liveries.uploadALivery',
@@ -48,7 +49,7 @@ const update = {
   },
   updateSummary: {
     id: 'utils.intl.liveries.updateSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+    defaultMessage: `Here you can update some of the details for your livery. You cannot update the livery files or the car it belongs to, but more minor or descriptive details can be changed, including the images.`
   },
   updateALivery: {
     id: 'utils.intl.liveries.updateALivery',

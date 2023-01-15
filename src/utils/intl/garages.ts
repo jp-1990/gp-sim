@@ -10,7 +10,7 @@ const garages = {
   },
   garagesSummary: {
     id: 'utils.intl.garages.garagesSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis. Interdum et malesuada fames ac ante ipsum primis in faucibus`
+    defaultMessage: `Garages represent a way to organise your liveries. 'Your Collection' includes any liveries you've chosen to add to your collection, as well as any liveries you've uploaded. You can also select other garages that you belong to, and view the liveries added to that garage by other members. If you want to start your own garage, or if you've been given a key to join a garage, use the buttons below!`
   },
   joinGarage: {
     id: 'utils.intl.garages.joinGarage',
@@ -26,7 +26,7 @@ const garages = {
   },
   yourCollectionDescription: {
     id: 'utils.intl.garages.yourCollectionDescription',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+    defaultMessage: `This collection is unique to you. No one else can view it, and it contains all the liveries that you've added to your collection, as well as any that you've uploaded, both public and private.`
   }
 };
 
@@ -37,7 +37,7 @@ const create = {
   },
   createSummary: {
     id: 'utils.intl.garages.createSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
+    defaultMessage: `Once created, you can go to your profile and edit the garage details there. From the edit page you will be able to manage the liveries and drivers that belong to the garage, and see the garage key. In order to invite new drivers to the garage you will need to provide them with this key, which they can use on the main 'garages' page to join this garage.`
   },
   createAGarage: {
     id: 'utils.intl.garages.createAGarage',
@@ -66,10 +66,6 @@ const edit = {
   garageKey: {
     id: 'utils.intl.garages.garageKey',
     defaultMessage: 'Garage Key: {key}'
-  },
-  updateSummary: {
-    id: 'utils.intl.garages.updateSummary',
-    defaultMessage: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mauris eros, euismod ut mi vitae, convallis iaculis quam. Pellentesque consectetur iaculis tortor vitae euismod. Integer malesuada congue elementum. Pellentesque vulputate diam dignissim elit hendrerit iaculis.`
   },
   updateAGarage: {
     id: 'utils.intl.garages.updateAGarage',
