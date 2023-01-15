@@ -1,6 +1,8 @@
 import { chakra, Flex, Heading, Text } from '@chakra-ui/react';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useAuthCheck } from '../../../hooks';
+import { RequestStatus } from '../../../types';
 
 import { commonStrings } from '../../../utils/intl';
 import { MainLayout } from '../../layout';
@@ -9,6 +11,11 @@ import { MainLayout } from '../../layout';
  * Displays a page with the header and nav bar, informing the user that they need to log in to view this page
  */
 const Unauthorized = () => {
+  // AUTH CHECK
+  const { currentUser } = useAuthCheck();
+
+  if (currentUser.status === RequestStatus.IDLE && !currentUser.token)
+    return null;
   return (
     <MainLayout pageDescription="User unauthorized">
       <chakra.section pt={16}>
