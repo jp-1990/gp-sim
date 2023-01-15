@@ -232,7 +232,7 @@ const MainLayout: React.FC<Props> = ({
       <Flex
         alignItems="center"
         direction="column"
-        minH={`calc(100vh - ${headerFooterHeight}px)`}
+        minH={`calc(100vh - ${headerFooterHeight - 1}px)`}
       >
         {children}
       </Flex>
