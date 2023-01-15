@@ -123,6 +123,7 @@ async function handler(
               for (const key of Object.keys(rawData)) {
                 if (rawData[key] === 'undefined') rawData[key] = undefined;
               }
+              if (!rawData.imagesToRemove) rawData.imagesToRemove = [];
               rawData.isPublic = parseStringBoolean(rawData.isPublic);
 
               resolve(rawData);
@@ -170,7 +171,7 @@ async function handler(
         // add images which are not being removed to updateData
         for (const image of currentLivery.images) {
           const img = (image.match(/(image-[0-9])/g) || [''])[0];
-          if (imagesToRemove.includes(img)) continue;
+          if (imagesToRemove.length && imagesToRemove.includes(img)) continue;
           updateLiveryData.images.push(image);
         }
 
