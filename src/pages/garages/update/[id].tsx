@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { GetStaticPaths, NextPage } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
   Box,
@@ -94,7 +93,6 @@ const Update: NextPage<Props> = ({ id, _garage, _liveries, _users }) => {
   // AUTH CHECK
   const { currentUser } = useAuthCheck();
 
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const intl = useIntl();
 

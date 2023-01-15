@@ -23,7 +23,6 @@ import {
   Divider
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -80,7 +79,6 @@ const Garages: NextPage<Props> = ({ _garages, _liveries }) => {
   const { currentUser } = useAuthCheck();
 
   const intl = useIntl();
-  const router = useRouter();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
