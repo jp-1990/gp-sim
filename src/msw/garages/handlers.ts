@@ -64,15 +64,6 @@ export const garagesHandlers = [
       return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
     }
   ),
-  rest.delete(
-    `${
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/garages/:id/liveries`,
-    (req, res, ctx) => {
-      const { id } = req.params as { id: string };
-      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
-    }
-  ),
   rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -86,15 +77,6 @@ export const garagesHandlers = [
       );
     }
   ),
-  rest.delete(
-    `${
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
-    }/api/v1/garages/:id/users`,
-    (req, res, ctx) => {
-      const { id } = req.params as { id: string };
-      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
-    }
-  ),
   rest.patch(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
@@ -102,6 +84,24 @@ export const garagesHandlers = [
     (req, res, ctx) => {
       const { ids } = req.params as { ids: string };
       return res(ctx.delay(), ctx.status(200), ctx.json({ ids }));
+    }
+  ),
+  rest.post(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/garages/:id/join`,
+    (req, res, ctx) => {
+      const { id } = req.params as { id: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+    }
+  ),
+  rest.post(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/garages/:id/leave`,
+    (req, res, ctx) => {
+      const { id } = req.params as { id: string };
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
     }
   )
 ];

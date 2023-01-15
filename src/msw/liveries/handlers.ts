@@ -71,10 +71,28 @@ export const liveriesHandlers = [
       return res(ctx.delay(), ctx.status(200), ctx.json(livery));
     }
   ),
+  rest.patch(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/liveries/:id`,
+    (req, res, ctx) => {
+      const { id } = req.params;
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+    }
+  ),
   rest.delete(
     `${
       process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
     }/api/v1/liveries/:id`,
+    (req, res, ctx) => {
+      const { id } = req.params;
+      return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
+    }
+  ),
+  rest.get(
+    `${
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL
+    }/api/v1/liveries/download/:id`,
     (req, res, ctx) => {
       const { id } = req.params;
       return res(ctx.delay(), ctx.status(200), ctx.json({ id }));
