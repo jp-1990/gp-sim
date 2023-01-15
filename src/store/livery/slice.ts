@@ -432,20 +432,26 @@ const { selectAll: selectLiveries } = liveriesAdapter.getSelectors(
 
 const createSelectUserCreatedLiveryIds =
   (uid: string) => (state: KnownRootState) => {
+    const liveryIds = selectLiveryIds(state);
     const liveries = selectLiveries(state);
+
     const filteredIds: string[] = [];
     for (const livery of liveries) {
-      if (livery.creator.id === uid) filteredIds.push(livery.id);
+      if (livery.creator.id === uid && liveryIds.includes(livery.id))
+        filteredIds.push(livery.id);
     }
     return filteredIds;
   };
 
 const createSelectUserCreatedLiveryEntities =
   (uid: string) => (state: KnownRootState) => {
+    const liveryIds = selectLiveryIds(state);
     const liveries = selectLiveries(state);
+
     const filteredEntities: Record<string, LiveryDataType> = {};
     for (const livery of liveries) {
-      if (livery.creator.id === uid) filteredEntities[livery.id] = livery;
+      if (livery.creator.id === uid && liveryIds.includes(livery.id))
+        filteredEntities[livery.id] = livery;
     }
     return filteredEntities;
   };
