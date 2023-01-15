@@ -226,7 +226,9 @@ async function handler(
         for (const filename of filenames) {
           if (files[filename].stream && files[filename].filename) {
             const bucket = storage.bucket();
-            file = bucket.file(`${StoragePath.GARAGES}${newGarageRef.id}`);
+            file = bucket.file(
+              `${StoragePath.GARAGES}${newGarageRef.id}/${Date.now()}`
+            );
 
             const fileWriteStream = file.createWriteStream({
               contentType: 'image/webp'

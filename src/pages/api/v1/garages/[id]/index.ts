@@ -132,7 +132,7 @@ async function handler(
             await bucket.deleteFiles({
               prefix: `${StoragePath.GARAGES}${id}`
             });
-            file = bucket.file(`${StoragePath.GARAGES}${id}`);
+            file = bucket.file(`${StoragePath.GARAGES}${id}/${Date.now()}`);
 
             const fileWriteStream = file.createWriteStream({
               contentType: 'image/webp'
@@ -148,6 +148,7 @@ async function handler(
             await file.makePublic();
             const url = file.publicUrl();
             parsedData.image = url;
+            parsedDataKeys.push('image');
           }
         }
 
