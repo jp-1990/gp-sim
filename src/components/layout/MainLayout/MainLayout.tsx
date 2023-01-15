@@ -66,7 +66,7 @@ const MainLayout: React.FC<Props> = ({
   locale,
   children
 }) => {
-  const [contentMinHeight, setContentMinHeight] = useState<number>(0);
+  const [headerFooterHeight, setHeaderFooterHeight] = useState<number>(0);
   const intl = useIntl();
   const dispatch = useAppDispatch();
 
@@ -78,14 +78,16 @@ const MainLayout: React.FC<Props> = ({
   const headerChakraHeight = 15;
   const footerChakraHeight = 15;
   const footerChakraPaddingTop = 9;
+
   useEffect(() => {
-    const calculatedMinHeight =
-      window.innerHeight -
-      headerChakraHeight * 4 -
-      footerChakraHeight * 4 -
-      footerChakraPaddingTop * 4;
-    setContentMinHeight(calculatedMinHeight);
-  }, []);
+    if (!headerFooterHeight) {
+      const calculatedHeaderFooterHeight =
+        headerChakraHeight * 4 +
+        footerChakraHeight * 4 +
+        footerChakraPaddingTop * 4;
+      setHeaderFooterHeight(calculatedHeaderFooterHeight);
+    }
+  }, [headerFooterHeight]);
 
   const backgroundColor = 'red.600';
   const textColor = 'white';
@@ -230,7 +232,7 @@ const MainLayout: React.FC<Props> = ({
       <Flex
         alignItems="center"
         direction="column"
-        minH={`${contentMinHeight}px`}
+        minH={`calc(100vh - ${headerFooterHeight}px)`}
       >
         {children}
       </Flex>
